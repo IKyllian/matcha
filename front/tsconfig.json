@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "moduleResolution": "node",
+    "module": "es2020",
+    "lib": ["DOM", "DOM.Iterable", "ES2020"],
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "paths": {
+      "front/*": ["src/*"],
+      "styled-system/*": ["styled-system/*"],
+    },
+    "allowJs": true,
+    "noEmit": true,
+    "rootDir": "./"
+  },
+  "include":  ["src", "styled-system", ]
+}
