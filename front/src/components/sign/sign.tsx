@@ -1,3 +1,5 @@
+import { useForm } from "react-hook-form"
+import { useNavigate } from "react-router-dom"
 import { css, sva } from "styled-system/css"
 
 const formStyle = sva({
@@ -78,13 +80,24 @@ const Input = ({ type, name, required }: InputProps) => (
 )
 
 const Sign = () => {
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors },
+      } = useForm()
+    const navigate = useNavigate()
     const slotsStyles = formStyle.raw()
-
+    const onSubmit = (data) => {
+        console.info('data = ', data)
+        navigate('profile')
+    }
+    
     return (
         <div className={css({minHeight: '100vh', display: 'flex'})}>
             <div className={css(slotsStyles.wrapper)}>
                 <h2 className={css(slotsStyles.title)}> Incrvivez-vous </h2>
-                <form className={css(slotsStyles.form)}>
+                <form className={css(slotsStyles.form)} onSubmit={handleSubmit(onSubmit)}>
                     <label className={css(slotsStyles.label)}>
                         Prenom
                         <Input type="text" name="firstName" required />

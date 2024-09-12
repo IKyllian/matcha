@@ -16,5 +16,5 @@
     "noEmit": true,
     "rootDir": "./"
   },
-  "include":  ["src", "styled-system", ]
+  "include":  ["src", "styled-system"]
 }

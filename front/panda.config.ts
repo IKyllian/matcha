@@ -19,7 +19,9 @@ export default defineConfig({
           primary: { value: '#000000'},
           primaryBackground: { value: '#DCF2FA'},
           secondaryBackground: { value: '#FEF2E8' },
-          buttonPrimaryBackground: { value: '#FF9D73' }
+          buttonPrimaryBackground: { value: '#FF9D73' },
+          lightPink: { value: '#faafe5'},
+          darkPink: { value: '#ed05ab' }
         },
         fonts: {
           title: { value: "Archivo, sans-serif" },
