@@ -18,7 +18,6 @@ export const cardStyle = sva({
             border: '2px solid black',
             boxShadow: '2.5px 2.5px 0 black',
             width: '300px',
-            height: '370px',
             borderRadius: '10px',
             backgroundColor: 'secondaryBackground'
         },

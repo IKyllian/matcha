@@ -9,6 +9,11 @@ export const profileStyle = sva({
         profilInfosContainer: {
             display: 'flex',
             gap: '16px',
+            border: '2px solid black',
+            boxShadow: '3px 3px 0 black',
+            borderRadius: '10px',
+            backgroundColor: 'secondaryBackground',
+            padding: '8px'
         },
         profilContent: {
             display: 'flex',

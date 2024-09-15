@@ -17,8 +17,8 @@ const ChipsList = ({ chipsList }: ChipsListProps) => {
     return (
         <div className={css(slotsStyles.chipsContainer)}>
             {
-                chipsList.map(chip => (
-                    <Chip value={chip} classname={css(slotsStyles.chip)} />
+                chipsList.map((chip, index) => (
+                    <Chip key={index} value={chip} classname={css(slotsStyles.chip)} />
                 ))
             }
         </div>

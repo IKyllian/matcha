@@ -2,7 +2,7 @@ import Image from 'front/assets/images/Panda.jpeg'
 
 export type User = {
     id: number;
-    img: any;
+    img?: any;
     firstName: string;
     lastname: string;
     username: string;
@@ -10,6 +10,7 @@ export type User = {
     description: string;
     age: number;
     interests: string[];
+    pictures: any[];
 }
 
 export const USERS: User[] = [
@@ -28,6 +29,11 @@ export const USERS: User[] = [
             'lecture',
             'voyage'
         ],
+        pictures: [
+            Image,
+            Image,
+            Image,
+        ],
         description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tristique, nisl quis lobortis fermentum, elit tellus varius nisl, sed ullamcorper ex lacus ut ex. Nulla eleifend bibendum tellus interdum sagittis. Suspendisse ac lacus sit amet mauris dapibus fringilla. Proin ut semper elit. Nam vel nisi lacus. Sed scelerisque maximus dui nec vulputate'
     },
     {
@@ -45,6 +51,11 @@ export const USERS: User[] = [
             'lecture',
             'voyage'
         ],
+        pictures: [
+            Image,
+            Image,
+            Image,
+        ],
         description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tristique, nisl quis lobortis fermentum, elit tellus varius nisl, sed ullamcorper ex lacus ut ex. Nulla eleifend bibendum tellus interdum sagittis. Suspendisse ac lacus sit amet mauris dapibus fringilla. Proin ut semper elit. Nam vel nisi lacus. Sed scelerisque maximus dui nec vulputate'
     },
     {
@@ -61,6 +72,11 @@ export const USERS: User[] = [
             'tech',
             'lecture',
             'voyage'
+        ],
+        pictures: [
+            Image,
+            Image,
+            Image,
         ],
         description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tristique, nisl quis lobortis fermentum, elit tellus varius nisl, sed ullamcorper ex lacus ut ex. Nulla eleifend bibendum tellus interdum sagittis. Suspendisse ac lacus sit amet mauris dapibus fringilla. Proin ut semper elit. Nam vel nisi lacus. Sed scelerisque maximus dui nec vulputate'
     }
