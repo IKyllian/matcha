@@ -13,7 +13,7 @@ export const profileStyle = sva({
             boxShadow: '3px 3px 0 black',
             borderRadius: '10px',
             backgroundColor: 'secondaryBackground',
-            padding: '8px'
+            padding: '16px'
         },
         profilContent: {
             display: 'flex',

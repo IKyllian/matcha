@@ -54,7 +54,6 @@ const Sign = () => {
     const {
         register,
         handleSubmit,
-        watch,
         formState: { errors },
     } = useForm<FormValues>()
 

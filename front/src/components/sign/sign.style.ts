@@ -58,8 +58,8 @@ export const formStyle = sva({
             fontSize: '20px',
             marginTop: '12px',
             fontFamily: 'body',
-            _hover: {
-                boxShadow: '4px 4px 0 black',
+            _active: {
+                boxShadow: 'none',
             }
         }
     }

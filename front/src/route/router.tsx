@@ -2,6 +2,7 @@ import Profile from "front/components/profile/profile";
 import Sign from "front/components/sign/sign";
 import { createBrowserRouter } from "react-router-dom";
 import PublicRoute from "./publicRoute";
+import ChatScreen from "front/components/chat/chatScreen";
 
 export const router = createBrowserRouter([
     {
@@ -14,5 +15,13 @@ export const router = createBrowserRouter([
             <PublicRoute>
                 <Profile />
             </PublicRoute>)
+    },
+    {
+        path: "/chat",
+        element: (
+            <PublicRoute>
+                <ChatScreen />
+            </PublicRoute>
+        )
     }
 ])

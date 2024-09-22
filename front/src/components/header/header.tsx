@@ -12,8 +12,8 @@ const Header = () => {
         <div className={css(slotsStyles.headerContainer)}>
             <p className={css(slotsStyles.headerLogo)}> matcha </p>
             <div className={css(slotsStyles.headerContentWrapper)}>
-                <Link to=''>Chat</Link>
-                <Link to=''>Profil</Link>
+                <Link to='/chat'>Chat</Link>
+                <Link to='/profile'>Profil</Link>
                 <div className={css(slotsStyles.headerAvatar)}>
                     <img src={USER.img} alt='image de profil' />
                 </div>

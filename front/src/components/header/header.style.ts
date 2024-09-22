@@ -8,6 +8,7 @@ export const headerStyle = sva({
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '16px',
+            height: '70px',
         },
         headerContentWrapper: {
             display: 'flex',
