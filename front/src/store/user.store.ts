@@ -2,7 +2,6 @@ import { User } from "front/typing/user";
 import { create } from "zustand";
 import Image from 'front/assets/images/Panda.jpeg'
 
-
 type AuthType = {
     user?: User,
     isLogged: boolean
@@ -28,7 +27,7 @@ function cleanUserData(user: User): User {
     };
 }
 
-const useAuthStore = create<AuthStoreType>((set) => ({
+export const useAuthStore = create<AuthStoreType>((set) => ({
     authStore: defaultAuthStore,
     setUser: (user: User) => set((state) => ({...state, user: cleanUserData(user)})) 
 }))

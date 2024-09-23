@@ -16,12 +16,14 @@ export const router = createBrowserRouter([
                 <Profile />
             </PublicRoute>)
     },
-    {
-        path: "/chat",
+    ...["/chat", "/chat/:chatId"].map(path => ({
+
+        path,
         element: (
             <PublicRoute>
                 <ChatScreen />
             </PublicRoute>
         )
-    }
+
+    }))
 ])

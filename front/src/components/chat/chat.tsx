@@ -1,45 +1,27 @@
-import { USERS } from "front/typing/user"
-import { IoSend } from "react-icons/io5";
 import { chatStyle } from "./chat.style";
 import { css } from "styled-system/css";
 import { AiOutlineSend } from "react-icons/ai";
+import { useApi } from "front/hook/useApi";
+import { ChatType } from "front/typing/chat";
+import { USERS } from "front/typing/user";
+import { useChatStore } from "front/store/chat.store";
 
-const CHAT = {
-    participants: [
-        USERS[0],
-        USERS[1]
-    ],
-    messages: [
-        {
-            id: 1,
-            senderId: 1,
-            text: 'Salut',
-            createdAt: new Date().toISOString(),
-        },
-        {
-            id: 2,
-            senderId: 1,
-            text: 'Comment ça va?',
-            createdAt: new Date().toISOString(),
-        },
-        {
-            id: 3,
-            senderId: 2,
-            text: 'Hello !',
-            createdAt: new Date().toISOString(),
-        },
-        {
-            id: 4,
-            senderId: 2,
-            text: 'Bien et toi?',
-            createdAt: new Date().toISOString(),
-        }
-    ]
+type ChatProps = {
+    chatId: number;
 }
-const Chat = () => {
+const Chat = ({ chatId }: ChatProps) => {
     const slotsStyles = chatStyle.raw()
-    const recipientId = 2
-    const recipient = CHAT.participants.find(participant => participant.id === recipientId)
+    const { setChat, chat } = useChatStore()
+    const { isLoading } = useApi<ChatType>({ endpoint: "chat", dependencies: [chatId], params: { id: chatId }, setter: setChat })
+    const userConnected = USERS[0]
+    const recipient = chat?.participants.find(participant => participant.id !== userConnected.id)
+
+    if (isLoading) {
+        return <p>Chargement...</p>
+    }
+    if (!chat || !recipient) {
+        return <p>Aucun message pour le moment.</p>
+    }
     return (
         <div className={css(slotsStyles.chatContainer)}>
             <div className={css(slotsStyles.chatWrapper)}>
@@ -49,16 +31,16 @@ const Chat = () => {
                 </div>
                 <div className={css(slotsStyles.messagesContainer)}>
                     {
-                        CHAT.messages.map((message) => {
+                        chat.messages.map((message) => {
                             return (
                                 <div
                                     key={message.id}
                                     className={css(
                                         slotsStyles.messageItem,
-                                        message.senderId === recipientId ? slotsStyles.recipient : slotsStyles.sender
+                                        message.senderId === recipient.id ? slotsStyles.recipient : slotsStyles.sender
                                     )}
                                 >
-                                    <p>{message.text}</p>
+                                    <p>{message.message}</p>
                                     <span>{new Date(message.createdAt).toLocaleTimeString()}</span>
                                 </div>
                             )
