@@ -1,24 +1,33 @@
 import { User } from "front/typing/user";
 import { create } from "zustand";
 import Image from 'front/assets/images/Panda.jpeg'
+import { socketMiddleware } from "./socketMidlleware.store";
 
 type AuthType = {
     user?: User,
-    isLogged: boolean
+    isLogged: boolean,
+    socketInitialized: boolean
 }
 
 const defaultAuthStore: AuthType = {
-    isLogged: false
-} 
-type AuthStoreType = {
+    isLogged: false,
+    socketInitialized: false,
+    user: undefined
+}
+export type AuthStoreType = {
     authStore: AuthType,
-    setUser: (user: User) => void,
+    setUser: (user: Partial<User>) => void,
 }
 
-function cleanUserData(user: User): User {
+function cleanUserData(user: Partial<User>): User {
+    console.info("cleanUserData = ")
     return {
         ...user,
-        img: user.img?? Image,
+        id: user.id || undefined,
+        firstName: user.firstName || '',
+        lastname: user.lastname || '',
+        username: user.username || '',
+        img: user.img ?? Image,
         age: user.age ?? 0,
         description: user.description ?? 'Aucune description disponible',
         location: user.location ?? 'Localisation non spécifiée',
@@ -27,7 +36,7 @@ function cleanUserData(user: User): User {
     };
 }
 
-export const useAuthStore = create<AuthStoreType>((set) => ({
+export const authSlice = (set): AuthStoreType => ({
     authStore: defaultAuthStore,
-    setUser: (user: User) => set((state) => ({...state, user: cleanUserData(user)})) 
-}))
+    setUser: (user: Partial<User>) => set((state) => ({ ...state, authStore: { ...state.authStore, user: cleanUserData(user) } })),
+})

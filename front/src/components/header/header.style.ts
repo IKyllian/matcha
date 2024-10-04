@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css";
 
 export const headerStyle = sva({
-    slots: ['headerContainer', 'headerLogo', 'headerAvatar', 'headerContentWrapper', 'logoutIcon', 'logoutWrapper', 'divider'],
+    slots: ['headerContainer', 'headerLogo', 'headerAvatar', 'headerContentWrapper', 'notificationIcon', 'notificationContainer', 'logoutIcon', 'logoutWrapper', 'divider'],
     base: {
         headerContainer: {
             display: 'flex',
@@ -36,6 +36,14 @@ export const headerStyle = sva({
                 width: '100%',
                 height: '100%',
             }
+        },
+        notificationIcon: {
+            width: '24px',
+            height: '24px',
+            cursor: 'pointer',
+        },
+        notificationContainer: {
+            position: 'relative'
         },
         logoutWrapper: {
             display: 'flex',

@@ -3,12 +3,12 @@ import { User, USERS } from "front/typing/user";
 import ky from "ky";
 import { useEffect, useState } from "react"
 
-type UseApiProps = {
+type UseApiProps<T> = {
     endpoint: EndpointType,
     method?: string,
     params?: { id: number },
     dependencies?: any[],
-    setter: any
+    setter: (entity: T ) => void,
 }
 
 const API_URL = 'localhost:3000/';
@@ -31,7 +31,7 @@ const getDataFromEndpoint = ({ endpoint, params }: { endpoint: EndpointType, par
 }
 //--------------------------------------------------------------------------------------------------------//
 
-export const useApi = <T>({ endpoint, method, params, dependencies = [], setter }: UseApiProps) => {
+export const useApi = <T>({ endpoint, method, params, dependencies = [], setter }: UseApiProps<T>) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -46,6 +46,7 @@ export const useApi = <T>({ endpoint, method, params, dependencies = [], setter 
                 setIsLoading(false);
             }
         }
+        setIsLoading(true);
         setTimeout(() => {
             fetch()
         }, 1000);

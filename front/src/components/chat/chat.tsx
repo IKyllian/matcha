@@ -4,17 +4,42 @@ import { AiOutlineSend } from "react-icons/ai";
 import { useApi } from "front/hook/useApi";
 import { ChatType } from "front/typing/chat";
 import { USERS } from "front/typing/user";
-import { useChatStore } from "front/store/chat.store";
+import { useStore } from "front/store/socketMidlleware.store";
+import { useForm } from "react-hook-form";
 
 type ChatProps = {
     chatId: number;
 }
+
+type FormValues = {
+    message: string;
+}
+
 const Chat = ({ chatId }: ChatProps) => {
     const slotsStyles = chatStyle.raw()
-    const { setChat, chat } = useChatStore()
+    const chat = useStore(state => state.chat)
+    const { user } = useStore(state => state.authStore)
+    const setChat = useStore(state => state.setChat)
+    const sendMessage = useStore(state => state.sendMessage)
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<FormValues>()
     const { isLoading } = useApi<ChatType>({ endpoint: "chat", dependencies: [chatId], params: { id: chatId }, setter: setChat })
     const userConnected = USERS[0]
     const recipient = chat?.participants.find(participant => participant.id !== userConnected.id)
+
+    const onSubmit = (data: FormValues) => {
+        if (user) {
+            sendMessage({
+                chatId,
+                userId: user.id,
+                message: data.message,
+            })
+        }
+
+    }
 
     if (isLoading) {
         return <p>Chargement...</p>
@@ -47,12 +72,12 @@ const Chat = ({ chatId }: ChatProps) => {
                         })
                     }
                 </div>
-                <div className={css(slotsStyles.chatFormContainer)}>
-                    <input type='text' />
-                    <div className={css(slotsStyles.sendButtonContainer)}>
+                <form className={css(slotsStyles.chatFormContainer)} onSubmit={handleSubmit(onSubmit)}>
+                    <input type='text' {...register('message')} name="message" />
+                    <button type="submit" className={css(slotsStyles.sendButtonContainer)}>
                         <AiOutlineSend />
-                    </div>
-                </div>
+                    </button>
+                </form>
             </div>
         </div>
     )

@@ -1,12 +1,19 @@
-import { ChatType } from "front/typing/chat"
-import { create } from "zustand"
+import { ChatType, MessageType } from "front/typing/chat"
 
-type ChatSidebatStoreType = {
+export type ChatStoreType = {
     chat: ChatType | undefined,
     setChat: (chat: ChatType) => void,
+    addMessage: (message: MessageType) => void,
 }
 
-export const useChatStore = create<ChatSidebatStoreType>((set) => ({
+export const chatSlice = (set): ChatStoreType => ({
     chat: undefined,
-    setChat: (chat: ChatType) => set((state) => ({ ...state, chat }))
-}))
+    setChat: (chat: ChatType) => set((state) => ({ ...state, chat })),
+    addMessage: (message: MessageType) => set(state => ({
+        ...state,
+        chat: {
+            ...state.chat,
+            messages: [...state.chat.messages, message]
+        }
+    }))
+})

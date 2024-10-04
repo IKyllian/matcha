@@ -3,11 +3,12 @@ import { css } from "styled-system/css"
 import { ChatSidebarType } from "front/typing/chat"
 import { useApi } from "front/hook/useApi"
 import { useNavigate } from "react-router-dom"
-import { useChatSidebarStore } from "front/store/chatSidebar.store"
+import { useStore } from "front/store/socketMidlleware.store"
 
 const Sidebar = () => {
     const slotsStyles = sidebarStyle.raw()
-    const { setChatSidebar, chatSidebar } = useChatSidebarStore()
+    const setChatSidebar = useStore(state => state.setChatSidebar)
+    const chatSidebar = useStore(state => state.chatSidebar)
     const { isLoading } = useApi<ChatSidebarType[]>({ endpoint: "sidebar", setter: setChatSidebar })
     const navigate = useNavigate()
 

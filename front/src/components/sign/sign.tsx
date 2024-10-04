@@ -2,6 +2,8 @@ import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
+import { useAuthStore } from "front/store/user.store"
+import { useStore } from "front/store/socketMidlleware.store"
 
 type FormValues = {
     firstName: string;
@@ -39,7 +41,7 @@ const FIELDS: FieldsType[] = [
     {
         label: 'Email',
         name: 'email',
-        type: 'email',
+        type: 'text',
         required: true,
     },
     {
@@ -56,11 +58,14 @@ const Sign = () => {
         handleSubmit,
         formState: { errors },
     } = useForm<FormValues>()
-
+    // const { authStore, setUser } = useAuthStore()
+    const authStore = useStore((state) => state.authStore)
+    const setUser = useStore((state) => state.setUser)
     const navigate = useNavigate()
     const slotsStyles = formStyle.raw()
     const onSubmit = (data: FormValues) => {
         console.info('data = ', data)
+        setUser(data)
         navigate('profile')
     }
     
