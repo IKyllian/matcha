@@ -1,4 +1,4 @@
-import { User } from "front/typing/user";
+import { User, USERS } from "front/typing/user";
 import { create } from "zustand";
 import Image from 'front/assets/images/Panda.jpeg'
 import { socketMiddleware } from "./socketMidlleware.store";
@@ -10,9 +10,9 @@ type AuthType = {
 }
 
 const defaultAuthStore: AuthType = {
-    isLogged: false,
+    isLogged: true,
     socketInitialized: false,
-    user: undefined
+    user: USERS[0]
 }
 export type AuthStoreType = {
     authStore: AuthType,

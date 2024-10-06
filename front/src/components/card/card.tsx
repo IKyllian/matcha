@@ -1,9 +1,10 @@
 import { cardStyle } from './card.style'
 import { css } from 'styled-system/css';
-import LikeButton from 'front/components/buttons/likeButton';
 import { useState } from 'react';
 import { FaLocationDot } from "react-icons/fa6";
 import { User } from 'front/typing/user';
+import { Link } from 'react-router-dom';
+import IconButton, { BUTTONS_ICON } from 'front/components/buttons/iconButton';
 
 export type CardType = 'image' | 'image-content'
 
@@ -24,10 +25,10 @@ const Card = ({ user, cardType }: CardProps) => {
                 cardType === 'image-content' && (
                     <div className={css(slotsStyles.cardContent)}>
                         <div className={css(slotsStyles.textWrapper)}>
-                            <p className={css(slotsStyles.cardPrimaryText)}> {username} </p>
+                            <Link to={`/profile/${user.id}`} className={css(slotsStyles.cardPrimaryText)}> {username} </Link>
                             <p className={css(slotsStyles.cardSecondaryText)}> <FaLocationDot /> {location} </p>
                         </div>
-                        <LikeButton isLike={isLike} onClick={() => setIsLike(prev => !prev)} />
+                        <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => setIsLike(prev => !prev)}  />
                     </div>
                 )
             }

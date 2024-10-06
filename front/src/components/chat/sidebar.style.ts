@@ -7,7 +7,6 @@ export const sidebarStyle = sva({
             height: 'calc(100vh - 70px)',
             width: '350px',
             borderRight: '2px solid black',
-            borderTop: '2px solid black',
             display: 'flex',
             flexDirection: 'column',
             gap: '16px',

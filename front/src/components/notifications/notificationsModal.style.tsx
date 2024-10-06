@@ -33,7 +33,7 @@ export const notificationsModalStyle = sva({
       padding: '10px',
       borderRadius: '10px',
       '&:hover': {
-        backgroundColor: '#F8D6B3'
+        backgroundColor: '#fae3d2'
       },
       '& > span': {
         flex: 1

@@ -18,7 +18,7 @@ const Header = () => {
     
     return (
         <div className={css(slotsStyles.headerContainer)}>
-            <p className={css(slotsStyles.headerLogo)}> matcha </p>
+            <Link to='/' className={css(slotsStyles.headerLogo)}> matcha </Link>
             <div className={css(slotsStyles.headerContentWrapper)}>
                 <Link to='/chat'>Chat</Link>
                 <Link to='/profile'>Profil</Link>

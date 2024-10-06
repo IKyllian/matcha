@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 
 type UseApiProps<T> = {
     endpoint: EndpointType,
-    method?: string,
+    // method?: string,
     params?: { id: number },
     dependencies?: any[],
     setter: (entity: T ) => void,
@@ -31,7 +31,7 @@ const getDataFromEndpoint = ({ endpoint, params }: { endpoint: EndpointType, par
 }
 //--------------------------------------------------------------------------------------------------------//
 
-export const useApi = <T>({ endpoint, method, params, dependencies = [], setter }: UseApiProps<T>) => {
+export const useApi = <T>({ endpoint, params, dependencies = [], setter }: UseApiProps<T>) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -46,10 +46,10 @@ export const useApi = <T>({ endpoint, method, params, dependencies = [], setter 
                 setIsLoading(false);
             }
         }
-        setIsLoading(true);
-        setTimeout(() => {
-            fetch()
-        }, 1000);
+        if (!isLoading) {
+            setIsLoading(true);
+        }
+        fetch()
     }, dependencies)
 
     return {

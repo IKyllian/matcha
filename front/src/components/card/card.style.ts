@@ -36,6 +36,7 @@ export const cardStyle = sva({
         cardPrimaryText: {
             fontSize: '20px',
             fontWeight: '600',
+            cursor: 'pointer'
         },
         cardSecondaryText: {
             display: 'flex',

@@ -9,6 +9,12 @@ export const headerStyle = sva({
             alignItems: 'center',
             padding: '16px',
             height: '70px',
+            width: '100vw',
+            top: 0,
+            zIndex: '4',
+            position: 'fixed',
+            backgroundColor: 'primaryBackground',
+            borderBottom: '2px solid black',
         },
         headerContentWrapper: {
             display: 'flex',

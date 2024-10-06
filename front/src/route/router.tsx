@@ -3,21 +3,31 @@ import Sign from "front/components/sign/sign";
 import { createBrowserRouter } from "react-router-dom";
 import PublicRoute from "./publicRoute";
 import ChatScreen from "front/components/chat/chatScreen";
+import Home from "front/components/home/home";
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <Sign />
+        element: (
+            <PublicRoute>
+                <Home />
+            </PublicRoute>
+        )
     },
     {
-        path: "/profile",
+        path: "/sign",
+        element: <Sign />
+    },
+    ...["/profile", "/profile/:userId"].map(path => ({
+        path,
         element: (
             <PublicRoute>
                 <Profile />
-            </PublicRoute>)
-    },
-    ...["/chat", "/chat/:chatId"].map(path => ({
+            </PublicRoute>
+        )
 
+    })),
+    ...["/chat", "/chat/:chatId"].map(path => ({
         path,
         element: (
             <PublicRoute>

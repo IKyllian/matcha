@@ -4,7 +4,6 @@ export const chatStyle = sva({
     slots: ['chatContainer', 'chatWrapper', 'chatHeader', 'img', 'messagesContainer', 'messageItem', 'recipient', 'sender', 'chatFormContainer', 'sendButtonContainer'],
     base: {
         chatContainer: {
-            borderTop: '2px solid black',
             borderLeft: 'none',
             flex: 1,
             padding: '24px',

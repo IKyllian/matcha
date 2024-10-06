@@ -4,7 +4,9 @@ const PublicRoute = ({ children }) => {
     return (
         <div>
             <Header />
-            {children}
+            <div style={{marginTop: '70px'}}>
+                {children}
+            </div>
         </div>
     )
 }

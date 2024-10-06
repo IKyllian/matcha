@@ -1,11 +1,17 @@
 import { css } from "styled-system/css"
 import { profileStyle } from "./profile.style"
-import { USERS } from "front/typing/user"
+import { User, USERS } from "front/typing/user"
 import Tabs from "front/components/tabs/tabs"
 import CardsList from "front/components/card/cardsList"
 import ChipsList from "front/components/chips/chips"
 import { CardType } from "front/components/card/card"
 import { useStore } from "front/store/socketMidlleware.store"
+import { IoSettingsSharp } from "react-icons/io5";
+import { buttonStyle } from "front/components/buttons/button.style"
+import { useParams } from "react-router-dom"
+import IconButton, { BUTTONS_ICON } from "front/components/buttons/iconButton"
+import { useState } from "react"
+import { useApi } from "front/hook/useApi"
 
 const USER = USERS[0]
 const NAV_CONTENT_LOGGED_USER = [
@@ -20,20 +26,53 @@ const NAV_CONTENT_NOT_LOGGED_USER = [
 
 const Profile = () => {
     const authStore = useStore((state) => state.authStore)
-    console.info('Profile authStore ', authStore)
+    const { userId } = useParams<{ userId?: string }>()
+    const isLoggedUser = !userId || userId && authStore.user?.id === +userId
+    const [isLike, setIsLike] = useState(false)
+    const [isBlock, setIsBlock] = useState(false)
+    const [user, setUser] = useState<User | undefined>()
+    const { isLoading } = useApi<User>({
+        endpoint: 'profile',
+        params: { id: userId ? +userId : authStore.user?.id },
+        setter: setUser,
+        dependencies: [userId]
+    })
     const slotsStyles = profileStyle.raw()
-    const isLoggedUser = true
+    const buttonSlotsStyles = buttonStyle.raw()
     const tabsContent = isLoggedUser ? NAV_CONTENT_LOGGED_USER : NAV_CONTENT_NOT_LOGGED_USER
     const cardType: CardType = isLoggedUser ? 'image-content' : 'image'
+
+    if (!user && isLoading) {
+        return <span> Is loading ...</span>
+    }
+    if (!user && !isLoading) {
+        return <span> 404 Not found </span>
+    }
     return (
         <div className={css(slotsStyles.profileContainer)}>
             <div className={css(slotsStyles.profilInfosContainer)}>
-                <img className={css(slotsStyles.profileImg)} src={USER.img} />
+                <img className={css(slotsStyles.profileImg)} src={user.img} />
                 <div className={css(slotsStyles.profilContent)}>
-                    <p> {USER.firstName} {USER.lastname}, {USER.age}ans ({USER.username}) </p>
-                    <p> {USER.location} </p>
-                    <p> {USER.description} </p>
-                    <ChipsList chipsList={USER.interests} />
+                    <div className={css(slotsStyles.flexContainer)}>
+                        <p> {user.firstName} {user.lastname}, {user.age}ans ({user.username}) </p>
+                        {
+                            isLoggedUser &&
+                            <div className={css(buttonSlotsStyles.likeButtonContainer)} style={{ backgroundColor: '#E3DFF2' }}>
+                                <IoSettingsSharp />
+                            </div>
+                        }
+                        {
+                            !isLoggedUser && (
+                                <div className={css(slotsStyles.profilButtonContainer)}>
+                                    <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => setIsLike(prev => !prev)}  />
+                                    <IconButton buttonIcon={BUTTONS_ICON["BLOCKED"]} status={isBlock} onClick={() => setIsBlock(prev => !prev)} />
+                                </div>
+                            )
+                        }
+                    </div>
+                    <p> {user.location} </p>
+                    <p> {user.description} </p>
+                    <ChipsList chipsList={user.interests} />
                 </div>
             </div>
             <Tabs tabsContent={tabsContent} />

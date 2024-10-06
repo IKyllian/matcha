@@ -14,7 +14,7 @@ export const chipsStyle = sva({
             border: '1px solid black',
             fontSize: '11px',
             fontWeight: 'bold',
-            backgroundColor: '#c5e3d9'
+            backgroundColor: '#f8d6b3'
         },
     }
 })

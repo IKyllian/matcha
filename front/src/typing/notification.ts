@@ -10,10 +10,6 @@ export enum NotificationTypeEnum {
 export type NotificationType = {
   id: number
   type: NotificationTypeEnum
-  sender: {
-    userId: User['id'],
-    img: User['img'],
-    username: User['username'],
-  }
+  sender: Pick<User, 'id' | 'img' | 'username'>
   createdAt: Date
 }
