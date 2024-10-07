@@ -1,16 +1,10 @@
 import { css } from "styled-system/css"
 import { chipsStyle } from "./chips.style"
-
+import Chip from "./chip"
 
 type ChipsListProps = {
     chipsList: string[]
 }
-
-const Chip = ({ value, classname }: { value: string, classname: string }) => (
-    <div className={classname}>
-        {value}
-    </div>
-)
 
 const ChipsList = ({ chipsList }: ChipsListProps) => {
     const slotsStyles = chipsStyle.raw()
@@ -18,7 +12,7 @@ const ChipsList = ({ chipsList }: ChipsListProps) => {
         <div className={css(slotsStyles.chipsContainer)}>
             {
                 chipsList.map((chip, index) => (
-                    <Chip key={index} value={chip} classname={css(slotsStyles.chip)} />
+                    <Chip key={index} value={chip} />
                 ))
             }
         </div>

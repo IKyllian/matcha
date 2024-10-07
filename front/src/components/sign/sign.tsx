@@ -2,7 +2,6 @@ import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
-import { useAuthStore } from "front/store/user.store"
 import { useStore } from "front/store/socketMidlleware.store"
 
 type FormValues = {
@@ -58,7 +57,6 @@ const Sign = () => {
         handleSubmit,
         formState: { errors },
     } = useForm<FormValues>()
-    // const { authStore, setUser } = useAuthStore()
     const authStore = useStore((state) => state.authStore)
     const setUser = useStore((state) => state.setUser)
     const navigate = useNavigate()
@@ -68,9 +66,9 @@ const Sign = () => {
         setUser(data)
         navigate('profile')
     }
-    
+
     return (
-        <div className={css({minHeight: '100vh', display: 'flex'})}>
+        <div className={css({ minHeight: '100vh', display: 'flex' })}>
             <div className={css(slotsStyles.wrapper)}>
                 <h2 className={css(slotsStyles.title)}> Incrvivez-vous </h2>
                 <form className={css(slotsStyles.form)} onSubmit={handleSubmit(onSubmit)}>

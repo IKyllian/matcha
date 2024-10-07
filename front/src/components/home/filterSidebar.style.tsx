@@ -10,7 +10,7 @@ export const filterSidebarStyle = sva({
       textAlign: 'center',
     },
     sidebarContainer: {
-      width: '300px',
+      width: '400px',
       height: 'calc(100vh - 70px)',
       position: 'fixed',
       display: 'flex',
@@ -47,8 +47,8 @@ export const filterSidebarStyle = sva({
       margin: '12px auto 0 auto',
       cursor: 'pointer',
       _active: {
-          boxShadow: 'none',
+        boxShadow: 'none',
       }
-  }
+    }
   }
 })

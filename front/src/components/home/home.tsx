@@ -6,11 +6,10 @@ import { MdOutlineFilterAlt } from "react-icons/md";
 import { useState } from "react";
 import FilterSidebar from "front/components/home/filterSidebar";
 
-const LIST = [...USERS, ...USERS, ...USERS, ...USERS, ...USERS, ...USERS, ...USERS, ...USERS, ...USERS, ...USERS]
+const LIST = [...USERS]
 const Home = () => {
   const slotsStyles = homeStyle.raw()
   const [showSidebar, setShowSidebar] = useState(false)
-
   const onSidebarClose = () => {
     setShowSidebar(prev => !prev)
   }
@@ -25,7 +24,7 @@ const Home = () => {
       <div className={css(slotsStyles.listContainer)}>
         {
           LIST.map(user => (
-            <Card user={user} cardType='image-content' />
+            <Card key={user.id} user={user} cardType='image-content' />
           ))
         }
       </div>

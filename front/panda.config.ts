@@ -16,12 +16,13 @@ export default defineConfig({
     extend: {
       tokens: {
         colors: {
-          primary: { value: '#000000'},
-          primaryBackground: { value: '#DCF2FA'},
+          primary: { value: '#000000' },
+          primaryBackground: { value: '#DCF2FA' },
           secondaryBackground: { value: '#FEF2E8' },
           buttonPrimaryBackground: { value: '#FF9D73' },
-          lightPink: { value: '#faafe5'},
-          darkPink: { value: '#ed05ab' }
+          lightPink: { value: '#faafe5' },
+          darkPink: { value: '#ed05ab' },
+          lightRed: { value: '#FF6B6B' }
         },
         fonts: {
           title: { value: "Archivo, sans-serif" },

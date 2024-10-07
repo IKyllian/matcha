@@ -17,8 +17,5 @@ export const buttonStyle = sva({
                 boxShadow: 'none',
             },
         },
-        likeIcon: {
-            color: 'darkPink',
-        }
     }
 })

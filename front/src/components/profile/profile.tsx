@@ -6,12 +6,12 @@ import CardsList from "front/components/card/cardsList"
 import ChipsList from "front/components/chips/chips"
 import { CardType } from "front/components/card/card"
 import { useStore } from "front/store/socketMidlleware.store"
-import { IoSettingsSharp } from "react-icons/io5";
 import { buttonStyle } from "front/components/buttons/button.style"
 import { useParams } from "react-router-dom"
-import IconButton, { BUTTONS_ICON } from "front/components/buttons/iconButton"
+import IconButton from "front/components/buttons/iconButton"
 import { useState } from "react"
 import { useApi } from "front/hook/useApi"
+import { BUTTONS_ICON } from "front/typing/button"
 
 const USER = USERS[0]
 const NAV_CONTENT_LOGGED_USER = [
@@ -38,7 +38,6 @@ const Profile = () => {
         dependencies: [userId]
     })
     const slotsStyles = profileStyle.raw()
-    const buttonSlotsStyles = buttonStyle.raw()
     const tabsContent = isLoggedUser ? NAV_CONTENT_LOGGED_USER : NAV_CONTENT_NOT_LOGGED_USER
     const cardType: CardType = isLoggedUser ? 'image-content' : 'image'
 
@@ -57,14 +56,12 @@ const Profile = () => {
                         <p> {user.firstName} {user.lastname}, {user.age}ans ({user.username}) </p>
                         {
                             isLoggedUser &&
-                            <div className={css(buttonSlotsStyles.likeButtonContainer)} style={{ backgroundColor: '#E3DFF2' }}>
-                                <IoSettingsSharp />
-                            </div>
+                            <IconButton buttonIcon={BUTTONS_ICON["SETTINGS"]} />
                         }
                         {
                             !isLoggedUser && (
                                 <div className={css(slotsStyles.profilButtonContainer)}>
-                                    <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => setIsLike(prev => !prev)}  />
+                                    <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => setIsLike(prev => !prev)} />
                                     <IconButton buttonIcon={BUTTONS_ICON["BLOCKED"]} status={isBlock} onClick={() => setIsBlock(prev => !prev)} />
                                 </div>
                             )

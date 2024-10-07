@@ -55,22 +55,22 @@ const NotificationsModal = ({ onClose }: NotificationsModalProps) => {
 
   return (
     <div className={css(slotsStyles.modalContainer)} ref={ref}>
-      { !NOTIFICATIONS.length && <span style={{textAlign: 'center'}}> Pas de notifications </span> }
-      { NOTIFICATIONS.length &&
+      {!NOTIFICATIONS.length && <span style={{ textAlign: 'center' }}> Pas de notifications </span>}
+      {NOTIFICATIONS.length &&
         <>
           {
             NOTIFICATIONS.map(notif => (
-              <div className={css(slotsStyles.notifItem)}>
+              <div key={notif.id} className={css(slotsStyles.notifItem)}>
                 <img className={css(slotsStyles.imgSender)} src={notif.sender.img} alt='image de profil' />
                 <span> {getMessageByNotificationType(notif)} </span>
                 <FaTrash className={css(slotsStyles.deleteIcon)} onClick={() => onDelete(notif.id)} />
               </div>
             ))
           }
-          < Link className={css(slotsStyles.link)} to=''> All notifications </Link>
+          <Link className={css(slotsStyles.link)} to=''> All notifications </Link>
         </>
       }
-    </div >
+    </div>
   )
 }
 
