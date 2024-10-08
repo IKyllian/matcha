@@ -4,6 +4,7 @@ import { createBrowserRouter } from "react-router-dom";
 import PublicRoute from "./publicRoute";
 import ChatScreen from "front/components/chat/chatScreen";
 import Home from "front/components/home/home";
+import Settings from "front/components/settings/settings";
 
 export const router = createBrowserRouter([
     {
@@ -27,6 +28,14 @@ export const router = createBrowserRouter([
         )
 
     })),
+    {
+        path: "/settings",
+        element: (
+            <PublicRoute>
+                <Settings />
+            </PublicRoute>
+        )
+    },
     ...["/chat", "/chat/:chatId"].map(path => ({
         path,
         element: (
