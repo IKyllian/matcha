@@ -6,7 +6,7 @@ import { MdOutlineFilterAlt } from "react-icons/md";
 import { useState } from "react";
 import FilterSidebar from "front/components/home/filterSidebar";
 
-const LIST = [...USERS]
+const LIST = [...USERS, ...USERS, ...USERS, ...USERS, ...USERS, ...USERS, ...USERS, ...USERS,]
 const Home = () => {
   const slotsStyles = homeStyle.raw()
   const [showSidebar, setShowSidebar] = useState(false)

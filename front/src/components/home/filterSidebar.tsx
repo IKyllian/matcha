@@ -1,8 +1,9 @@
 import { css } from "styled-system/css"
 import { filterSidebarStyle } from "./filterSidebar.style"
-import { useRef, useState } from "react"
+import { useState } from "react"
 import useCloseRef from "front/hook/useCloseRef"
 import ChipSelect from "front/components/chips/chipSelect"
+import { IoMdClose } from "react-icons/io";
 
 type FilterSidebarProps = {
   onClose: () => void
@@ -23,6 +24,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
 
   return (
     <div className={css(slotsStyles.sidebarContainer)} ref={ref}>
+      <IoMdClose className={css(slotsStyles.closeButton)} onClick={onClose} />
       <span className={css(slotsStyles.title)}> Filtrage des profils </span>
       <div className={css(slotsStyles.filtersContainer)} >
         <label>
@@ -37,7 +39,10 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
           Fame
           <input type='range' />
         </label>
-        <ChipSelect selectedChips={selectedChips} onChipClick={onChipClick} />
+        <label>
+          Centre d'interets
+          <ChipSelect selectedChips={selectedChips} onChipClick={onChipClick} />
+        </label>
         <button className={css(slotsStyles.button)}> Sauvegarder </button>
       </div>
     </div>

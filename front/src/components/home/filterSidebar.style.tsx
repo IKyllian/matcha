@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css";
 
 export const filterSidebarStyle = sva({
-  slots: ['sidebarContainer', 'filtersContainer', 'title', 'button'],
+  slots: ['sidebarContainer', 'filtersContainer', 'title', 'button', 'closeButton'],
   base: {
     title: {
       fontSize: '24px',
@@ -22,6 +22,13 @@ export const filterSidebarStyle = sva({
       backgroundColor: 'primaryBackground',
       borderRight: '2px solid black',
       padding: '24px'
+    },
+    closeButton: {
+      position: 'absolute',
+      fontSize: '24px',
+      right: '10px',
+      top: '10px',
+      cursor: 'pointer',
     },
     filtersContainer: {
       display: 'flex',

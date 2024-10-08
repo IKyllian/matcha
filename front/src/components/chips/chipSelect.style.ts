@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css";
 
 export const chipSelectStyle = sva({
-    slots: ['chipContainer', 'boxContainer', 'inputChip', 'title', 'selectContainer'],
+    slots: ['chipContainer', 'boxContainer', 'inputChip', 'selectContainer'],
     base: {
         selectContainer: {
             display: 'flex',
@@ -9,9 +9,6 @@ export const chipSelectStyle = sva({
             justifyContent: 'center',
             alignItems: 'center',
             gap: '8px',
-        },
-        title: {
-            fontSize: '14px',
         },
         chipContainer: {
             display: 'flex',

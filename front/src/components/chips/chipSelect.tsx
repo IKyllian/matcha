@@ -20,14 +20,12 @@ const CHIPS = [
     'Science',
     'Art',
     'Divertissement',
-    'Autre'
 ]
 
 const ChipSelect = ({ selectedChips, onChipClick }: ChypeSelectType) => {
     const slotsStyles = chipSelectStyle.raw()
     return (
         <div className={css(slotsStyles.selectContainer)}>
-            <span className={css(slotsStyles.title)}> Selectionnez des centres d'interets :  </span>
             <div className={css(slotsStyles.chipContainer)}>
                 {CHIPS.map((chip, index) => {
                     const isSelected = selectedChips.some(c => c === chip)
