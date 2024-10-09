@@ -1,0 +1,19 @@
+services:
+  # Database
+  matcha_db:
+    image: keinos/sqlite3:latest
+    networks:
+      - matcha_network
+    environment:
+      SQLITE_USER: ${SQLITE_USER}
+      SQLITE_PASSWORD: ${SQLITE_PASSWORD}
+      SQLITE_DB: ${SQLITE_DB}
+    ports:
+      - "5432:5432"
+
+networks:
+  matcha_network:
+    name: matcha_network
+    driver: bridge
+
+volumes:
