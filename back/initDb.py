@@ -1,4 +1,5 @@
 import sqlite3
+import bcrypt
 
 connection = sqlite3.connect('database.db')
 
@@ -9,12 +10,12 @@ with open('schema.sql') as f:
 cur = connection.cursor()
 
 cur.execute("INSERT INTO user (username, pass, email, first_name, last_name) VALUES (?, ?, ?, ?, ?)",
-            ('user1', 'pass','adam@gmail.com', 'Adam', 'pass')
+            ('user1', bcrypt.generate_password_hash('pass'),'adam@gmail.com', 'Adam', 'C')
             )
 
-# cur.execute("INSERT INTO posts (title, content) VALUES (?, ?)",
-#             ('Second Post', 'Content for the second post')
-#             )
+cur.execute("INSERT INTO user (username, pass, email, first_name, last_name) VALUES (?, ?, ?, ?, ?)",
+            ('user2', bcrypt.generate_password_hash('pass'),'kyllian@gmail.com', 'Kyllian', 'last')
+            )
 
 connection.commit()
 connection.close()

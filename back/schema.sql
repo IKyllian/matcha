@@ -68,6 +68,7 @@ CREATE TABLE block (
 
 CREATE TABLE message (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    message     TEXT        NOT NULL,
     sender_id   INTEGER     NOT NULL,
     receiver_id INTEGER     NOT NULL,
     created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,

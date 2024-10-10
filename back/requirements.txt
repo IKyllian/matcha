@@ -1,1 +1,4 @@
 Flask
+flask-cors
+Flask-jwt-extended
+flask-bcrypt
