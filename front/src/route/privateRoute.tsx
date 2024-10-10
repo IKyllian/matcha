@@ -1,3 +1,4 @@
+import Header from "front/components/header/header"
 import { useStore } from "front/store/socketMidlleware.store"
 import { Navigate } from "react-router-dom"
 
@@ -7,10 +8,17 @@ const PrivateRoute = ({ children }) => {
     if (authStore.authStatus === 'CHECKING') {
         return <div>Chargement...</div>
     }
-    if (authStore.authStatus === 'CHECKED' && authStore.isLogged) {
-        return <Navigate to="/" />
+    if (authStore.authStatus === 'CHECKED' && !authStore.isLogged) {
+        return <Navigate to="/signin" />
     }
-    return children
+    return (
+        <div>
+            <Header />
+            <div style={{ marginTop: '70px' }}>
+                {children}
+            </div>
+        </div>
+    )
 }
 
 export default PrivateRoute

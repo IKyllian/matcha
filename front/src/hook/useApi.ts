@@ -8,10 +8,10 @@ type UseApiProps<T> = {
     // method?: string,
     params?: { id: number },
     dependencies?: any[],
-    setter: (entity: T ) => void,
+    setter: (entity: T) => void,
 }
 
-const API_URL = 'localhost:3000/';
+export const API_URL = 'http://10.11.11.1:3000/';
 
 // -------------------------- Until we have an api -------------------------------------------------------//
 export type EndpointType = 'chat' | 'profile' | 'sidebar';
@@ -37,8 +37,9 @@ export const useApi = <T>({ endpoint, params, dependencies = [], setter }: UseAp
     useEffect(() => {
         const fetch = async () => {
             try {
-                // const response = await ky.get<T>(`${API_URL}${endpoint}`, {json: params}).json();
+                // const response = await ky.get<T>(`${API_URL}${endpoint}/${params.id}`).json();
                 const response = getDataFromEndpoint({ endpoint, params }) as T
+                console.info("REPONSE = ", response)
                 setter(response)
             } catch (err) {
                 console.error(err);

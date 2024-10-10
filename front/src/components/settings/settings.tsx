@@ -3,6 +3,8 @@ import ChipSelect from "front/components/chips/chipSelect"
 import { settingsStyle } from "./settings.style"
 import { css } from "styled-system/css"
 import { useForm } from "react-hook-form"
+import { FaUpload } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
 
 type FormValues = {
   description: string
@@ -29,6 +31,8 @@ const InputRatio = ({ value, label, register }: InputRatioProps) => {
 const Settings = () => {
   const slotsStyles = settingsStyle.raw()
   const [selectedChips, setSelectedChips] = useState<string[]>([])
+  const [profilePicturePreview, setProfilPicturePreview] = useState<string | null>(null)
+
   const {
     register,
     handleSubmit,
@@ -45,6 +49,15 @@ const Settings = () => {
 
   const onSubmit = (values: FormValues) => {
     console.info("values - ", values)
+  }
+
+  const onUpload = (event: any) => {
+    console.info("data - ", event)
+    const [file] = event.target.files
+    if (file) {
+      setProfilPicturePreview(URL.createObjectURL(file))
+    }
+    console.info("upload", file)
   }
 
   return (
@@ -74,11 +87,31 @@ const Settings = () => {
           Centre d'interets:
           <ChipSelect selectedChips={selectedChips} onChipClick={onChipClick} />
         </label>
-        <label>
-          Photos:
-          <input type="file" multiple />
-          <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
-        </label>
+        <div className={css(slotsStyles.profilPictureContainer)}>
+          <label>
+            Photo de profile:
+          </label>
+          {
+            profilePicturePreview &&
+            <div className={css(slotsStyles.profilPicturePreview)}>
+              <img src={profilePicturePreview} alt="profile picture preview" />
+            </div>
+          }
+          {
+            !profilePicturePreview &&
+            <label htmlFor="profile-picture" className={css(slotsStyles.uploadButton)}>
+              <input type="file" id="profile-picture" hidden onChange={onUpload} />
+              <FaUpload />
+            </label>
+          }
+          {
+            profilePicturePreview &&
+            <div className={css(slotsStyles.uploadButton)} onClick={() => setProfilPicturePreview(null)}>
+              <IoClose />
+            </div>
+          }
+        </div>
+        <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
       </form>
     </div>
   )

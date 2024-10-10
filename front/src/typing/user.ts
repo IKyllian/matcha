@@ -3,7 +3,9 @@ import Image from 'front/assets/images/Panda.jpeg'
 export type User = {
     id: number;
     img?: any;
-    firstName: string;
+    password: string;
+    email: string;
+    firstname: string;
     lastname: string;
     username: string;
     location: string;
@@ -17,10 +19,12 @@ export const USERS: User[] = [
     {
         id: 1,
         img: Image,
-        firstName: 'John',
+        firstname: 'John',
         lastname: 'Doe',
         username: 'johndoe',
         location: 'Paris, France',
+        password: 'weqweqweqwe',
+        email: 'qwe@gmail.com',
         age: 25,
         interests: [
             'musique',
@@ -39,10 +43,12 @@ export const USERS: User[] = [
     {
         id: 2,
         img: Image,
-        firstName: 'Jane',
+        firstname: 'Jane',
         lastname: 'Smith',
         username: 'janesmith',
+        email: 'qwe@gmail.com',
         location: 'New York, USA',
+        password: 'weqweqweqwe',
         age: 30,
         interests: [
             'musique',
@@ -61,10 +67,12 @@ export const USERS: User[] = [
     {
         id: 3,
         img: Image,
-        firstName: 'Alice',
+        firstname: 'Alice',
         lastname: 'Williams',
+        email: 'qwe@gmail.com',
         username: 'aliciawilliams',
         location: 'Tokyo, Japan',
+        password: 'weqweqweqwe',
         age: 28,
         interests: [
             'musique',

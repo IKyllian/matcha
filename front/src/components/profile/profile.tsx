@@ -53,7 +53,7 @@ const Profile = () => {
                 <img className={css(slotsStyles.profileImg)} src={user.img} />
                 <div className={css(slotsStyles.profilContent)}>
                     <div className={css(slotsStyles.flexContainer)}>
-                        <p> {user.firstName} {user.lastname}, {user.age}ans ({user.username}) </p>
+                        <p> {user.firstname} {user.lastname}, {user.age}ans ({user.username}) </p>
                         {
                             isLoggedUser &&
                             <IconButton buttonIcon={BUTTONS_ICON["SETTINGS"]} />

@@ -1,7 +1,19 @@
 import { sva } from "styled-system/css";
 
 export const settingsStyle = sva({
-    slots: ['title', 'settingsContainer', 'settingsWrapper', 'radioInput', 'radioLabel', 'radioWrapper', 'textAreaInput', 'button'],
+    slots: [
+        'title',
+        'settingsContainer',
+        'settingsWrapper',
+        'radioInput',
+        'radioLabel',
+        'radioWrapper',
+        'textAreaInput',
+        'button',
+        'uploadButton',
+        'profilPicturePreview',
+        'profilPictureContainer'
+    ],
     base: {
         settingsContainer: {
             width: '80%',
@@ -27,10 +39,6 @@ export const settingsStyle = sva({
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
                 gap: '8px',
-                '& > input[type="radio"]': {
-
-
-                }
             }
         },
         radioWrapper: {
@@ -64,6 +72,38 @@ export const settingsStyle = sva({
             _active: {
                 boxShadow: 'none',
             }
+        },
+        uploadButton: {
+            border: '2px solid black',
+            boxShadow: '2.5px 2.5px 0 black',
+            width: '30px',
+            height: '30px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            cursor: 'pointer',
+            "& > svg": {
+                margin: 'auto'
+            },
+        },
+        profilPicturePreview: {
+            width: '100px',
+            height: '100px',
+            borderRadius: '50%',
+            border: '2px solid black',
+            "& > img": {
+                width: '100%',
+                height: '100%',
+                borderRadius: '50%',
+            }
+        },
+        profilPictureContainer: {
+            display: 'flex',
+            justifyContent: 'flex-start',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '12px',
+            width: 'fit-content'
         }
     }
 })
