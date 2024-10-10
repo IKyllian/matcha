@@ -5,7 +5,6 @@ import { useEffect, useState } from "react"
 
 type UseApiProps<T> = {
     endpoint: EndpointType,
-    // method?: string,
     params?: { id: number },
     dependencies?: any[],
     setter: (entity: T) => void,
