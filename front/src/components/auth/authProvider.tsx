@@ -20,6 +20,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
                         logUser(user)
                     }
                 } catch (e) {
+                    console.error("Error auth request: ", e)
                     setAuthStatus('CHECKED')
                 }
             } else {

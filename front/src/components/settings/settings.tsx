@@ -111,6 +111,9 @@ const Settings = () => {
             </div>
           }
         </div>
+        <label>
+          Autres photos
+        </label>
         <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
       </form>
     </div>
