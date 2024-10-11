@@ -3,7 +3,6 @@ from database_utils.requests import *
 from flask_jwt_extended import create_access_token, decode_token
 from app import bcrypt
 
-
 def signin():
     username = request.json.get("username", None)
     password = request.json.get("password", None)

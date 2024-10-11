@@ -2,7 +2,9 @@ from flask_cors import CORS
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
+from flask_socketio import SocketIO
 
+socketio = SocketIO(cors_allowed_origins = "*")
 bcrypt = Bcrypt()
 jwt = JWTManager()
 
@@ -12,6 +14,7 @@ def createApp():
     bcrypt.init_app(app)
     app.config["JWT_SECRET_KEY"] = "secret_matcha_jwt_key"
     jwt.init_app(app)
+    socketio.init_app(app)
     from routes.user import user_bp
     from routes.auth import auth_bp
     from routes.chat import chat_bp
