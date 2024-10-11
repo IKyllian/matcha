@@ -28,6 +28,7 @@ CREATE TABLE user (
     email               NVARCHAR(320)                   NOT NULL,
     first_name          NVARCHAR(20)                    NOT NULL,
     last_name           NVARCHAR(20)                    NOT NULL,
+    birth_date          TIMESTAMP                       NULL,
     gender              NCHAR(1)                        NULL,
     sexual_preference   NCHAR(1)                        NULL,
     bio                 TEXT                            NULL,
@@ -68,6 +69,7 @@ CREATE TABLE block (
 
 CREATE TABLE message (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    message     TEXT        NOT NULL,
     sender_id   INTEGER     NOT NULL,
     receiver_id INTEGER     NOT NULL,
     created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
