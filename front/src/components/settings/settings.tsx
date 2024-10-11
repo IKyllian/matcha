@@ -106,7 +106,7 @@ const Settings = () => {
           }
           {
             profilePicturePreview &&
-            <div className={css(slotsStyles.uploadButton)} onClick={() => setProfilPicturePreview(null)}>
+            <div className={css(slotsStyles.uploadButton, slotsStyles.imageResetButton)} onClick={() => setProfilPicturePreview(null)}>
               <IoClose />
             </div>
           }

@@ -1,5 +1,5 @@
 import Header from "front/components/header/header"
-import { useStore } from "front/store/socketMidlleware.store"
+import { useStore } from "front/store/store"
 import { Navigate } from "react-router-dom"
 
 const PrivateRoute = ({ children }) => {

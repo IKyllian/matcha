@@ -4,7 +4,7 @@ import { AiOutlineSend } from "react-icons/ai";
 import { useApi } from "front/hook/useApi";
 import { ChatType } from "front/typing/chat";
 import { USERS } from "front/typing/user";
-import { useStore } from "front/store/socketMidlleware.store";
+import { useStore } from "front/store/store";
 import { useForm } from "react-hook-form";
 
 type ChatProps = {

@@ -11,6 +11,7 @@ export const settingsStyle = sva({
         'textAreaInput',
         'button',
         'uploadButton',
+        'imageResetButton',
         'profilPicturePreview',
         'profilPictureContainer'
     ],
@@ -84,6 +85,12 @@ export const settingsStyle = sva({
             cursor: 'pointer',
             "& > svg": {
                 margin: 'auto'
+            },
+        },
+        imageResetButton: {
+            backgroundColor: '#f38d8d',
+            "& > svg": {
+                color: 'red'
             },
         },
         profilPicturePreview: {

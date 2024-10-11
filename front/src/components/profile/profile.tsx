@@ -5,8 +5,7 @@ import Tabs from "front/components/tabs/tabs"
 import CardsList from "front/components/card/cardsList"
 import ChipsList from "front/components/chips/chips"
 import { CardType } from "front/components/card/card"
-import { useStore } from "front/store/socketMidlleware.store"
-import { buttonStyle } from "front/components/buttons/button.style"
+import { useStore } from "front/store/store"
 import { useParams } from "react-router-dom"
 import IconButton from "front/components/buttons/iconButton"
 import { useState } from "react"
@@ -69,7 +68,7 @@ const Profile = () => {
                     </div>
                     <p> {user.location} </p>
                     <p> {user.description} </p>
-                    <ChipsList chipsList={user.interests} />
+                    <ChipsList chipsList={user.tags} />
                 </div>
             </div>
             <Tabs tabsContent={tabsContent} />

@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
-import { useStore } from "front/store/socketMidlleware.store"
+import { useStore } from "front/store/store"
 import { makeSignInRequest } from "front/api/sign"
 import { User } from "front/typing/user"
 import { useEffect } from "react"
@@ -38,7 +38,7 @@ const SignIn = () => {
         handleSubmit,
         formState: { errors },
     } = useForm<FormValues>()
-    const [cookies, setCookie, removeCookie] = useCookies([]);
+    const [cookies, setCookie, removeCookie] = useCookies();
     const authStore = useStore((state) => state.authStore)
     const logUser = useStore((state) => state.logUser)
     const navigate = useNavigate()

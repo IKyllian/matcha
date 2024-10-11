@@ -11,8 +11,12 @@ export type User = {
     location: string;
     description: string;
     age: number;
-    interests: string[];
+    tags: string[];
     pictures: any[];
+    gender?: 'M' | 'F'
+    sexual_preference?: 'M' | 'F' | 'B'
+    profile_picture?: string
+    images?: Image[]
 }
 
 export const USERS: User[] = [
@@ -26,7 +30,7 @@ export const USERS: User[] = [
         password: 'weqweqweqwe',
         email: 'qwe@gmail.com',
         age: 25,
-        interests: [
+        tags: [
             'musique',
             'gaming',
             'tech',
@@ -50,7 +54,7 @@ export const USERS: User[] = [
         location: 'New York, USA',
         password: 'weqweqweqwe',
         age: 30,
-        interests: [
+        tags: [
             'musique',
             'gaming',
             'tech',
@@ -74,7 +78,7 @@ export const USERS: User[] = [
         location: 'Tokyo, Japan',
         password: 'weqweqweqwe',
         age: 28,
-        interests: [
+        tags: [
             'musique',
             'gaming',
             'tech',
@@ -90,6 +94,11 @@ export const USERS: User[] = [
     }
 ]
 
+
+export type Tags = {
+    id: number,
+    tag_name: string
+}
 
 export type Image = {
     id: number
@@ -111,5 +120,5 @@ export type User2 = {
     bio?: string
     profile_picture?: string
     images?: Image[]
-    tags?: { id: number, tag_name: string }
+    tags?: Tags[]
 }

@@ -2,10 +2,12 @@ import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
-import { useStore } from "front/store/socketMidlleware.store"
+import { useStore } from "front/store/store"
 import { User } from "front/typing/user"
 import { useEffect } from "react"
 import { makeSignUpRequest } from "front/api/sign"
+import { COOKIE_JWT_TOKEN } from "front/constant/cookie"
+import { useCookies } from "react-cookie"
 
 type FormValues = Pick<User, 'firstname' | 'lastname' | 'username' | 'email' | 'password'>
 
@@ -55,14 +57,18 @@ const Sign = () => {
         handleSubmit,
         formState: { errors },
     } = useForm<FormValues>()
+    const [cookies, setCookie, removeCookie] = useCookies();
     const authStore = useStore((state) => state.authStore)
     const logUser = useStore((state) => state.logUser)
     const navigate = useNavigate()
     const slotsStyles = formStyle.raw()
     const onSubmit = async (data: FormValues) => {
         console.info('data = ', data)
-        const response = await makeSignUpRequest(data)
-        logUser(response.user)
+        const { user, access_token } = await makeSignUpRequest(data)
+        logUser(user)
+        if (access_token) {
+            setCookie(COOKIE_JWT_TOKEN, access_token)
+        }
     }
 
     useEffect(() => {

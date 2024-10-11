@@ -8,11 +8,13 @@ import NotificationsModal from "front/components/notifications/notificationsModa
 import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { COOKIE_JWT_TOKEN } from "front/constant/cookie";
+import { useStore } from "front/store/store";
 
 const USER = USERS[0]
 const Header = () => {
     const [openNotif, setOpenNotif] = useState(false)
-    const [cookies, setCookie, removeCookie] = useCookies([]);
+    const logoutUser = useStore((state) => state.logoutUser)
+    const [cookies, setCookie, removeCookie] = useCookies();
     const slotsStyles = headerStyle.raw()
 
     const onCloseNotification = () => {
@@ -21,6 +23,7 @@ const Header = () => {
 
     const onLogout = () => {
         removeCookie(COOKIE_JWT_TOKEN)
+        logoutUser()
     }
 
     return (

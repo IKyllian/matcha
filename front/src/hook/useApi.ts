@@ -1,13 +1,45 @@
+import { COOKIE_JWT_TOKEN } from "front/constant/cookie";
 import { CHAT_DATA, CHAT_SIDEBAR, ChatType } from "front/typing/chat";
-import { User, USERS } from "front/typing/user";
+import { Tags, User, USERS } from "front/typing/user";
 import ky from "ky";
 import { useEffect, useState } from "react"
+import { useCookies } from "react-cookie";
+
+export type UrlParamsType = {
+    minAge?: number,
+    maxAge?: number,
+    minPos?: number,
+    maxPos?: number,
+    minFame?: number,
+    maxFame?: number,
+    tags?: Tags[]
+}
 
 type UseApiProps<T> = {
     endpoint: EndpointType,
+    urlParams?: UrlParamsType,
     params?: { id: number },
     dependencies?: any[],
     setter: (entity: T) => void,
+}
+
+const buildUrlParams = (urlParams: UrlParamsType): string => {
+    let stringParams: string = "?"
+    const entries = Object.entries(urlParams)
+    for (const [index, [key, value]] of Object.entries(entries)) {
+        if (value) {
+            if (+index !== 0) {
+                stringParams += "&"
+            }
+            if (Array.isArray(value)) {
+                stringParams += `${key}=${value.toString()}`
+            } else {
+                stringParams += `${key}=${value}`
+            }
+        }
+    }
+
+    return stringParams
 }
 
 export const API_URL = 'http://10.11.11.1:3000/';
@@ -28,16 +60,38 @@ const getDataFromEndpoint = ({ endpoint, params }: { endpoint: EndpointType, par
             return undefined;
     }
 }
+
+const getUlrParams = ({ urlParams, endpoint, params }: { endpoint: string, urlParams?: UrlParamsType, params?: { id: number } }) => {
+    if (urlParams) {
+        return `${API_URL}${endpoint}${buildUrlParams(urlParams)}`
+    }
+    return `${API_URL}${endpoint}/${params.id}`
+}
 //--------------------------------------------------------------------------------------------------------//
 
-export const useApi = <T>({ endpoint, params, dependencies = [], setter }: UseApiProps<T>) => {
+export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], setter }: UseApiProps<T>) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [cookies, setCookie, removeCookie] = useCookies();
 
     useEffect(() => {
         const fetch = async () => {
             try {
-                // const response = await ky.get<T>(`${API_URL}${endpoint}/${params.id}`).json();
-                const response = getDataFromEndpoint({ endpoint, params }) as T
+                const cookie = cookies[COOKIE_JWT_TOKEN]
+                if (!cookie) {
+                    throw new Error("No JWT token found")
+                }
+                const api = ky.extend({
+                    hooks: {
+                        beforeRequest: [
+                            (request) => {
+                                request.headers.set('Authorization', `Bearer ${cookie})}`);
+                            }
+                        ]
+                    }
+                })
+                const requestparams = getUlrParams({ endpoint, params, urlParams })
+                const response = await api.get<T>(requestparams).json();
+                // const response = getDataFromEndpoint({ endpoint, params }) as T
                 console.info("REPONSE = ", response)
                 setter(response)
             } catch (err) {
