@@ -9,7 +9,8 @@ import { IoClose } from "react-icons/io5";
 type FormValues = {
   description: string
   gender: 'male' | 'female',
-  preference: 'male' | 'female' | 'bi'
+  preference: 'male' | 'female' | 'bi',
+  birth_date: any
 }
 
 type InputRatioProps = {
@@ -32,7 +33,8 @@ const Settings = () => {
   const slotsStyles = settingsStyle.raw()
   const [selectedChips, setSelectedChips] = useState<string[]>([])
   const [profilePicturePreview, setProfilPicturePreview] = useState<string | null>(null)
-
+  const [profilesImages, setProfilesImages] = useState<string[]>([])
+  console.info('profilesImages = ', profilesImages)
   const {
     register,
     handleSubmit,
@@ -51,7 +53,7 @@ const Settings = () => {
     console.info("values - ", values)
   }
 
-  const onUpload = (event: any) => {
+  const onSingleUpload = (event: any) => {
     console.info("data - ", event)
     const [file] = event.target.files
     if (file) {
@@ -60,10 +62,38 @@ const Settings = () => {
     console.info("upload", file)
   }
 
+  const onMultipleUpload = (event: any) => {
+    console.info("data - ", event)
+    const imagesLength = profilesImages.length
+    if (imagesLength === 4) {
+      console.info('Max images Uploaded: ', imagesLength)
+      return
+    }
+    const files = event.target.files
+    for (let i = 0; i < files.length; i++) {
+      if (i + imagesLength === 4) {
+        break
+      }
+      for (const file of files) {
+        setProfilesImages(prev => [...prev, URL.createObjectURL(file)])
+      }
+    }
+  }
+
+  const onImageDelete = (index: number) => {
+    const newArray = [...profilesImages]
+    newArray.splice(index, 1)
+    setProfilesImages([...newArray])
+  }
+
   return (
     <div className={css(slotsStyles.settingsContainer)}>
       <h2 className={css(slotsStyles.title)}> Completez votre profil </h2>
       <form className={css(slotsStyles.settingsWrapper)} onSubmit={handleSubmit(onSubmit)}>
+        <label>
+          Date de naissance:
+          <input type="date" className={css(slotsStyles.inputDate)} {...register('birth_date')} name="birth_date" />
+        </label>
         <label>
           Genre:
           <div className={css(slotsStyles.radioWrapper)}>
@@ -100,7 +130,7 @@ const Settings = () => {
           {
             !profilePicturePreview &&
             <label htmlFor="profile-picture" className={css(slotsStyles.uploadButton)}>
-              <input type="file" id="profile-picture" hidden onChange={onUpload} />
+              <input type="file" id="profile-picture" hidden onChange={onSingleUpload} />
               <FaUpload />
             </label>
           }
@@ -112,7 +142,31 @@ const Settings = () => {
           }
         </div>
         <label>
-          Autres photos
+          Téléchargez plus de photos:
+        </label>
+        {
+          profilesImages.length > 0 &&
+          <div className={css(slotsStyles.picturesContainer)}>
+            {
+              profilesImages.map((profileImage, index) => (
+                <div className={css(slotsStyles.picturesItemContainer)}>
+                  <div className={css(slotsStyles.picturesItem)}>
+                    <img src={profileImage} alt='' />
+                  </div>
+                  <div className={css(slotsStyles.uploadButton, slotsStyles.imageResetButton)}>
+                    <IoClose onClick={() => onImageDelete(index)} />
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        }
+        <label>
+          <input type="file" id="photos" multiple accept="image/*" hidden onChange={onMultipleUpload} />
+          <div className={css(slotsStyles.filesUploadContainer)}>
+            <FaUpload />
+            <span> Upload </span>
+          </div>
         </label>
         <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
       </form>

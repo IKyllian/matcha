@@ -30,6 +30,8 @@ const Profile = () => {
     const [isLike, setIsLike] = useState(false)
     const [isBlock, setIsBlock] = useState(false)
     const [user, setUser] = useState<User | undefined>()
+    const [navIndex, setNavIndex] = useState(0)
+    const handleClick = (index: number) => setNavIndex(index)
     const { isLoading } = useApi<User>({
         endpoint: 'profile',
         params: { id: userId ? +userId : authStore.user?.id },
@@ -71,7 +73,7 @@ const Profile = () => {
                     <ChipsList chipsList={user.tags} />
                 </div>
             </div>
-            <Tabs tabsContent={tabsContent} />
+            <Tabs tabsContent={tabsContent} navIndex={navIndex} handleClick={handleClick} />
             <CardsList list={USERS} cardType={cardType} />
         </div>
     )

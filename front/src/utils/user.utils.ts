@@ -2,6 +2,7 @@ import { User } from "front/typing/user";
 
 export const isUserProfileComplete = (user: User): boolean => {
     return !!(
+        user &&
         user.gender &&
         user.sexual_preference &&
         (

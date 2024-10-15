@@ -1,9 +1,14 @@
+import Banner from "front/components/banner/banner"
 import Header from "front/components/header/header"
 import { useStore } from "front/store/store"
-import { Navigate } from "react-router-dom"
+import { isUserProfileComplete } from "front/utils/user.utils"
+import { Navigate, useLocation } from "react-router-dom"
 
 const PrivateRoute = ({ children }) => {
     const authStore = useStore((state) => state.authStore)
+    const isProfileComplete = isUserProfileComplete(authStore.user)
+    const location = useLocation()
+    const showBanner = !isProfileComplete && !location.pathname
 
     if (authStore.authStatus === 'CHECKING') {
         return <div>Chargement...</div>
@@ -14,7 +19,8 @@ const PrivateRoute = ({ children }) => {
     return (
         <div>
             <Header />
-            <div style={{ marginTop: '70px' }}>
+            <div style={{ marginTop: showBanner ? '130px' : '70px' }}>
+                { showBanner && <Banner />}
                 {children}
             </div>
         </div>
