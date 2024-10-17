@@ -28,6 +28,8 @@ export const cardStyle = sva({
         },
         cardImg: {
             borderRadius: '10px',
+            width: '280px',
+            height: '280px',
         },
         textWrapper: {
             display: 'flex',

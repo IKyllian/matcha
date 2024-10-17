@@ -1,5 +1,5 @@
 import { cardStyle } from './card.style'
-import { css } from 'styled-system/css';
+import { css, Styles } from 'styled-system/css';
 import { useState } from 'react';
 import { FaLocationDot } from "react-icons/fa6";
 import { User } from 'front/typing/user';
@@ -12,13 +12,14 @@ export type CardType = 'image' | 'image-content'
 type CardProps = {
     user: User
     cardType: CardType
+    className?: Styles
 }
-const Card = ({ user, cardType }: CardProps) => {
+const Card = ({ user, cardType, className }: CardProps) => {
     const { location, username } = user
     const [isLike, setIsLike] = useState(false)
     const slotsStyles = cardStyle.raw()
     return (
-        <div className={css(slotsStyles.cardWrapper, {
+        <div className={css(slotsStyles.cardWrapper, className, {
             height: cardType === 'image-content' ? '370px' : 'auto'
         })}>
             <img src={user.img} className={css(slotsStyles.cardImg)} />
