@@ -6,6 +6,8 @@ import ChatScreen from "front/components/chat/chatScreen";
 import Home from "front/components/home/home";
 import Settings from "front/components/settings/settings";
 import SignIn from "front/components/sign/signIn";
+import NotificationScreen from "front/components/notifications/notificationScreen";
+import ViewScreen from "front/components/viewed/viewScreen";
 
 export const router = createBrowserRouter([
     {
@@ -48,6 +50,21 @@ export const router = createBrowserRouter([
                 <ChatScreen />
             </PrivateRoute>
         )
-
-    }))
+    })),
+    {
+        path: '/notifications',
+        element: (
+            <PrivateRoute>
+                <NotificationScreen />
+            </PrivateRoute>
+        )
+    },
+    {
+        path: '/vues',
+        element: (
+            <PrivateRoute>
+                <ViewScreen />
+            </PrivateRoute>
+        )
+    },
 ])
