@@ -19,7 +19,7 @@ const PrivateRoute = ({ children }) => {
     return (
         <div>
             <Header />
-            <div style={{ marginTop: showBanner ? '130px' : '70px' }}>
+            <div style={{ marginTop: showBanner ? '130px' : '70px', display: 'inline-block', width: '100%' }}>
                 { showBanner && <Banner />}
                 {children}
             </div>
