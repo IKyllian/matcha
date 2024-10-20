@@ -90,8 +90,8 @@ export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], sett
                     }
                 })
                 const requestparams = getUlrParams({ endpoint, params, urlParams })
-                const response = await api.get<T>(requestparams).json();
-                // const response = getDataFromEndpoint({ endpoint, params }) as T
+                // const response = await api.get<T>(requestparams).json();
+                const response = getDataFromEndpoint({ endpoint, params }) as T
                 console.info("REPONSE = ", response)
                 setter(response)
             } catch (err) {

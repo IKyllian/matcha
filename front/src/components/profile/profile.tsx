@@ -29,6 +29,7 @@ const Profile = () => {
     const isLoggedUser = !userId || userId && authStore.user?.id === +userId
     const [isLike, setIsLike] = useState(false)
     const [isBlock, setIsBlock] = useState(false)
+    const [isReport, setIsReport] = useState(false)
     const [user, setUser] = useState<User | undefined>()
     const [navIndex, setNavIndex] = useState(0)
     const handleClick = (index: number) => setNavIndex(index)
@@ -64,6 +65,7 @@ const Profile = () => {
                                 <div className={css(slotsStyles.profilButtonContainer)}>
                                     <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => setIsLike(prev => !prev)} />
                                     <IconButton buttonIcon={BUTTONS_ICON["BLOCKED"]} status={isBlock} onClick={() => setIsBlock(prev => !prev)} />
+                                    <IconButton buttonIcon={BUTTONS_ICON["REPORT"]} status={isReport} onClick={() => setIsReport(prev => !prev)} />
                                 </div>
                             )
                         }
