@@ -26,8 +26,9 @@ def signup():
     email = request.json.get("email", None)
     first_name = request.json.get("first_name", None)
     last_name = request.json.get("last_name", None)
-    response = makeRequest("INSERT INTO user (username, pass, email, first_name, last_name) VALUES (?, ?, ?, ?, ?)",
-                           (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name)))
+    birth_date = request.json.get("birth_date", None)
+    response = makeRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date) VALUES (?, ?, ?, ?, ?, ?)",
+                           (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date)))
 
     # if len(response) < 1 or not bcrypt.check_password_hash(response[0]["pass"], password):
     #     return jsonify({"msg": "Bad username or password"}), 401
