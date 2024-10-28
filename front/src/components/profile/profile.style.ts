@@ -19,6 +19,7 @@ export const profileStyle = sva({
             display: 'flex',
             flexDir: 'column',
             gap: '8px',
+            flex: '1'
         },
         profileImg: {
             width: '300px',

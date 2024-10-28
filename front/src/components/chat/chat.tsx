@@ -52,7 +52,7 @@ const Chat = ({ chatId }: ChatProps) => {
             <div className={css(slotsStyles.chatWrapper)}>
                 <div className={css(slotsStyles.chatHeader)}>
                     <img src={recipient.img} className={css(slotsStyles.img)} />
-                    <p> {recipient.firstname} {recipient.lastname} </p>
+                    <p> {recipient.first_name} {recipient.last_name} </p>
                 </div>
                 <div className={css(slotsStyles.messagesContainer)}>
                     {

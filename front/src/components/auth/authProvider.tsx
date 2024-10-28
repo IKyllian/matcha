@@ -17,7 +17,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
                 try {
                     const { user } = await makeAuthRequest(cookie)
                     if (user) {
-                        logUser(user)
+                        logUser(user, cookie)
                     }
                 } catch (e) {
                     console.error("Error auth request: ", e)

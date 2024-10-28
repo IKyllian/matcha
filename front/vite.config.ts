@@ -6,6 +6,10 @@ import path from 'node:path'
 export default defineConfig({
   plugins: [react()],
   base: './',
+  server: {
+    host: '10.11.11.3',
+    port: 5173
+  },
   resolve: {
     alias: {
       'front': path.resolve(__dirname, './src'),

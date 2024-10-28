@@ -4,6 +4,7 @@ import { useState } from "react"
 import useCloseRef from "front/hook/useCloseRef"
 import ChipSelect from "front/components/chips/chipSelect"
 import { IoMdClose } from "react-icons/io";
+import MultiRangeInput from "front/components/input/multiRange"
 
 type FilterSidebarProps = {
   onClose: () => void
@@ -29,6 +30,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
       <div className={css(slotsStyles.filtersContainer)} >
         <label>
           Age
+          <MultiRangeInput min={0} max={100} />
           <input type='range' />
         </label>
         <label>

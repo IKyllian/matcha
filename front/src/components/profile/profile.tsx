@@ -11,8 +11,8 @@ import IconButton from "front/components/buttons/iconButton"
 import { useState } from "react"
 import { useApi } from "front/hook/useApi"
 import { BUTTONS_ICON } from "front/typing/button"
+import { makeBlockRequest, makeLikeRequest } from "front/api/profile"
 
-const USER = USERS[0]
 const NAV_CONTENT_LOGGED_USER = [
     'Like',
     'Matches',
@@ -23,56 +23,83 @@ const NAV_CONTENT_NOT_LOGGED_USER = [
     'Photos',
 ]
 
+type ProfileStateType = {
+    user: User
+    like: boolean
+    block: boolean
+}
+
 const Profile = () => {
-    const authStore = useStore((state) => state.authStore)
+    const { user: loggedUser, token } = useStore((state) => state.authStore)
     const { userId } = useParams<{ userId?: string }>()
-    const isLoggedUser = !userId || userId && authStore.user?.id === +userId
-    const [isLike, setIsLike] = useState(false)
-    const [isBlock, setIsBlock] = useState(false)
+    const isLoggedUser = !userId || userId && loggedUser.id === +userId
     const [isReport, setIsReport] = useState(false)
-    const [user, setUser] = useState<User | undefined>()
+    const [profile, setProfile] = useState<ProfileStateType | undefined>()
     const [navIndex, setNavIndex] = useState(0)
     const handleClick = (index: number) => setNavIndex(index)
-    const { isLoading } = useApi<User>({
+
+    const { isLoading } = useApi<ProfileStateType>({
         endpoint: 'profile',
-        params: { id: userId ? +userId : authStore.user?.id },
-        setter: setUser,
-        dependencies: [userId]
+        params: { id: userId ? +userId : loggedUser.id },
+        setter: setProfile,
+        dependencies: [userId],
     })
+
     const slotsStyles = profileStyle.raw()
     const tabsContent = isLoggedUser ? NAV_CONTENT_LOGGED_USER : NAV_CONTENT_NOT_LOGGED_USER
     const cardType: CardType = isLoggedUser ? 'image-content' : 'image'
 
-    if (!user && isLoading) {
+    if (!profile && isLoading) {
         return <span> Is loading ...</span>
     }
-    if (!user && !isLoading) {
+    if (!profile && !isLoading) {
         return <span> 404 Not found </span>
     }
+
+    const onLikeClick = async () => {
+        const { ok } = await makeLikeRequest({ token, id: profile.user.id })
+        if (ok) {
+            setProfile(prev => ({ ...prev, like: !profile.like }))
+        }
+    }
+
+    const onBlockclick = async () => {
+        const { ok } = await makeBlockRequest({ token, id: profile.user.id })
+        if (ok) {
+            setProfile(prev => ({ ...prev, block: !profile.block }))
+        }
+    }
+
     return (
         <div className={css(slotsStyles.profileContainer)}>
             <div className={css(slotsStyles.profilInfosContainer)}>
-                <img className={css(slotsStyles.profileImg)} src={user.img} />
+                <img className={css(slotsStyles.profileImg)} src={profile.user.img} />
                 <div className={css(slotsStyles.profilContent)}>
                     <div className={css(slotsStyles.flexContainer)}>
-                        <p> {user.firstname} {user.lastname}, {user.age}ans ({user.username}) </p>
-                        {
-                            isLoggedUser &&
-                            <IconButton buttonIcon={BUTTONS_ICON["SETTINGS"]} />
-                        }
-                        {
-                            !isLoggedUser && (
-                                <div className={css(slotsStyles.profilButtonContainer)}>
-                                    <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => setIsLike(prev => !prev)} />
-                                    <IconButton buttonIcon={BUTTONS_ICON["BLOCKED"]} status={isBlock} onClick={() => setIsBlock(prev => !prev)} />
-                                    <IconButton buttonIcon={BUTTONS_ICON["REPORT"]} status={isReport} onClick={() => setIsReport(prev => !prev)} />
-                                </div>
-                            )
-                        }
+                        <p> {profile.user.first_name} {profile.user.last_name}, {profile.user.age}ans ({profile.user.username}) </p>
+                        <div>
+
+                            {
+                                isLoggedUser &&
+                                <IconButton buttonIcon={BUTTONS_ICON["SETTINGS"]} />
+                            }
+                            {
+                                !isLoggedUser && (
+                                    <div className={css(slotsStyles.profilButtonContainer)}>
+                                        <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={profile.like} onClick={onLikeClick} />
+                                        <IconButton buttonIcon={BUTTONS_ICON["BLOCKED"]} status={profile.block} onClick={onBlockclick} />
+                                        <IconButton buttonIcon={BUTTONS_ICON["REPORT"]} status={isReport} onClick={() => setIsReport(prev => !prev)} />
+                                    </div>
+                                )
+                            }
+                        </div>
                     </div>
-                    <p> {user.location} </p>
-                    <p> {user.description} </p>
-                    <ChipsList chipsList={user.tags} />
+                    <p> {profile.user.location} </p>
+                    <p> {profile.user.description} </p>
+                    {
+                        profile.user.tags &&
+                        <ChipsList chipsList={profile.user.tags} />
+                    }
                 </div>
             </div>
             <Tabs tabsContent={tabsContent} navIndex={navIndex} handleClick={handleClick} />

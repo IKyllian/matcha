@@ -46,10 +46,8 @@ const SignIn = () => {
     const onSubmit = async (data: FormValues) => {
         console.info('data = ', data)
         const { access_token, user } = await makeSignInRequest(data)
-        logUser(user)
-        if (access_token) {
-            setCookie(COOKIE_JWT_TOKEN, access_token)
-        }
+        logUser(user, access_token)
+        setCookie(COOKIE_JWT_TOKEN, access_token)
     }
 
     useEffect(() => {

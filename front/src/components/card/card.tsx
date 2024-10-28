@@ -15,7 +15,7 @@ type CardProps = {
     className?: Styles
 }
 const Card = ({ user, cardType, className }: CardProps) => {
-    const { location, username } = user
+    const { location, username, last_name, first_name } = user
     const [isLike, setIsLike] = useState(false)
     const slotsStyles = cardStyle.raw()
     return (
@@ -27,7 +27,7 @@ const Card = ({ user, cardType, className }: CardProps) => {
                 cardType === 'image-content' && (
                     <div className={css(slotsStyles.cardContent)}>
                         <div className={css(slotsStyles.textWrapper)}>
-                            <Link to={`/profile/${user.id}`} className={css(slotsStyles.cardPrimaryText)}> {username} </Link>
+                            <Link to={`/profile/${user.id}`} className={css(slotsStyles.cardPrimaryText)}> {first_name} {last_name} </Link>
                             <p className={css(slotsStyles.cardSecondaryText)}> <FaLocationDot /> {location} </p>
                         </div>
                         <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => setIsLike(prev => !prev)} />

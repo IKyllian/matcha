@@ -5,8 +5,8 @@ export type User = {
     img?: any;
     password: string;
     email: string;
-    firstname: string;
-    lastname: string;
+    first_name: string;
+    last_name: string;
     username: string;
     location: string;
     description: string;
@@ -14,6 +14,7 @@ export type User = {
     tags: string[];
     pictures: any[];
     gender?: 'M' | 'F'
+    birth_date?: any
     sexual_preference?: 'M' | 'F' | 'B'
     profile_picture?: string
     images?: Image[]
@@ -23,8 +24,8 @@ export const USERS: User[] = [
     {
         id: 1,
         img: Image,
-        firstname: 'John',
-        lastname: 'Doe',
+        first_name: 'John',
+        last_name: 'Doe',
         username: 'johndoe',
         location: 'Paris, France',
         password: 'weqweqweqwe',
@@ -47,8 +48,8 @@ export const USERS: User[] = [
     {
         id: 2,
         img: Image,
-        firstname: 'Jane',
-        lastname: 'Smith',
+        first_name: 'Jane',
+        last_name: 'Smith',
         username: 'janesmith',
         email: 'qwe@gmail.com',
         location: 'New York, USA',
@@ -71,8 +72,8 @@ export const USERS: User[] = [
     {
         id: 3,
         img: Image,
-        firstname: 'Alice',
-        lastname: 'Williams',
+        first_name: 'Alice',
+        last_name: 'Williams',
         email: 'qwe@gmail.com',
         username: 'aliciawilliams',
         location: 'Tokyo, Japan',

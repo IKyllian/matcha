@@ -12,8 +12,8 @@ export const formStyle = sva({
         },
         wrapper: {
             backgroundColor: 'secondaryBackground',
-            width: '600px',
-            height: '600px',
+            width: '700px',
+            height: '700px',
             padding: '24px',
             boxShadow: '2.5px 2.5px 0 black',
             borderRadius: '7px',

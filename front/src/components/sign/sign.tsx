@@ -9,7 +9,7 @@ import { makeSignUpRequest } from "front/api/sign"
 import { COOKIE_JWT_TOKEN } from "front/constant/cookie"
 import { useCookies } from "react-cookie"
 
-type FormValues = Pick<User, 'firstname' | 'lastname' | 'username' | 'email' | 'password'>
+type FormValues = Pick<User, 'first_name' | 'last_name' | 'username' | 'email' | 'password' | 'birth_date'>
 
 type FieldsType = {
     label: string
@@ -21,13 +21,13 @@ type FieldsType = {
 const FIELDS: FieldsType[] = [
     {
         label: 'Prenom',
-        name: 'firstname',
+        name: 'first_name',
         type: 'text',
         required: true,
     },
     {
         label: 'Nom',
-        name: 'lastname',
+        name: 'last_name',
         type: 'text',
         required: true,
     },
@@ -41,6 +41,12 @@ const FIELDS: FieldsType[] = [
         label: 'Email',
         name: 'email',
         type: 'text',
+        required: true,
+    },
+    {
+        label: 'Date de naissance',
+        name: 'birth_date',
+        type: 'date',
         required: true,
     },
     {
@@ -65,10 +71,8 @@ const Sign = () => {
     const onSubmit = async (data: FormValues) => {
         console.info('data = ', data)
         const { user, access_token } = await makeSignUpRequest(data)
-        logUser(user)
-        if (access_token) {
-            setCookie(COOKIE_JWT_TOKEN, access_token)
-        }
+        logUser(user, access_token)
+        setCookie(COOKIE_JWT_TOKEN, access_token)
     }
 
     useEffect(() => {

@@ -91,10 +91,6 @@ const Settings = () => {
       <h2 className={css(slotsStyles.title)}> Completez votre profil </h2>
       <form className={css(slotsStyles.settingsWrapper)} onSubmit={handleSubmit(onSubmit)}>
         <label>
-          Date de naissance:
-          <input type="date" className={css(slotsStyles.inputDate)} {...register('birth_date')} name="birth_date" />
-        </label>
-        <label>
           Genre:
           <div className={css(slotsStyles.radioWrapper)}>
             <InputRatio value="male" label="Homme" register={{ ...register('gender') }} />
