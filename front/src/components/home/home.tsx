@@ -1,32 +1,40 @@
-import { USERS } from "front/typing/user"
-import Card, { CardType } from "front/components/card/card"
+
 import { homeStyle } from "./home.style"
 import { css } from "styled-system/css"
 import { MdOutlineFilterAlt } from "react-icons/md";
 import { useState } from "react";
 import FilterSidebar from "front/components/home/filterSidebar";
+import Tabs from "front/components/tabs/tabs";
+import HomeList from "./homeList";
+import HomeSuggestion from "./homeSuggestion";
 
-const LIST = [...USERS, ...USERS, ...USERS, ...USERS, ...USERS, ...USERS, ...USERS, ...USERS,]
+type HomeTabs = 'Liste' | 'Suggestion'
+
 const Home = () => {
   const slotsStyles = homeStyle.raw()
   const [showSidebar, setShowSidebar] = useState(false)
+  const [navIndex, setNavIndex] = useState(0)
+  const handleClick = (index: number) => setNavIndex(index)
   const onSidebarClose = () => {
     setShowSidebar(prev => !prev)
   }
+  const tabsContent: HomeTabs[] = ["Liste", "Suggestion"]
+
   return (
     <div className={css(slotsStyles.homeContainer)}>
       {
-        showSidebar && <FilterSidebar onClose={onSidebarClose} />
+        showSidebar && tabsContent[navIndex] === "Liste" && <FilterSidebar onClose={onSidebarClose} />
       }
-      <div className={css(slotsStyles.filterIconContainer)} onClick={onSidebarClose}>
-        <MdOutlineFilterAlt className={css(slotsStyles.filterIcon)} />
-      </div>
-      <div className={css(slotsStyles.listContainer)}>
-        {
-          LIST.map(user => (
-            <Card key={user.id} user={user} cardType='image-content' />
-          ))
-        }
+      {
+        tabsContent[navIndex] === "Liste" &&
+        <div className={css(slotsStyles.filterIconContainer)} onClick={onSidebarClose}>
+          <MdOutlineFilterAlt className={css(slotsStyles.filterIcon)} />
+        </div>
+      }
+      <div>
+        <Tabs tabsContent={tabsContent} navIndex={navIndex} handleClick={handleClick} />
+        {tabsContent[navIndex] === "Liste" && <HomeList />}
+        {tabsContent[navIndex] === "Suggestion" && <HomeSuggestion />}
       </div>
     </div>
   )

@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom"
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
 import { useStore } from "front/store/store"
+import { makeSignInRequest } from "front/api/sign"
 import { User } from "front/typing/user"
 import { useEffect } from "react"
-import { makeSignUpRequest } from "front/api/sign"
-import { COOKIE_JWT_TOKEN } from "front/constant/cookie"
 import { useCookies } from "react-cookie"
+import { COOKIE_JWT_TOKEN } from "front/constant/cookie"
 
-type FormValues = Pick<User, 'firstname' | 'lastname' | 'username' | 'email' | 'password'>
+type FormValues = Pick<User, 'username' | 'password'>
 
 type FieldsType = {
     label: string
@@ -17,29 +17,10 @@ type FieldsType = {
     name: keyof FormValues
     required?: boolean
 }
-
 const FIELDS: FieldsType[] = [
     {
-        label: 'Prenom',
-        name: 'firstname',
-        type: 'text',
-        required: true,
-    },
-    {
-        label: 'Nom',
-        name: 'lastname',
-        type: 'text',
-        required: true,
-    },
-    {
-        label: 'Nom d\'utilisateur',
+        label: 'Username',
         name: 'username',
-        type: 'text',
-        required: true,
-    },
-    {
-        label: 'Email',
-        name: 'email',
         type: 'text',
         required: true,
     },
@@ -51,7 +32,7 @@ const FIELDS: FieldsType[] = [
     }
 ]
 
-const Sign = () => {
+const SignIn = () => {
     const {
         register,
         handleSubmit,
@@ -64,7 +45,7 @@ const Sign = () => {
     const slotsStyles = formStyle.raw()
     const onSubmit = async (data: FormValues) => {
         console.info('data = ', data)
-        const { user, access_token } = await makeSignUpRequest(data)
+        const { access_token, user } = await makeSignInRequest(data)
         logUser(user)
         if (access_token) {
             setCookie(COOKIE_JWT_TOKEN, access_token)
@@ -80,7 +61,7 @@ const Sign = () => {
     return (
         <div className={css({ minHeight: '100vh', display: 'flex' })}>
             <div className={css(slotsStyles.wrapper)}>
-                <h2 className={css(slotsStyles.title)}> Incrvivez-vous </h2>
+                <h2 className={css(slotsStyles.title)}> Connectez-vous </h2>
                 <form className={css(slotsStyles.form)} onSubmit={handleSubmit(onSubmit)}>
                     {
                         FIELDS.map(({ name, type, required, label }) => (
@@ -97,4 +78,4 @@ const Sign = () => {
     )
 }
 
-export default Sign
+export default SignIn

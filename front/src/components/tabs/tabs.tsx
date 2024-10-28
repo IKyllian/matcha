@@ -3,12 +3,12 @@ import { tabsStyle } from "./tabs.style"
 import { useState } from "react"
 
 type TabsProps = {
-    tabsContent: string[]
+    tabsContent: string[],
+    navIndex: number,
+    handleClick: (index: number) => void
 }
-const Tabs = ({ tabsContent }: TabsProps) => {
+const Tabs = ({ tabsContent, navIndex, handleClick }: TabsProps) => {
     const slotsStyles = tabsStyle.raw()
-    const [navIndex, setNavIndex] = useState(0)
-    const handleClick = (index: number) => setNavIndex(index)
     return (
         <div className={css(slotsStyles.tabsContainer)} >
             {

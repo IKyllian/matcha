@@ -3,6 +3,7 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO
+from datetime import timedelta
 
 socketio = SocketIO(cors_allowed_origins = "*")
 bcrypt = Bcrypt()
@@ -13,6 +14,7 @@ def createApp():
     CORS(app)
     bcrypt.init_app(app)
     app.config["JWT_SECRET_KEY"] = "secret_matcha_jwt_key"
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=120)
     jwt.init_app(app)
     socketio.init_app(app)
     from routes.user import user_bp

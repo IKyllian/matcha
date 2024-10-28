@@ -3,7 +3,7 @@ import { css } from "styled-system/css"
 import { ChatSidebarType } from "front/typing/chat"
 import { useApi } from "front/hook/useApi"
 import { useNavigate } from "react-router-dom"
-import { useStore } from "front/store/socketMidlleware.store"
+import { useStore } from "front/store/store"
 
 const Sidebar = () => {
     const slotsStyles = sidebarStyle.raw()

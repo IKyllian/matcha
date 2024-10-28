@@ -6,16 +6,26 @@ import { MdLogout } from "react-icons/md";
 import { IoMdNotifications } from "react-icons/io";
 import NotificationsModal from "front/components/notifications/notificationsModal";
 import { useState } from "react";
+import { useCookies } from "react-cookie";
+import { COOKIE_JWT_TOKEN } from "front/constant/cookie";
+import { useStore } from "front/store/store";
 
 const USER = USERS[0]
 const Header = () => {
     const [openNotif, setOpenNotif] = useState(false)
+    const logoutUser = useStore((state) => state.logoutUser)
+    const [cookies, setCookie, removeCookie] = useCookies();
     const slotsStyles = headerStyle.raw()
 
     const onCloseNotification = () => {
         setOpenNotif(prev => !prev)
     }
-    
+
+    const onLogout = () => {
+        removeCookie(COOKIE_JWT_TOKEN)
+        logoutUser()
+    }
+
     return (
         <div className={css(slotsStyles.headerContainer)}>
             <Link to='/' className={css(slotsStyles.headerLogo)}> matcha </Link>
@@ -30,7 +40,7 @@ const Header = () => {
                     <img src={USER.img} alt='image de profil' />
                 </div>
                 <div className={css(slotsStyles.divider)}> </div>
-                <div className={css(slotsStyles.logoutWrapper)}>
+                <div className={css(slotsStyles.logoutWrapper)} onClick={onLogout}>
                     <MdLogout className={css(slotsStyles.logoutIcon)} />
                 </div>
             </div>

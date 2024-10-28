@@ -4,7 +4,7 @@ import { AiOutlineSend } from "react-icons/ai";
 import { useApi } from "front/hook/useApi";
 import { ChatType } from "front/typing/chat";
 import { USERS } from "front/typing/user";
-import { useStore } from "front/store/socketMidlleware.store";
+import { useStore } from "front/store/store";
 import { useForm } from "react-hook-form";
 
 type ChatProps = {
@@ -52,7 +52,7 @@ const Chat = ({ chatId }: ChatProps) => {
             <div className={css(slotsStyles.chatWrapper)}>
                 <div className={css(slotsStyles.chatHeader)}>
                     <img src={recipient.img} className={css(slotsStyles.img)} />
-                    <p> {recipient.firstName} {recipient.lastname} </p>
+                    <p> {recipient.firstname} {recipient.lastname} </p>
                 </div>
                 <div className={css(slotsStyles.messagesContainer)}>
                     {
