@@ -21,9 +21,13 @@ def createApp():
     from routes.auth import auth_bp
     from routes.chat import chat_bp
     from routes.like import like_bp
+    from routes.block import block_bp
+    from routes.view import view_bp
     app.register_blueprint(user_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(like_bp)
+    app.register_blueprint(block_bp)
+    app.register_blueprint(view_bp)
 
     return app

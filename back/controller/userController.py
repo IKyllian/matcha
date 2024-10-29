@@ -23,7 +23,8 @@ def getProfileById(user_id, profile_id):
     if (user_id == profile_id):
         return jsonify(user=user)
     like = makeRequest("SELECT id FROM like WHERE like.user_id = ? AND like.liked_user_id = ?", (str(user_id), str(profile_id),))
-    return jsonify(user=user, like=(len(like) > 0))
+    block = makeRequest("SELECT id FROM block WHERE block.user_id = ? AND block.blocked_user_id = ?", (str(user_id), str(profile_id),))
+    return jsonify(user=user, like=(len(like) > 0), block=(len(block) > 0))
 
 @token_required
 def getSettings(user_id):
