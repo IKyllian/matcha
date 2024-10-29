@@ -1,4 +1,4 @@
-import Image from 'front/assets/images/Panda.jpeg'
+import Image from 'front/assets/images/panda2.webp'
 
 export type User = {
     id: number;
@@ -122,4 +122,21 @@ export type User2 = {
     profile_picture?: string
     images?: Image[]
     tags?: Tags[]
+}
+
+export type FormValuesSettings = {
+    description: string
+    gender: 'male' | 'female',
+    preference: 'male' | 'female' | 'bi',
+    birth_date: any
+}
+
+export type ImageSettingsType = {
+    file: any,
+    is_profile_picture: boolean
+    preview?: string
+}
+
+export type SettingsDataType = FormValuesSettings & {
+    images: Omit<ImageSettingsType, 'preview'>[]
 }

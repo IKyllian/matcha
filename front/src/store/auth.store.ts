@@ -1,6 +1,6 @@
 import { User, USERS } from "front/typing/user";
 import { create } from "zustand";
-import Image from 'front/assets/images/Panda.jpeg'
+import Image from 'front/assets/images/panda2.webp'
 import { socketMiddleware } from "./socketMidlleware.store";
 
 type AuthStatusType = 'CHECKING' | 'CHECKED'

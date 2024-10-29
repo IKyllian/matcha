@@ -1,8 +1,6 @@
 import { makeApi } from "front/api/api";
 import { COOKIE_JWT_TOKEN } from "front/constant/cookie";
-import { CHAT_DATA, CHAT_SIDEBAR, ChatType } from "front/typing/chat";
-import { Tags, User, USERS } from "front/typing/user";
-import ky from "ky";
+import { Tags } from "front/typing/user";
 import { useEffect, useState } from "react"
 import { useCookies } from "react-cookie";
 
@@ -44,24 +42,9 @@ const buildUrlParams = (urlParams: UrlParamsType): string => {
     return stringParams
 }
 
-export const API_URL = 'http://10.11.11.1:3000';
+export const API_URL = 'http://10.11.11.3:3000';
 
-// -------------------------- Until we have an api -------------------------------------------------------//
-export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser';
-const getUserById = (userId: number): User | undefined => USERS.find(user => user.id === userId);
-const getChatById = (chatId: number): ChatType | undefined => CHAT_DATA.find(chat => chat.id === chatId);
-const getDataFromEndpoint = ({ endpoint, params }: { endpoint: EndpointType, params?: { id: number } }) => {
-    switch (endpoint) {
-        case 'chat':
-            return getChatById(params?.id);
-        case 'profile':
-            return getUserById(params?.id);
-        case 'sidebar':
-            return CHAT_SIDEBAR;
-        default:
-            return undefined;
-    }
-}
+export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getViewsOfUser' | 'getMatchesOfUser';
 
 const getUlrParams = ({ urlParams, endpoint, params }: { endpoint: string, urlParams?: UrlParamsType, params?: { id: number } }) => {
     if (urlParams) {
@@ -87,7 +70,6 @@ export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], sett
                 const api = makeApi(cookie)
                 const requestparams = getUlrParams({ endpoint, params, urlParams })
                 const response = await api.get<T>(requestparams).json();
-                // const response = getDataFromEndpoint({ endpoint, params }) as T
                 console.info("REPONSE = ", response)
                 setter(key ? response[key] : response)
             } catch (err) {

@@ -8,15 +8,18 @@ import { CardType } from "front/components/card/card"
 import { useStore } from "front/store/store"
 import { useParams } from "react-router-dom"
 import IconButton from "front/components/buttons/iconButton"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useApi } from "front/hook/useApi"
 import { BUTTONS_ICON } from "front/typing/button"
-import { makeBlockRequest, makeLikeRequest } from "front/api/profile"
+import { makeBlockRequest, makeLikeRequest, makeViewRequest } from "front/api/profile"
+import ProfileLikes from "./profileLikes"
+import ProfileMatches from "./profileMatches"
+import ProfilePictures from "./profilePictures"
 
 const NAV_CONTENT_LOGGED_USER = [
-    'Like',
+    'Likes',
     'Matches',
-    'Views'
+    'Photos'
 ]
 
 const NAV_CONTENT_NOT_LOGGED_USER = [
@@ -45,9 +48,20 @@ const Profile = () => {
         dependencies: [userId],
     })
 
+
     const slotsStyles = profileStyle.raw()
     const tabsContent = isLoggedUser ? NAV_CONTENT_LOGGED_USER : NAV_CONTENT_NOT_LOGGED_USER
     const cardType: CardType = isLoggedUser ? 'image-content' : 'image'
+
+    useEffect(() => {
+        const request = async () => {
+            await makeViewRequest({ token, id: +userId })
+        }
+        if (+userId !== loggedUser.id) {
+            request()
+        }
+    }, [])
+
 
     if (!profile && isLoading) {
         return <span> Is loading ...</span>
@@ -67,6 +81,17 @@ const Profile = () => {
         const { ok } = await makeBlockRequest({ token, id: profile.user.id })
         if (ok) {
             setProfile(prev => ({ ...prev, block: !profile.block }))
+        }
+    }
+
+    const get_tab_content = () => {
+        switch (tabsContent[navIndex]) {
+            case 'Likes':
+                return <ProfileLikes />
+            case 'Matches':
+                return <ProfileMatches />
+            case 'Photos':
+                return <ProfilePictures userPictures={profile.user.images} />
         }
     }
 
@@ -103,7 +128,7 @@ const Profile = () => {
                 </div>
             </div>
             <Tabs tabsContent={tabsContent} navIndex={navIndex} handleClick={handleClick} />
-            <CardsList list={USERS} cardType={cardType} />
+            {get_tab_content()}
         </div>
     )
 }

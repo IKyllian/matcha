@@ -5,21 +5,17 @@ import { css } from "styled-system/css"
 import { useForm } from "react-hook-form"
 import { FaUpload } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
+import { makeSettingsRequest } from "front/api/profile"
+import { useStore } from "front/store/store"
+import { FormValuesSettings, ImageSettingsType } from "front/typing/user"
 
-type FormValues = {
-  description: string
-  gender: 'male' | 'female',
-  preference: 'male' | 'female' | 'bi',
-  birth_date: any
-}
-
-type InputRatioProps = {
+type InputRadioProps = {
   value: string
   label: string
   register: any
 }
 
-const InputRatio = ({ value, label, register }: InputRatioProps) => {
+const InputRadio = ({ value, label, register }: InputRadioProps) => {
   const slotsStyles = settingsStyle.raw()
   return (
     <label className={css(slotsStyles.radioLabel)}>
@@ -31,15 +27,16 @@ const InputRatio = ({ value, label, register }: InputRatioProps) => {
 
 const Settings = () => {
   const slotsStyles = settingsStyle.raw()
+  const { token } = useStore((state) => state.authStore)
   const [selectedChips, setSelectedChips] = useState<string[]>([])
   const [profilePicturePreview, setProfilPicturePreview] = useState<string | null>(null)
-  const [profilesImages, setProfilesImages] = useState<string[]>([])
+  const [profilesImages, setProfilesImages] = useState<ImageSettingsType[]>([])
   console.info('profilesImages = ', profilesImages)
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>()
+  } = useForm<FormValuesSettings>()
 
   const onChipClick = (chip: string, wasSelected: boolean) => {
     if (wasSelected) {
@@ -49,15 +46,23 @@ const Settings = () => {
     }
   }
 
-  const onSubmit = (values: FormValues) => {
+  const onSubmit = async (values: FormValuesSettings) => {
+    await makeSettingsRequest({
+      data: {
+        ...values,
+        images: [...profilesImages.map(o => ({ file: o.file, is_profile_picture: o.is_profile_picture }))]
+      }, token
+    })
     console.info("values - ", values)
   }
 
   const onSingleUpload = (event: any) => {
     console.info("data - ", event)
     const [file] = event.target.files
+    // const filesize: string = ((file.size/1024)/1024).toFixed(4);
     if (file) {
       setProfilPicturePreview(URL.createObjectURL(file))
+      setProfilesImages(prev => [...prev, { file, is_profile_picture: true }])
     }
     console.info("upload", file)
   }
@@ -75,7 +80,8 @@ const Settings = () => {
         break
       }
       for (const file of files) {
-        setProfilesImages(prev => [...prev, URL.createObjectURL(file)])
+        // setProfilesImages(prev => [...prev, URL.createObjectURL(file)])
+        setProfilesImages(prev => [...prev, { file, preview: URL.createObjectURL(file), is_profile_picture: false }])
       }
     }
   }
@@ -93,16 +99,16 @@ const Settings = () => {
         <label>
           Genre:
           <div className={css(slotsStyles.radioWrapper)}>
-            <InputRatio value="male" label="Homme" register={{ ...register('gender') }} />
-            <InputRatio value="female" label="Femme" register={{ ...register('gender') }} />
+            <InputRadio value="male" label="Homme" register={{ ...register('gender') }} />
+            <InputRadio value="female" label="Femme" register={{ ...register('gender') }} />
           </div>
         </label>
         <label>
           Attirer par:
           <div className={css(slotsStyles.radioWrapper)}>
-            <InputRatio value="male" label="Homme" register={{ ...register('preference') }} />
-            <InputRatio value="female" label="Femme" register={{ ...register('preference') }} />
-            <InputRatio value="bi" label="Les deux" register={{ ...register('preference') }} />
+            <InputRadio value="male" label="Homme" register={{ ...register('preference') }} />
+            <InputRadio value="female" label="Femme" register={{ ...register('preference') }} />
+            <InputRadio value="bi" label="Les deux" register={{ ...register('preference') }} />
           </div>
         </label>
         <label>
@@ -144,16 +150,16 @@ const Settings = () => {
           profilesImages.length > 0 &&
           <div className={css(slotsStyles.picturesContainer)}>
             {
-              profilesImages.map((profileImage, index) => (
-                <div className={css(slotsStyles.picturesItemContainer)}>
+              profilesImages.map((profileImage, index) => profileImage.preview ? (
+                <div key={profileImage.preview} className={css(slotsStyles.picturesItemContainer)}>
                   <div className={css(slotsStyles.picturesItem)}>
-                    <img src={profileImage} alt='' />
+                    <img src={profileImage.preview} alt='' />
                   </div>
                   <div className={css(slotsStyles.uploadButton, slotsStyles.imageResetButton)}>
                     <IoClose onClick={() => onImageDelete(index)} />
                   </div>
                 </div>
-              ))
+              ) : null)
             }
           </div>
         }
