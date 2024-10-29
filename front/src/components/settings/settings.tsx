@@ -7,7 +7,8 @@ import { FaUpload } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { makeSettingsRequest } from "front/api/profile"
 import { useStore } from "front/store/store"
-import { FormValuesSettings, ImageSettingsType } from "front/typing/user"
+import { FormValuesSettings, ImageSettingsType, Tags, User } from "front/typing/user"
+import { useApi } from "front/hook/useApi"
 
 type InputRadioProps = {
   value: string
@@ -25,10 +26,10 @@ const InputRadio = ({ value, label, register }: InputRadioProps) => {
   )
 }
 
-const Settings = () => {
+const Settings = ({ profileSettings }: { profileSettings: Partial<User> }) => {
   const slotsStyles = settingsStyle.raw()
   const { token } = useStore((state) => state.authStore)
-  const [selectedChips, setSelectedChips] = useState<string[]>([])
+  const [selectedChips, setSelectedChips] = useState<Tags[]>([])
   const [profilePicturePreview, setProfilPicturePreview] = useState<string | null>(null)
   const [profilesImages, setProfilesImages] = useState<ImageSettingsType[]>([])
   console.info('profilesImages = ', profilesImages)
@@ -36,23 +37,43 @@ const Settings = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValuesSettings>()
+  } = useForm<Partial<User>>({
+    defaultValues: profileSettings
+  })
 
-  const onChipClick = (chip: string, wasSelected: boolean) => {
+
+
+  const onChipClick = (chip: Tags, wasSelected: boolean) => {
     if (wasSelected) {
-      setSelectedChips(prev => [...prev.filter(c => c !== chip)])
+      setSelectedChips(prev => [...prev.filter(c => c.id !== chip.id)])
     } else {
       setSelectedChips(prev => [...prev, chip])
     }
   }
 
-  const onSubmit = async (values: FormValuesSettings) => {
-    await makeSettingsRequest({
-      data: {
-        ...values,
-        images: [...profilesImages.map(o => ({ file: o.file, is_profile_picture: o.is_profile_picture }))]
-      }, token
-    })
+  const onSubmit = async (values: Partial<User>) => {
+    console.info('images = ', [...profilesImages.map(o => ({ file: o.file, is_profile_picture: o.is_profile_picture }))])
+    const data = {
+      ...values,
+      images: [...profilesImages.map(o => ({ file: o.file, is_profile_picture: o.is_profile_picture }))]
+    }
+    console.info('data = ', data)
+
+    const formData = new FormData()
+
+    profilesImages.forEach((image, index) => {
+      formData.append(`images[${index}][file]`, image.file); // fichier
+      formData.append(`images[${index}][is_profile_picture]`, image.is_profile_picture.toString()); // info sur l'image de profil
+    });
+
+    for (const [key, value] of Object.entries(values)) {
+      formData.append(key, value)
+    }
+
+    await makeSettingsRequest(
+      formData,
+      token
+    )
     console.info("values - ", values)
   }
 
@@ -99,16 +120,16 @@ const Settings = () => {
         <label>
           Genre:
           <div className={css(slotsStyles.radioWrapper)}>
-            <InputRadio value="male" label="Homme" register={{ ...register('gender') }} />
-            <InputRadio value="female" label="Femme" register={{ ...register('gender') }} />
+            <InputRadio value="M" label="Homme" register={{ ...register('gender') }} />
+            <InputRadio value="F" label="Femme" register={{ ...register('gender') }} />
           </div>
         </label>
         <label>
           Attirer par:
           <div className={css(slotsStyles.radioWrapper)}>
-            <InputRadio value="male" label="Homme" register={{ ...register('preference') }} />
-            <InputRadio value="female" label="Femme" register={{ ...register('preference') }} />
-            <InputRadio value="bi" label="Les deux" register={{ ...register('preference') }} />
+            <InputRadio value="M" label="Homme" register={{ ...register('sexual_preference') }} />
+            <InputRadio value="F" label="Femme" register={{ ...register('sexual_preference') }} />
+            <InputRadio value="B" label="Les deux" register={{ ...register('sexual_preference') }} />
           </div>
         </label>
         <label>
@@ -176,4 +197,17 @@ const Settings = () => {
   )
 }
 
-export default Settings
+const ScreenSettings = () => {
+  const [profileSettings, setProfileSettings] = useState<User>()
+  const { isLoading } = useApi<User>({
+    endpoint: 'profile/settings',
+    setter: setProfileSettings,
+  })
+  console.info("isLoading = ", isLoading)
+  if (isLoading) {
+    return <div>loading...</div>
+  }
+  return <Settings profileSettings={profileSettings} />
+}
+
+export default ScreenSettings

@@ -2,11 +2,10 @@ import { css } from "styled-system/css"
 import { profileStyle } from "./profile.style"
 import { User, USERS } from "front/typing/user"
 import Tabs from "front/components/tabs/tabs"
-import CardsList from "front/components/card/cardsList"
 import ChipsList from "front/components/chips/chips"
 import { CardType } from "front/components/card/card"
 import { useStore } from "front/store/store"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import IconButton from "front/components/buttons/iconButton"
 import { useEffect, useState } from "react"
 import { useApi } from "front/hook/useApi"
@@ -40,7 +39,7 @@ const Profile = () => {
     const [profile, setProfile] = useState<ProfileStateType | undefined>()
     const [navIndex, setNavIndex] = useState(0)
     const handleClick = (index: number) => setNavIndex(index)
-
+    const navigate = useNavigate()
     const { isLoading } = useApi<ProfileStateType>({
         endpoint: 'profile',
         params: { id: userId ? +userId : loggedUser.id },
@@ -103,10 +102,9 @@ const Profile = () => {
                     <div className={css(slotsStyles.flexContainer)}>
                         <p> {profile.user.first_name} {profile.user.last_name}, {profile.user.age}ans ({profile.user.username}) </p>
                         <div>
-
                             {
                                 isLoggedUser &&
-                                <IconButton buttonIcon={BUTTONS_ICON["SETTINGS"]} />
+                                <IconButton buttonIcon={BUTTONS_ICON["SETTINGS"]} onClick={() => navigate('/settings')} />
                             }
                             {
                                 !isLoggedUser && (

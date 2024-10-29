@@ -1,18 +1,9 @@
 import { makeApi } from "front/api/api";
 import { COOKIE_JWT_TOKEN } from "front/constant/cookie";
+import { UrlParamsType } from "front/typing/filters";
 import { Tags } from "front/typing/user";
 import { useEffect, useState } from "react"
 import { useCookies } from "react-cookie";
-
-export type UrlParamsType = {
-    minAge?: number,
-    maxAge?: number,
-    minPos?: number,
-    maxPos?: number,
-    minFame?: number,
-    maxFame?: number,
-    tags?: Tags[]
-}
 
 type UseApiProps<T> = {
     endpoint: EndpointType,
@@ -44,7 +35,7 @@ const buildUrlParams = (urlParams: UrlParamsType): string => {
 
 export const API_URL = 'http://10.11.11.3:3000';
 
-export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getViewsOfUser' | 'getMatchesOfUser';
+export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getViewsOfUser' | 'getMatchesOfUser' | 'profile/settings';
 
 const getUlrParams = ({ urlParams, endpoint, params }: { endpoint: string, urlParams?: UrlParamsType, params?: { id: number } }) => {
     if (urlParams) {
@@ -67,7 +58,7 @@ export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], sett
                 if (!cookie) {
                     throw new Error("No JWT token found")
                 }
-                const api = makeApi(cookie)
+                const api = makeApi({ token: cookie })
                 const requestparams = getUlrParams({ endpoint, params, urlParams })
                 const response = await api.get<T>(requestparams).json();
                 console.info("REPONSE = ", response)

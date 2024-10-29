@@ -137,6 +137,6 @@ export type ImageSettingsType = {
     preview?: string
 }
 
-export type SettingsDataType = FormValuesSettings & {
+export type SettingsDataType = Partial<User> & {
     images: Omit<ImageSettingsType, 'preview'>[]
 }
