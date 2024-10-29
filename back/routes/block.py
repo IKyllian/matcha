@@ -11,4 +11,5 @@ block_bp.route("/getUserBlocks/<int:blocked_id>", methods = ["GET"]) (getUserBlo
 
 block_bp.route("/getBlocksOfUser", methods = ["GET"]) (getBlocksOfUser)
 
+block_bp.route("/report", methods = ["POST"]) (reportUserById)
 

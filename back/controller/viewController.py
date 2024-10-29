@@ -5,6 +5,8 @@ from database_utils.decoratorFunctions import token_required
 @token_required
 def viewUserById(user_id):
     user_to_view_id = request.json.get("user_to_view_id", None)
+    if (user_id == user_to_view_id):
+        return ("Can't view your own profile!", 403)
     view = makeRequest("SELECT id FROM view WHERE view.user_id = ? AND view.viewed_user_id = ?", (str(user_id), str(user_to_view_id),))
     if (len(view) > 0):
         response = makeRequest("DELETE FROM view WHERE view.user_id = ? AND view.viewed_user_id = ?", (str(user_id), str(user_to_view_id),))

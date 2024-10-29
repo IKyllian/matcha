@@ -24,3 +24,14 @@ def getBlocksOfUser(user_id):
     blocks = makeRequest("SELECT user.id, user.first_name, user.last_name, image.image_file AS profile_picture FROM block LEFT JOIN user ON block.blocked_user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE block.user_id = ?", (str(user_id),))
     
     return jsonify(blocks=blocks)
+
+@token_required
+def reportUserById(user_id):
+    user_to_report_id = request.json.get("user_to_report_id", None)
+    report = makeRequest("SELECT id FROM report WHERE report.user_id = ? AND report.reported_user_id = ?", (str(user_id), str(user_to_report_id),))
+    if (len(report) > 0):
+        response = makeRequest("DELETE FROM report WHERE report.user_id = ? AND report.reported_user_id = ?", (str(user_id), str(user_to_report_id),))
+    else :
+        response = makeRequest("INSERT INTO report (user_id, reported_user_id) VALUES (?, ?)",
+                           (str(user_id), str(user_to_report_id)))
+    return jsonify(ok=True)
