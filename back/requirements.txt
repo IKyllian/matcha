@@ -3,3 +3,4 @@ flask-cors
 Flask-jwt-extended
 flask-bcrypt
 flask-socketio
+python-dateutil

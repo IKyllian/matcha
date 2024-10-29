@@ -5,7 +5,7 @@ from controller.userController import *
 
 user_bp = Blueprint("user", __name__)
 
-user_bp.route("/profile/", methods = ["GET"]) (getProfiles)
+user_bp.route("/profile", methods = ["GET"]) (getProfiles)
 
 user_bp.route("/profile/<int:profile_id>", methods = ["GET"]) (getProfileById)
 
