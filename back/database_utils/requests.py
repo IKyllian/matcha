@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def makeRequest(query, params = ()):
     connection = sqlite3.connect('database.db')
     connection.row_factory = sqlite3.Row

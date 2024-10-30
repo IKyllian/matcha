@@ -67,6 +67,14 @@ CREATE TABLE block (
     FOREIGN KEY (blocked_user_id) REFERENCES user(id)
 );
 
+CREATE TABLE report (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id         INTEGER NOT NULL,
+    reported_user_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (reported_user_id) REFERENCES user(id)
+);
+
 CREATE TABLE message (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     message     TEXT        NOT NULL,

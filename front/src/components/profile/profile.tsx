@@ -14,6 +14,7 @@ import { makeBlockRequest, makeLikeRequest, makeViewRequest } from "front/api/pr
 import ProfileLikes from "./profileLikes"
 import ProfileMatches from "./profileMatches"
 import ProfilePictures from "./profilePictures"
+import ProfilePicture from "front/components/utils/profilePicture"
 
 const NAV_CONTENT_LOGGED_USER = [
     'Likes',
@@ -97,7 +98,7 @@ const Profile = () => {
     return (
         <div className={css(slotsStyles.profileContainer)}>
             <div className={css(slotsStyles.profilInfosContainer)}>
-                <img className={css(slotsStyles.profileImg)} src={profile.user.img} />
+                <ProfilePicture userImages={profile.user.images} width="300px" height="300px" />
                 <div className={css(slotsStyles.profilContent)}>
                     <div className={css(slotsStyles.flexContainer)}>
                         <p> {profile.user.first_name} {profile.user.last_name}, {profile.user.age}ans ({profile.user.username}) </p>
@@ -118,7 +119,7 @@ const Profile = () => {
                         </div>
                     </div>
                     <p> {profile.user.location} </p>
-                    <p> {profile.user.description} </p>
+                    <p> {profile.user.bio} </p>
                     {
                         profile.user.tags &&
                         <ChipsList chipsList={profile.user.tags} />

@@ -4,8 +4,20 @@ import { SettingsDataType } from "front/typing/user";
 
 export const makeLikeRequest = async ({ token, id }: { token: string, id: number }) => {
     const api = makeApi({ token })
-    const response = await api.post<{ ok: boolean }>(`${API_URL}/like`, { json: { user_to_like_id: id } }).json();
-    return response
+    try {
+        const response = await api.post<{ ok: boolean }>(`${API_URL}/like`, { json: { user_to_like_id: id } }).json();
+        return response
+    } catch (error) {
+        console.info('Error = ', error)
+        console.info('Error = ', error.message)
+        console.info('Error = ', error.response)
+        if (error.response) {
+            const errorData = await error.response.json();
+            console.info('Erreur:', errorData);
+        } else {
+            console.info('Erreur de réseau:', error.message);
+        }
+    }
 }
 
 export const makeBlockRequest = async ({ token, id }: { token: string, id: number }) => {
@@ -20,9 +32,9 @@ export const makeViewRequest = async ({ token, id }: { token: string, id: number
     return response
 }
 
-export const makeSettingsRequest = async (data: any, token) => {
+export const makeSettingsRequest = async (data: any, token: string) => {
     console.info('data = ', data)
-    const api = makeApi({ token, contentType: 'multipart/form-data' })
+    const api = makeApi({ token })
     const response = await api.post<{ ok: boolean }>(`${API_URL}/profile/setSettings`, { body: data }).json();
     return response
 }

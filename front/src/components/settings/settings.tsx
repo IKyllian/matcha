@@ -9,6 +9,7 @@ import { makeSettingsRequest } from "front/api/profile"
 import { useStore } from "front/store/store"
 import { FormValuesSettings, ImageSettingsType, Tags, User } from "front/typing/user"
 import { useApi } from "front/hook/useApi"
+import ProfilePicture from "front/components/utils/profilePicture"
 
 type InputRadioProps = {
   value: string
@@ -26,10 +27,11 @@ const InputRadio = ({ value, label, register }: InputRadioProps) => {
   )
 }
 
-const Settings = ({ profileSettings }: { profileSettings: Partial<User> }) => {
+const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType }) => {
+  console.info('profileSettings = ', profileSettings)
   const slotsStyles = settingsStyle.raw()
   const { token } = useStore((state) => state.authStore)
-  const [selectedChips, setSelectedChips] = useState<Tags[]>([])
+  const [selectedChips, setSelectedChips] = useState<Tags[]>(profileSettings.user.tags)
   const [profilePicturePreview, setProfilPicturePreview] = useState<string | null>(null)
   const [profilesImages, setProfilesImages] = useState<ImageSettingsType[]>([])
   console.info('profilesImages = ', profilesImages)
@@ -38,11 +40,10 @@ const Settings = ({ profileSettings }: { profileSettings: Partial<User> }) => {
     handleSubmit,
     formState: { errors },
   } = useForm<Partial<User>>({
-    defaultValues: profileSettings
+    defaultValues: profileSettings.user
   })
 
-
-
+  console.info('selected = ', selectedChips)
   const onChipClick = (chip: Tags, wasSelected: boolean) => {
     if (wasSelected) {
       setSelectedChips(prev => [...prev.filter(c => c.id !== chip.id)])
@@ -62,12 +63,18 @@ const Settings = ({ profileSettings }: { profileSettings: Partial<User> }) => {
     const formData = new FormData()
 
     profilesImages.forEach((image, index) => {
-      formData.append(`images[${index}][file]`, image.file); // fichier
-      formData.append(`images[${index}][is_profile_picture]`, image.is_profile_picture.toString()); // info sur l'image de profil
+      formData.append(`images[${index}][file]`, image.file);
+      formData.append(`images[${index}][is_profile_picture]`, image.is_profile_picture.toString());
+    });
+
+    selectedChips.forEach((tag) => {
+      formData.append(`tag_ids`, tag.id.toString());
     });
 
     for (const [key, value] of Object.entries(values)) {
-      formData.append(key, value)
+      if (key !== 'tags') {
+        formData.append(key, value)
+      }
     }
 
     await makeSettingsRequest(
@@ -134,11 +141,11 @@ const Settings = ({ profileSettings }: { profileSettings: Partial<User> }) => {
         </label>
         <label>
           Desription:
-          <textarea className={css(slotsStyles.textAreaInput)} {...register('description')} name="description" ></textarea>
+          <textarea className={css(slotsStyles.textAreaInput)} {...register('bio')} name="bio" ></textarea>
         </label>
         <label>
           Centre d'interets:
-          <ChipSelect selectedChips={selectedChips} onChipClick={onChipClick} />
+          <ChipSelect chips={profileSettings.tags} selectedChips={selectedChips} onChipClick={onChipClick} />
         </label>
         <div className={css(slotsStyles.profilPictureContainer)}>
           <label>
@@ -197,9 +204,13 @@ const Settings = ({ profileSettings }: { profileSettings: Partial<User> }) => {
   )
 }
 
+type ProfileSettingsType = {
+  user: User,
+  tags: Tags[]
+}
 const ScreenSettings = () => {
-  const [profileSettings, setProfileSettings] = useState<User>()
-  const { isLoading } = useApi<User>({
+  const [profileSettings, setProfileSettings] = useState<ProfileSettingsType>()
+  const { isLoading } = useApi<ProfileSettingsType>({
     endpoint: 'profile/settings',
     setter: setProfileSettings,
   })

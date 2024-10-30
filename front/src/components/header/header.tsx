@@ -9,10 +9,12 @@ import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { COOKIE_JWT_TOKEN } from "front/constant/cookie";
 import { useStore } from "front/store/store";
+import ProfilePicture from "../utils/profilePicture";
 
 const USER = USERS[0]
 const Header = () => {
     const [openNotif, setOpenNotif] = useState(false)
+    const { user } = useStore((state) => state.authStore)
     const logoutUser = useStore((state) => state.logoutUser)
     const [cookies, setCookie, removeCookie] = useCookies();
     const slotsStyles = headerStyle.raw()
@@ -37,7 +39,7 @@ const Header = () => {
                     {openNotif && <NotificationsModal onClose={onCloseNotification} />}
                 </div>
                 <div className={css(slotsStyles.headerAvatar)}>
-                    <img src={USER.img} alt='image de profil' />
+                    <ProfilePicture userImages={user.images} />
                 </div>
                 <div className={css(slotsStyles.divider)}> </div>
                 <div className={css(slotsStyles.logoutWrapper)} onClick={onLogout}>

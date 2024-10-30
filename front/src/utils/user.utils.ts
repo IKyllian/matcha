@@ -5,12 +5,7 @@ export const isUserProfileComplete = (user: User): boolean => {
         user &&
         user.gender &&
         user.sexual_preference &&
-        (
-            user.profile_picture ||
-            (
-                !user.profile_picture && user.images?.find(img => img.is_profile_picture)
-            )
-        ) &&
-        user.age
+        user.images?.find(img => img.is_profile_picture) &&
+        user.age && user.age > 18
     )
 }

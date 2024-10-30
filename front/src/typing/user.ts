@@ -9,14 +9,13 @@ export type User = {
     last_name: string;
     username: string;
     location: string;
-    description: string;
+    bio: string;
     age: number;
-    tags: string[];
+    tags: Tags[];
     pictures: any[];
     gender?: 'M' | 'F'
     birth_date?: any
     sexual_preference?: 'M' | 'F' | 'B'
-    profile_picture?: string
     images?: Image[]
 }
 
@@ -31,19 +30,13 @@ export const USERS: User[] = [
         password: 'weqweqweqwe',
         email: 'qwe@gmail.com',
         age: 25,
-        tags: [
-            'musique',
-            'gaming',
-            'tech',
-            'lecture',
-            'voyage'
-        ],
+        tags: [],
         pictures: [
             Image,
             Image,
             Image,
         ],
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tristique, nisl quis lobortis fermentum, elit tellus varius nisl, sed ullamcorper ex lacus ut ex. Nulla eleifend bibendum tellus interdum sagittis. Suspendisse ac lacus sit amet mauris dapibus fringilla. Proin ut semper elit. Nam vel nisi lacus. Sed scelerisque maximus dui nec vulputate'
+        bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tristique, nisl quis lobortis fermentum, elit tellus varius nisl, sed ullamcorper ex lacus ut ex. Nulla eleifend bibendum tellus interdum sagittis. Suspendisse ac lacus sit amet mauris dapibus fringilla. Proin ut semper elit. Nam vel nisi lacus. Sed scelerisque maximus dui nec vulputate'
     },
     {
         id: 2,
@@ -55,19 +48,13 @@ export const USERS: User[] = [
         location: 'New York, USA',
         password: 'weqweqweqwe',
         age: 30,
-        tags: [
-            'musique',
-            'gaming',
-            'tech',
-            'lecture',
-            'voyage'
-        ],
+        tags: [],
         pictures: [
             Image,
             Image,
             Image,
         ],
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tristique, nisl quis lobortis fermentum, elit tellus varius nisl, sed ullamcorper ex lacus ut ex. Nulla eleifend bibendum tellus interdum sagittis. Suspendisse ac lacus sit amet mauris dapibus fringilla. Proin ut semper elit. Nam vel nisi lacus. Sed scelerisque maximus dui nec vulputate'
+        bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tristique, nisl quis lobortis fermentum, elit tellus varius nisl, sed ullamcorper ex lacus ut ex. Nulla eleifend bibendum tellus interdum sagittis. Suspendisse ac lacus sit amet mauris dapibus fringilla. Proin ut semper elit. Nam vel nisi lacus. Sed scelerisque maximus dui nec vulputate'
     },
     {
         id: 3,
@@ -79,19 +66,13 @@ export const USERS: User[] = [
         location: 'Tokyo, Japan',
         password: 'weqweqweqwe',
         age: 28,
-        tags: [
-            'musique',
-            'gaming',
-            'tech',
-            'lecture',
-            'voyage'
-        ],
+        tags: [],
         pictures: [
             Image,
             Image,
             Image,
         ],
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tristique, nisl quis lobortis fermentum, elit tellus varius nisl, sed ullamcorper ex lacus ut ex. Nulla eleifend bibendum tellus interdum sagittis. Suspendisse ac lacus sit amet mauris dapibus fringilla. Proin ut semper elit. Nam vel nisi lacus. Sed scelerisque maximus dui nec vulputate'
+        bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tristique, nisl quis lobortis fermentum, elit tellus varius nisl, sed ullamcorper ex lacus ut ex. Nulla eleifend bibendum tellus interdum sagittis. Suspendisse ac lacus sit amet mauris dapibus fringilla. Proin ut semper elit. Nam vel nisi lacus. Sed scelerisque maximus dui nec vulputate'
     }
 ]
 
@@ -125,7 +106,7 @@ export type User2 = {
 }
 
 export type FormValuesSettings = {
-    description: string
+    bio: string
     gender: 'male' | 'female',
     preference: 'male' | 'female' | 'bi',
     birth_date: any
