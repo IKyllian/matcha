@@ -5,6 +5,8 @@ from database_utils.decoratorFunctions import token_required
 @token_required
 def blockUserById(user_id):
     user_to_block_id = request.json.get("user_to_block_id", None)
+    if (user_id == user_to_block_id):
+        return ("Can't block your own profile!", 403)
     block = makeRequest("SELECT id FROM block WHERE block.user_id = ? AND block.blocked_user_id = ?", (str(user_id), str(user_to_block_id),))
     if (len(block) > 0):
         response = makeRequest("DELETE FROM block WHERE block.user_id = ? AND block.blocked_user_id = ?", (str(user_id), str(user_to_block_id),))

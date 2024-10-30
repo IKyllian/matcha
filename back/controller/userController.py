@@ -72,6 +72,10 @@ def getProfileById(user_id, profile_id):
     user = response[0]
     user["age"] = getAgeFromTime(user["birth_date"])
     del user["birth_date"]
+    images = makeRequest("SELECT id, image_file, is_profile_picture FROM image WHERE image.user_id = ?", (str(user_id),))
+    user["images"] = decodeImages(images)
+    userTags = makeRequest("SELECT user_id, tag_id AS id, tag_name FROM user_tag LEFT JOIN tag ON user_tag.tag_id = tag.id WHERE user_tag.user_id = ?", (str(profile_id),))
+    user["tags"] = userTags
     if (user_id == profile_id):
         return jsonify(user=user)
     like = makeRequest("SELECT id FROM like WHERE like.user_id = ? AND like.liked_user_id = ?", (str(user_id), str(profile_id),))
@@ -82,16 +86,21 @@ def getProfileById(user_id, profile_id):
 def getSettings(user_id):
     response = makeRequest("SELECT username, first_name, last_name, email, gender, sexual_preference, bio, birth_date FROM user WHERE id = ?", (str(user_id),))
     user = response[0]
-    return jsonify(user=user)
+    images = makeRequest("SELECT id, image_file, is_profile_picture FROM image WHERE image.user_id = ?", (str(user_id),))
+    user["images"] = decodeImages(images)
+    userTags = makeRequest("SELECT user_id, tag_id AS id, tag_name FROM user_tag LEFT JOIN tag ON user_tag.tag_id = tag.id WHERE user_tag.user_id = ?", (str(user_id),))
+    user["tags"] = userTags
+    allTags = makeRequest("SELECT id, tag_name FROM tag")
+    return jsonify(user=user, tags=allTags)
 
 def checkImages(images):
-    # if (len(images) > 5):
-    #     return False
+    if (len(images) > 5):
+        return False
     profilePicCount = 0
     for image in images:
         if (image["is_profile_picture"] == True):
             profilePicCount += 1
-    if profilePicCount != 1:
+    if profilePicCount > 1:
         return False
     return True
 
@@ -101,34 +110,41 @@ def setSettings(user_id):
     email = request.form.get("email", None)
     first_name = request.form.get("first_name", None)
     last_name = request.form.get("last_name", None)
-    birth_date = request.form.get("birth_date", None)
     gender = request.form.get("gender")
     sexual_preference = request.form.get("sexual_preference", None)
     bio = request.form.get("bio", None)
-    images = request.files.get("images", None)
-    imageCount = len(request.form.getlist("images", None))
-    print (request.form.to_dict())
-    print (gender)
-    print (imageCount)
-    if (imageCount < 1):
-        return ("Invalid images sent", 403)
+    tags = request.form.getlist("tag_ids", None)
+    images = []
+    index = 0
 
-    # if (not checkImages(images)):
-    #     return ("Invalid images sent", 403)
+    while f"images[{index}][file]" in request.files:
+        image_file = request.files.get(f"images[{index}][file]")
+        is_profile_picture = request.form.get(f"images[{index}][is_profile_picture]") == 'true'
+        images.append({
+        'file': image_file,
+        'is_profile_picture': is_profile_picture
+        })
+        index += 1
+
+    if (not checkImages(images)):
+        return ("Invalid images sent", 403)
     
     #First we insert all the data we got from settings
-    #makeRequest("UPDATE user SET (username, email, first_name, last_name, birth_date, gender, sexual_preference, bio) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-    makeRequest("UPDATE user SET username = ?, email = ?, first_name = ?, last_name = ?, birth_date = ?, gender = ?, sexual_preference = ?, bio = ? WHERE id = ?",
-                           (str(username), str(email), str(first_name), str(last_name), str(birth_date), str(gender), str(sexual_preference), str(bio), str(user_id)))
-    #Then we go through every images sent, and save them in the database
-    for image in images:
-        print ("IMAGE FILE = " + str(image["file"]))
-        makeRequest("INSERT INTO image (image_file, user_id, is_profile_picture) VALUES (?, ?, ?)",
-                    (base64.b64encode(image["file"].read()), str(user_id), str(image["is_profile_picture"])))
+    makeRequest("UPDATE user SET username = ?, email = ?, first_name = ?, last_name = ?, gender = ?, sexual_preference = ?, bio = ? WHERE id = ?",
+                           (str(username), str(email), str(first_name), str(last_name), str(gender), str(sexual_preference), str(bio), str(user_id)))
+    
+    #We delete every tag before inserting the ones we received
+    response = makeRequest("DELETE FROM user_tag WHERE user_id = ?", (str(user_id),))
+    for tag in tags:
+        response = makeRequest("INSERT INTO user_tag (user_id, tag_id) VALUES (?, ?)", (str(user_id), str(tag)))
 
-    response = makeRequest("SELECT username, first_name, last_name, email, gender, sexual_preference, bio, birth_date FROM user WHERE id = ?", (str(user_id)))
-    user = response[0]
-    return jsonify(user=user)
+    #We delete every image before inserting the ones we received
+    response = makeRequest("DELETE FROM image WHERE user_id = ?", (str(user_id),))
+    for image in images:
+        makeRequest("INSERT INTO image (image_file, user_id, is_profile_picture) VALUES (?, ?, ?)",
+                    (base64.b64encode(image["file"].read()), str(user_id), bool(image["is_profile_picture"])))
+
+    return jsonify(ok=True)
 
 @token_required
 def getViewHistory(user_id):
