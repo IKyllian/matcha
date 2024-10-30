@@ -11,7 +11,7 @@ user_bp.route("/profile/<int:profile_id>", methods = ["GET"]) (getProfileById)
 
 user_bp.route("/profile/settings", methods = ["GET"]) (getSettings)
 
-user_bp.route("/profile/setSettings", methods = ["PUT"]) (setSettings)
+user_bp.route("/profile/setSettings", methods = ["POST"]) (setSettings)
 
 user_bp.route("/profile/viewHistory", methods = ["GET"]) (getViewHistory)
 

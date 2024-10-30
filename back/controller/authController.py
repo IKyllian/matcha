@@ -9,9 +9,11 @@ regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{
 
 def isEmailValid(email):
     if re.fullmatch(regex, email):
-      print("Valid email")
+        return True
+    #   print("Valid email")
     else:
-      print("Invalid email")
+        return False
+    #   print("Invalid email")
 
 
 def signin():
@@ -50,8 +52,8 @@ def signup():
                            (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date)))
     result = makeRequest("SELECT user.id, username, first_name, last_name FROM user WHERE username = ?", (str(username),))
     user = result[0]
-    images = makeRequest("SELECT id, image_file, is_profile_picture FROM image WHERE image.user_id = ? AND image.is_profile_picture = 1", (str(user["id"]),))
-    user["images"] = decodeImages(images)
+    # images = makeRequest("SELECT id, image_file, is_profile_picture FROM image WHERE image.user_id = ? AND image.is_profile_picture = 1", (str(user["id"]),))
+    # user["images"] = decodeImages(images)
     access_token = create_access_token(identity=user["id"])
     return jsonify(access_token=access_token, user=user)
 
