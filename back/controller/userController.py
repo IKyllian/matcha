@@ -1,5 +1,6 @@
 import base64
 from flask import jsonify, request
+from services.relations import *
 from services.user import *
 from database_utils.decoratorFunctions import token_required
 from database_utils.requests import *
@@ -67,7 +68,6 @@ def getProfiles(user_id):
             requestQuery += str(tag)
         requestQuery += ") GROUP BY user.id HAVING COUNT(DISTINCT ut.tag_id) = " + str(len(tags))
     
-    print (requestQuery)
     users = makeRequest(requestQuery)
 
     for user in users:
@@ -93,8 +93,8 @@ def getProfileById(user_id, profile_id):
     user["tags"] = getUserTags(profile_id)
     if (user_id == profile_id):
         return jsonify(user=user)
-    like = makeRequest("SELECT id FROM like WHERE like.user_id = ? AND like.liked_user_id = ?", (str(user_id), str(profile_id),))
-    block = makeRequest("SELECT id FROM block WHERE block.user_id = ? AND block.blocked_user_id = ?", (str(user_id), str(profile_id),))
+    like = getLikes(user_id, profile_id)
+    block = getBlocks(user_id, profile_id)
     return jsonify(user=user, like=(len(like) > 0), block=(len(block) > 0))
 
 @token_required
@@ -135,9 +135,11 @@ def setSettings(user_id):
         'is_profile_picture': is_profile_picture
         })
         index += 1
-
+    
     if (not checkImages(images)):
         return ("Invalid images sent", 403)
+    
+    print(images)
     
     #First we insert all the data we got from settings
     makeRequest("UPDATE user SET username = ?, email = ?, first_name = ?, last_name = ?, gender = ?, sexual_preference = ?, bio = ? WHERE id = ?",

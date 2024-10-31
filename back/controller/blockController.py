@@ -31,6 +31,8 @@ def getBlocksOfUser(user_id):
 @token_required
 def reportUserById(user_id):
     user_to_report_id = request.json.get("user_to_report_id", None)
+    if (user_id == user_to_report_id):
+        return ("Can't report your own profile!", 403)
     report = getReports(user_id, user_to_report_id)
     if (len(report) > 0):
         response = makeRequest("DELETE FROM report WHERE report.user_id = ? AND report.reported_user_id = ?", (str(user_id), str(user_to_report_id),))

@@ -1,5 +1,6 @@
 import base64
 from flask import request, jsonify
+from controller.userController import getAgeFromTime
 from services.user import getUserWithProfilePictureById, getUserWithProfilePictureByUsername
 from database_utils.requests import *
 from flask_jwt_extended import create_access_token, decode_token
@@ -10,10 +11,8 @@ regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{
 
 def isEmailValid(email):
     if re.fullmatch(regex, email):
-      print("Valid email")
       return True
     else:
-      print("Invalid email")
       return False
 
 
@@ -44,8 +43,14 @@ def signup():
     if (not isEmailValid(email)):
         return ("Email is invalid!", 401)
     first_name = request.json.get("first_name", None)
+    if (len(first_name) < 3 or len(first_name) > 20 or any(not c.isalpha() for c in first_name)):
+        return ("First name is invalid!", 401)
     last_name = request.json.get("last_name", None)
+    if (len(last_name) < 3 or len(last_name) > 20 or any(not c.isalpha() for c in last_name)):
+        return ("Last name is invalid!", 401)
     birth_date = request.json.get("birth_date", None)
+    if (getAgeFromTime(birth_date) < 18):
+        return ("User must bet at least 18 years old", 401)
     response = makeRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date) VALUES (?, ?, ?, ?, ?, ?)",
                            (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date)))
     user = getUserWithProfilePictureByUsername(username)
