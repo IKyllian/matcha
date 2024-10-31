@@ -6,6 +6,7 @@ import { User } from 'front/typing/user';
 import { Link } from 'react-router-dom';
 import IconButton from 'front/components/buttons/iconButton';
 import { BUTTONS_ICON } from 'front/typing/button';
+import ProfilePicture from '../utils/profilePicture';
 
 export type CardType = 'image' | 'image-content'
 
@@ -15,14 +16,14 @@ type CardProps = {
     className?: Styles
 }
 const Card = ({ user, cardType, className }: CardProps) => {
-    const { location, username, last_name, first_name } = user
+    const { location, last_name, first_name } = user
     const [isLike, setIsLike] = useState(false)
     const slotsStyles = cardStyle.raw()
     return (
         <div className={css(slotsStyles.cardWrapper, className, {
             height: cardType === 'image-content' ? '370px' : 'auto'
         })}>
-            <img src={user.img} className={css(slotsStyles.cardImg)} />
+            <ProfilePicture userImages={user.images} width='280px' height='280px' />
             {
                 cardType === 'image-content' && (
                     <div className={css(slotsStyles.cardContent)}>

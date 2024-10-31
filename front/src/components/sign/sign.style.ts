@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css/sva.mjs";
 
 export const formStyle = sva({
-    slots: ['wrapper', 'title', 'form', 'label', 'inputStyles', 'button'],
+    slots: ['wrapper', 'title', 'form', 'label', 'inputStyles', 'button', 'textInfo'],
     base: {
         title: {
             textAlign: 'center',
@@ -13,15 +13,15 @@ export const formStyle = sva({
         wrapper: {
             backgroundColor: 'secondaryBackground',
             width: '700px',
-            height: '700px',
-            padding: '24px',
+            height: 'fit-content',
+            padding: '54px 24px',
             boxShadow: '2.5px 2.5px 0 black',
             borderRadius: '7px',
             border: '2px solid black',
             margin: 'auto',
             display: 'flex',
             flexDir: 'column',
-            justifyContent: 'space-evenly',
+            gap: '44px'
         },
         form: {
             display: 'flex',
@@ -60,6 +60,15 @@ export const formStyle = sva({
             fontFamily: 'body',
             _active: {
                 boxShadow: 'none',
+            }
+        },
+        textInfo: {
+            textAlign: 'center',
+            '& > a': {
+                color: 'buttonPrimaryBackground',
+                '&:hover': {
+                    textDecoration: 'underline'
+                }
             }
         }
     }

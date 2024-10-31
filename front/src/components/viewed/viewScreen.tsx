@@ -1,5 +1,5 @@
 import { User, USERS } from "front/typing/user"
-import CardsList from "../card/cardsList"
+import { CardsList } from "../card/cardsList"
 import { viewScreenStyle } from "./viewScreen.style"
 import { css } from "styled-system/css"
 import { useState } from "react"

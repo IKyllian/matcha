@@ -22,7 +22,13 @@ export default defineConfig({
           buttonPrimaryBackground: { value: '#FF9D73' },
           lightPink: { value: '#faafe5' },
           darkPink: { value: '#ed05ab' },
-          lightRed: { value: '#FF6B6B' }
+          lightRed: { value: '#FF6B6B' },
+          successLight: { value: '#c3f4aa' },
+          successDark: { value: 'rgb(5, 65, 8)' },
+          errorLight: { value: '#f4aaaa' },
+          errorDark: { value: 'rgb(65, 5, 5)' },
+          warningLight: { value: '#f4f3aa' },
+          warningDark: { value: 'rgb(65, 61, 5)' },
         },
         fonts: {
           title: { value: "Archivo, sans-serif" },

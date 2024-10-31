@@ -1,5 +1,5 @@
 import { User, USERS } from "front/typing/user"
-import CardsList from "../card/cardsList"
+import { CardsList } from "../card/cardsList"
 import { useState } from "react"
 import { useApi } from "front/hook/useApi"
 

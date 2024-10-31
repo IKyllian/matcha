@@ -2,12 +2,13 @@ import { css } from "styled-system/css"
 import { filterSidebarStyle } from "./filterSidebar.style"
 import { useState } from "react"
 import useCloseRef from "front/hook/useCloseRef"
-import ChipSelect from "front/components/chips/chipSelect"
 import { IoMdClose } from "react-icons/io";
 import MultiRangeInput from "front/components/input/multiRange"
 import { UrlParamsType } from "front/typing/filters"
 import { Tags } from "front/typing/user"
 import { useForm } from "react-hook-form"
+import { useApi } from "front/hook/useApi";
+import ChipSelect from "front/components/chips/chipSelect";
 
 type FormValues = {
   min_age?: number;
@@ -33,7 +34,14 @@ const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
   } = useForm<FormValues>({
     defaultValues: filters
   })
+  const [tags, setTags] = useState<Tags[]>([])
   const [selectedChips, setSelectedChips] = useState<Tags[]>([])
+
+  const { isLoading } = useApi<Tags[]>({
+    endpoint: 'getTags',
+    setter: setTags,
+    key: 'tags'
+  })
 
   const onChipClick = (chip: Tags, wasSelected: boolean) => {
     if (wasSelected) {
@@ -50,6 +58,10 @@ const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
     })
   }
 
+  if (isLoading) {
+    return <div> loading...</div>
+  }
+
   return (
     <div className={css(slotsStyles.sidebarContainer)} ref={ref}>
       <IoMdClose className={css(slotsStyles.closeButton)} onClick={onClose} />
@@ -58,8 +70,8 @@ const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
         <label>
           Age
           <MultiRangeInput min={18} max={100} />
-          <input {...register('min_age')} type='range' min={18} />
-          <input {...register('max_age')} type='range' />
+          <input {...register('min_age')} type='range' min={18} max={100} defaultValue={18} />
+          <input {...register('max_age')} type='range' min={18} max={100} defaultValue={100} />
         </label>
         <label>
           Position
@@ -71,7 +83,7 @@ const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
         </label>
         <label>
           Centre d'interets
-          <ChipSelect selectedChips={selectedChips} onChipClick={onChipClick} />
+          <ChipSelect selectedChips={selectedChips} chips={tags} onChipClick={onChipClick} />
         </label>
         <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
       </form>

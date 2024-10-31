@@ -28,13 +28,12 @@ const buildUrlParams = (urlParams: UrlParamsType): string => {
             }
         }
     }
-
     return stringParams
 }
 
 export const API_URL = 'http://10.11.11.3:3000';
 
-export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getViewsOfUser' | 'getMatchesOfUser' | 'profile/settings';
+export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getViewsOfUser' | 'getMatchesOfUser' | 'profile/settings' | 'getTags';
 
 const getUlrParams = ({ urlParams, endpoint, params }: { endpoint: string, urlParams?: UrlParamsType, params?: { id: number } }) => {
     if (urlParams) {

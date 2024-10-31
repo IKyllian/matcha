@@ -1,3 +1,4 @@
+import Alert from "front/components/alert/alert"
 import Banner from "front/components/banner/banner"
 import Header from "front/components/header/header"
 import { useStore } from "front/store/store"
@@ -14,13 +15,14 @@ const PrivateRoute = ({ children }) => {
         return <div>Chargement...</div>
     }
     if (authStore.authStatus === 'CHECKED' && !authStore.isLogged) {
-        return <Navigate to="/signin" />
+        return <Navigate to="/login" />
     }
     return (
         <div>
             <Header />
             <div style={{ marginTop: showBanner ? '130px' : '70px', display: 'inline-block', width: '100%' }}>
-                { showBanner && <Banner />}
+                {showBanner && <Banner />}
+                <Alert />
                 {children}
             </div>
         </div>

@@ -1,6 +1,6 @@
 import { css } from "styled-system/css"
 import { profileStyle } from "./profile.style"
-import { User, USERS } from "front/typing/user"
+import { User } from "front/typing/user"
 import Tabs from "front/components/tabs/tabs"
 import ChipsList from "front/components/chips/chips"
 import { CardType } from "front/components/card/card"
@@ -13,8 +13,8 @@ import { BUTTONS_ICON } from "front/typing/button"
 import { makeBlockRequest, makeLikeRequest, makeViewRequest } from "front/api/profile"
 import ProfileLikes from "./profileLikes"
 import ProfileMatches from "./profileMatches"
-import ProfilePictures from "./profilePictures"
 import ProfilePicture from "front/components/utils/profilePicture"
+import { CardsImagesList } from "front/components/card/cardsList"
 
 const NAV_CONTENT_LOGGED_USER = [
     'Likes',
@@ -91,7 +91,7 @@ const Profile = () => {
             case 'Matches':
                 return <ProfileMatches />
             case 'Photos':
-                return <ProfilePictures userPictures={profile.user.images} />
+                return <CardsImagesList list={profile.user.images} />
         }
     }
 

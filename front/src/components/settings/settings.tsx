@@ -7,9 +7,9 @@ import { FaUpload } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { makeSettingsRequest } from "front/api/profile"
 import { useStore } from "front/store/store"
-import { FormValuesSettings, ImageSettingsType, Tags, User } from "front/typing/user"
+import { ImageSettingsType, Tags, User } from "front/typing/user"
 import { useApi } from "front/hook/useApi"
-import ProfilePicture from "front/components/utils/profilePicture"
+import { AlertTypeEnum } from "front/typing/alert"
 
 type InputRadioProps = {
   value: string
@@ -28,13 +28,18 @@ const InputRadio = ({ value, label, register }: InputRadioProps) => {
 }
 
 const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType }) => {
-  console.info('profileSettings = ', profileSettings)
+  const profileImageFromUser = profileSettings.user.images?.find(i => i.is_profile_picture)?.image_file
   const slotsStyles = settingsStyle.raw()
   const { token } = useStore((state) => state.authStore)
+  const addAlert = useStore((state) => state.addAlert)
   const [selectedChips, setSelectedChips] = useState<Tags[]>(profileSettings.user.tags)
-  const [profilePicturePreview, setProfilPicturePreview] = useState<string | null>(null)
-  const [profilesImages, setProfilesImages] = useState<ImageSettingsType[]>([])
-  console.info('profilesImages = ', profilesImages)
+  const [profilePicturePreview, setProfilPicturePreview] = useState<string | undefined>(profileImageFromUser ? `data:image/png;base64,${profileImageFromUser}` : undefined)
+  const [profilesImages, setProfilesImages] = useState<ImageSettingsType[]>(profileSettings.user.images.map(i => ({
+    file: i.image_file,
+    is_profile_picture: i.is_profile_picture,
+    preview: `data:image/png;base64,${i.image_file}`
+  })))
+
   const {
     register,
     handleSubmit,
@@ -62,8 +67,24 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
 
     const formData = new FormData()
 
-    profilesImages.forEach((image, index) => {
+    profilesImages.forEach((image: any, index) => {
+      // if (typeof image === 'string' && image.startsWith("data:")) {
+      //   // Si l'image est en base64, convertit en File
+      //   const [metadata, data] = image.split(',');
+      //   const mime = metadata.match(/:(.*?);/)[1];
+      //   const byteString = atob(data);
+      //   const byteNumbers = new Array(byteString.length);
+      //   for (let i = 0; i < byteString.length; i++) {
+      //     byteNumbers[i] = byteString.charCodeAt(i);
+      //   }
+      //   const byteArray = new Uint8Array(byteNumbers);
+      //   const blob = new Blob([byteArray], { type: mime });
+      //   const file = new File([blob], `image${index + 1}.${mime.split('/')[1]}`, { type: mime });
+      //   formData.append(`images[${index}][file]`, file);
+      // } else {
+      // Si c'est déjà un objet File, l'ajoute directement
       formData.append(`images[${index}][file]`, image.file);
+      // }
       formData.append(`images[${index}][is_profile_picture]`, image.is_profile_picture.toString());
     });
 
@@ -77,10 +98,18 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       }
     }
 
-    await makeSettingsRequest(
+    console.info("formData = ", formData)
+
+    const { ok } = await makeSettingsRequest(
       formData,
       token
     )
+
+    console.info("ok", ok)
+
+    if (ok) {
+      addAlert({ message: 'Votre profile a ete update', type: AlertTypeEnum.SUCCESS })
+    }
     console.info("values - ", values)
   }
 
@@ -99,7 +128,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     console.info("data - ", event)
     const imagesLength = profilesImages.length
     if (imagesLength === 4) {
-      console.info('Max images Uploaded: ', imagesLength)
+      console.error('Max images Uploaded: ', imagesLength)
       return
     }
     const files = event.target.files
@@ -178,7 +207,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
           profilesImages.length > 0 &&
           <div className={css(slotsStyles.picturesContainer)}>
             {
-              profilesImages.map((profileImage, index) => profileImage.preview ? (
+              profilesImages.map((profileImage, index) => profileImage.preview && !profileImage.is_profile_picture ? (
                 <div key={profileImage.preview} className={css(slotsStyles.picturesItemContainer)}>
                   <div className={css(slotsStyles.picturesItem)}>
                     <img src={profileImage.preview} alt='' />

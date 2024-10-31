@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
 import { useStore } from "front/store/store"
@@ -32,7 +32,7 @@ const FIELDS: FieldsType[] = [
     }
 ]
 
-const SignIn = () => {
+const Login = () => {
     const {
         register,
         handleSubmit,
@@ -71,9 +71,10 @@ const SignIn = () => {
                     }
                     <button className={css(slotsStyles.button)} type="submit">Valider</button>
                 </form>
+                <span className={css(slotsStyles.textInfo)}>Pas de compte ? <Link to="/register">Inscrivez-vous</Link></span>
             </div>
         </div>
     )
 }
 
-export default SignIn
+export default Login
