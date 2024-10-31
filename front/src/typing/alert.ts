@@ -9,3 +9,10 @@ export enum AlertTypeEnum {
     SUCCESS,
     WARNING
 }
+
+export type HTTPResponseType<T> = T | {
+    error: {
+        message: string
+        code?: number
+    }
+}

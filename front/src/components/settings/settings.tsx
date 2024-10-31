@@ -93,7 +93,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     });
 
     for (const [key, value] of Object.entries(values)) {
-      if (key !== 'tags') {
+      if (key !== 'tags' && key !== 'images') {
         formData.append(key, value)
       }
     }
