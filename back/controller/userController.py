@@ -1,5 +1,6 @@
 import base64
 from flask import jsonify, request
+from services.user import *
 from database_utils.decoratorFunctions import token_required
 from database_utils.requests import *
 from datetime import datetime, timedelta
@@ -15,6 +16,10 @@ def getTimeFromAge(Age):
     return datetime.today() - relativedelta(years=int(Age))
 
 @token_required
+def getTags(user_id):
+    return jsonify(tags=getAllTags())
+
+@token_required
 def getProfiles(user_id):
     min_age = request.args.get("min_age", None)
     max_age = request.args.get("max_age", None)
@@ -25,12 +30,12 @@ def getProfiles(user_id):
     if (min_age and max_age and int(min_age) > int(max_age)):
         return ("Invalid Params : min_age should be lower than max_age", 403)
 
-    requestQuery = "SELECT id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating FROM user "
-    if (min_age or max_age or max_pos or min_fame):
-        requestQuery += "WHERE "
+    requestQuery = "SELECT user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE user.id != " + str(user_id) + " "
     #Check needAnd to know if you need to add " AND " to requestQuery
-    needAnd = False
+    needAnd = True
     if (min_age):
+        if (needAnd == True):
+            requestQuery += "AND "
         needAnd = True
         requestQuery += "user.birth_date <= date('now', '-" + str(min_age) + " years') "
     if (max_age):
@@ -62,20 +67,30 @@ def getProfiles(user_id):
             requestQuery += str(tag)
         requestQuery += ") GROUP BY user.id HAVING COUNT(DISTINCT ut.tag_id) = " + str(len(tags))
     
-    response = makeRequest(requestQuery)
+    print (requestQuery)
+    users = makeRequest(requestQuery)
 
-    return response
+    for user in users:
+        if (user["image_file"]):
+            img = {
+                "id": user["image_id"],
+                "image_file": user["image_file"],
+                "is_profile_picture": user["is_profile_picture"]
+            }
+            decoded = decodeImages([img])
+            del user["image_id"]
+            del user["image_file"]
+            del user["is_profile_picture"]
+            user["images"] = decoded
+
+    return users
 
 @token_required
 def getProfileById(user_id, profile_id):
-    response = makeRequest("SELECT id, username, first_name, last_name, email, gender, sexual_preference, bio, fame_rating, birth_date FROM user WHERE id = ?", (str(profile_id),))
-    user = response[0]
+    user = getUserWithImagesById(profile_id)
     user["age"] = getAgeFromTime(user["birth_date"])
     del user["birth_date"]
-    images = makeRequest("SELECT id, image_file, is_profile_picture FROM image WHERE image.user_id = ?", (str(user_id),))
-    user["images"] = decodeImages(images)
-    userTags = makeRequest("SELECT user_id, tag_id AS id, tag_name FROM user_tag LEFT JOIN tag ON user_tag.tag_id = tag.id WHERE user_tag.user_id = ?", (str(profile_id),))
-    user["tags"] = userTags
+    user["tags"] = getUserTags(profile_id)
     if (user_id == profile_id):
         return jsonify(user=user)
     like = makeRequest("SELECT id FROM like WHERE like.user_id = ? AND like.liked_user_id = ?", (str(user_id), str(profile_id),))
@@ -84,14 +99,9 @@ def getProfileById(user_id, profile_id):
 
 @token_required
 def getSettings(user_id):
-    response = makeRequest("SELECT username, first_name, last_name, email, gender, sexual_preference, bio, birth_date FROM user WHERE id = ?", (str(user_id),))
-    user = response[0]
-    images = makeRequest("SELECT id, image_file, is_profile_picture FROM image WHERE image.user_id = ?", (str(user_id),))
-    user["images"] = decodeImages(images)
-    userTags = makeRequest("SELECT user_id, tag_id AS id, tag_name FROM user_tag LEFT JOIN tag ON user_tag.tag_id = tag.id WHERE user_tag.user_id = ?", (str(user_id),))
-    user["tags"] = userTags
-    allTags = makeRequest("SELECT id, tag_name FROM tag")
-    return jsonify(user=user, tags=allTags)
+    user = getUserWithImagesById(user_id)
+    user["tags"] = getUserTags(user_id)
+    return jsonify(user=user, tags=getAllTags())
 
 def checkImages(images):
     if (len(images) > 5):

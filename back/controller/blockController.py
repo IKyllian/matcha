@@ -1,4 +1,5 @@
 from flask import jsonify, request
+from services.relations import *
 from database_utils.requests import *
 from database_utils.decoratorFunctions import token_required
 
@@ -30,7 +31,7 @@ def getBlocksOfUser(user_id):
 @token_required
 def reportUserById(user_id):
     user_to_report_id = request.json.get("user_to_report_id", None)
-    report = makeRequest("SELECT id FROM report WHERE report.user_id = ? AND report.reported_user_id = ?", (str(user_id), str(user_to_report_id),))
+    report = getReports(user_id, user_to_report_id)
     if (len(report) > 0):
         response = makeRequest("DELETE FROM report WHERE report.user_id = ? AND report.reported_user_id = ?", (str(user_id), str(user_to_report_id),))
     else :
