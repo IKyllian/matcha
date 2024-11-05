@@ -27,6 +27,7 @@ const defaultAlerts: AlertType[] = [
 export const alertSlice = (set): AlertStoreType => ({
     alerts: [],
     addAlert: ({ message, type }: { message: string, type: AlertTypeEnum }) => set((state) => {
+        console.info('ADD ALEERT')
         const newAlert = { message, type, id: Date.now() };
         const updatedAlerts = [newAlert, ...state.alerts].slice(0, 3); // Limite le tableau à trois éléments pour ne pas avoir trop de notifs afficher
         return { ...state, alerts: updatedAlerts };

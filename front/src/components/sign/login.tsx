@@ -40,17 +40,17 @@ const Login = () => {
     } = useForm<FormValues>()
     const [cookies, setCookie, removeCookie] = useCookies();
     const authStore = useStore((state) => state.authStore)
+    const addAlert = useStore((state) => state.addAlert)
     const logUser = useStore((state) => state.logUser)
     const navigate = useNavigate()
     const slotsStyles = formStyle.raw()
     const onSubmit = async (data: FormValues) => {
-        console.info('data = ', data)
-        const { access_token, user, error } = await makeSignInRequest(data)
-        console.info('ret error = ', error)
-        // const ret = await makeSignInRequest(data)
-        // console.info('ret = ', ret)
-        // logUser(user, access_token)
-        // setCookie(COOKIE_JWT_TOKEN, access_token)
+        const ret = await makeSignInRequest({ data, addAlert })
+        if (ret) {
+            const { user, access_token } = ret
+            logUser(user, access_token)
+            setCookie(COOKIE_JWT_TOKEN, access_token)
+        }
     }
 
     useEffect(() => {
