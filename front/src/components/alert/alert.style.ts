@@ -12,7 +12,9 @@ export const alertStyle = sva({
         'notifWarning',
         'iconError',
         'iconSuccess',
-        'iconWarning'
+        'iconWarning',
+        'notifExit',
+        'notifEnter'
     ],
     base: {
         notifContainer: {
@@ -26,7 +28,6 @@ export const alertStyle = sva({
             flexDirection: 'column',
             alignItems: 'center',
             gap: '10px',
-            width: 0,
         },
         iconWrapper: {
             width: '25px',
@@ -43,11 +44,18 @@ export const alertStyle = sva({
             cursor: 'pointer',
         },
         notifWrapper: {
-            width: '300px',
             borderRadius: '40px',
             border: '2px solid black',
             boxShadow: '2px 2px 0 black',
             padding: '7px 11px',
+            width: 'auto',
+            maxWidth: '60%',
+        },
+        notifEnter: {
+            animation: 'fadeIn 0.5s ease-out',
+        },
+        notifExit: {
+            animation: 'fadeOut 0.5s ease-in',
         },
         notifContentContainer: {
             display: 'flex',
@@ -77,5 +85,5 @@ export const alertStyle = sva({
         iconWarning: {
             border: '2.5px solid warningDark'
         },
-    }
+    },
 })

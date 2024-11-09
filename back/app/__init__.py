@@ -39,7 +39,7 @@ def createApp():
         print("err", err.code)
         print("err", err.args)
         print("err", err.description)
-        response = {"error": err.description, "message": ""}
+        response = {"error": err.description, "message": "", 'code': err.code, 'description': err.description}
         if len(err.args) > 0:
             response["message"] = err.args[0]
         # Add some logging so that we can monitor different types of errors 

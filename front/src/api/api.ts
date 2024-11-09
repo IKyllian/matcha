@@ -1,6 +1,6 @@
 import { AlertStoreType } from "front/store/alert.store";
 import { AlertTypeEnum } from "front/typing/alert";
-import ky from "ky";
+import ky, { HTTPError } from "ky";
 
 export const makeApi = ({ token }: { token?: string }) => {
     return ky.extend({
@@ -26,10 +26,21 @@ export const apiRequest = async <T>({ token, url, options, addAlert }: ApiReques
         const response = await kyInstance(url, options).json<T>();
         return response;
     } catch (error) {
-        if (addAlert) {
-            addAlert({ message: error.message, type: AlertTypeEnum.ERROR });
+        let errorMessage = 'An unknown error occurred';
+        if (error instanceof HTTPError && error.response) {
+            try {
+                const errorResponse = await error.response.json();
+                errorMessage = errorResponse.message || errorMessage;
+            } catch (jsonError) {
+                console.error('Error parsing JSON:', jsonError);
+            }
+        } else {
+            errorMessage = error.message;
         }
-        console.error('API Error:', error);
+
+        if (addAlert) {
+            addAlert({ message: errorMessage, type: AlertTypeEnum.ERROR });
+        }
         return null;
     }
 };

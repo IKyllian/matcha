@@ -13,12 +13,16 @@ type AlertItemProps = {
 }
 const AlertItem = ({ alert }: AlertItemProps) => {
     const removeAlert = useStore(store => store.removeAlert)
+    const [isExiting, setIsExiting] = useState(false);
     const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | undefined>(undefined)
     const slotsStyles = alertStyle.raw()
 
     const closeSuccess = (id: number) => {
-        clearTimeout(timeoutId);
-        removeAlert(id);
+        setIsExiting(true);
+        setTimeout(() => {
+            removeAlert(id);
+            clearTimeout(timeoutId);
+        }, 500);
     }
 
     const getClass = (type: AlertTypeEnum): SystemStyleObject => {
@@ -40,7 +44,7 @@ const AlertItem = ({ alert }: AlertItemProps) => {
     }, [])
 
     return (
-        <div key={alert.id} className={css(slotsStyles.notifWrapper, getClass(alert.type))}>
+        <div key={alert.id} className={css(slotsStyles.notifWrapper, getClass(alert.type), isExiting ? slotsStyles.notifExit : slotsStyles.notifEnter)}>
             <div className={css(slotsStyles.notifContentContainer)}>
                 <div className={css(slotsStyles.iconWrapper)}>
                     {alert.type === AlertTypeEnum.SUCCESS && <FaCheck className={css(slotsStyles.iconSuccess)} />}
@@ -57,7 +61,6 @@ const AlertItem = ({ alert }: AlertItemProps) => {
 const Alert = () => {
     const alerts = useStore(store => store.alerts)
     const slotsStyles = alertStyle.raw()
-    console.info("ALERTS IN ALERT COMP = ", alerts)
 
     return alerts.length > 0 ? (
         <div className={css(slotsStyles.notifContainer)}>
