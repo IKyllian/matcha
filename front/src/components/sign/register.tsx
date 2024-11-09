@@ -66,11 +66,12 @@ const Register = () => {
     const [cookies, setCookie, removeCookie] = useCookies();
     const authStore = useStore((state) => state.authStore)
     const logUser = useStore((state) => state.logUser)
+    const addAlert = useStore((state) => state.addAlert)
     const navigate = useNavigate()
     const slotsStyles = formStyle.raw()
     const onSubmit = async (data: FormValues) => {
         console.info('data = ', data)
-        const { user, access_token } = await makeSignUpRequest(data)
+        const { user, access_token } = await makeSignUpRequest({ data, addAlert })
         logUser(user, access_token)
         setCookie(COOKIE_JWT_TOKEN, access_token)
     }

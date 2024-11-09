@@ -2,14 +2,14 @@ import { AlertStoreType } from "front/store/alert.store";
 import { AlertTypeEnum } from "front/typing/alert";
 import ky from "ky";
 
-export const makeApi = ({ token }: { token: string }) => {
+export const makeApi = ({ token }: { token?: string }) => {
     return ky.extend({
         hooks: {
-            beforeRequest: [
+            beforeRequest: token ? [
                 (request) => {
                     request.headers.set('Authorization', `Bearer ${token})}`);
                 }
-            ]
+            ] : []
         }
     })
 }
@@ -17,14 +17,18 @@ export const makeApi = ({ token }: { token: string }) => {
 type ApiRequestProps = {
     url: string
     options: Record<string, any>
-    addAlert: AlertStoreType['addAlert']
+    token?: string
+    addAlert?: AlertStoreType['addAlert']
 }
-export const apiRequest = async <T>({ url, options, addAlert }: ApiRequestProps): Promise<T | null> => {
+export const apiRequest = async <T>({ token, url, options, addAlert }: ApiRequestProps): Promise<T | null> => {
     try {
-        const response = await ky(url, options).json<T>();
+        const kyInstance = makeApi({ token })
+        const response = await kyInstance(url, options).json<T>();
         return response;
     } catch (error) {
-        addAlert({ message: error.message, type: AlertTypeEnum.ERROR });
+        if (addAlert) {
+            addAlert({ message: error.message, type: AlertTypeEnum.ERROR });
+        }
         console.error('API Error:', error);
         return null;
     }

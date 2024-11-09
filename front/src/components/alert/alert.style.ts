@@ -16,7 +16,7 @@ export const alertStyle = sva({
     ],
     base: {
         notifContainer: {
-            position: 'absolute',
+            position: 'fixed',
             zIndex: 30000,
             left: 0,
             right: 0,

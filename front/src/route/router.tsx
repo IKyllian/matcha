@@ -8,6 +8,7 @@ import Settings from "front/components/settings/settings";
 import Login from "front/components/sign/login";
 import NotificationScreen from "front/components/notifications/notificationScreen";
 import ViewScreen from "front/components/viewed/viewScreen";
+import PublicRoute from "front/route/publicRoute";
 
 export const router = createBrowserRouter([
     {
@@ -20,11 +21,19 @@ export const router = createBrowserRouter([
     },
     {
         path: "/register",
-        element: <Register />
+        element: (
+            <PublicRoute>
+                <Register />
+            </PublicRoute>
+        )
     },
     {
         path: "/login",
-        element: <Login />
+        element: (
+            <PublicRoute>
+                <Login />
+            </PublicRoute>
+        )
     },
     ...["/profile", "/profile/:userId"].map(path => ({
         path,
