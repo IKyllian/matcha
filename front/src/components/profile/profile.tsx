@@ -34,6 +34,7 @@ type ProfileStateType = {
 
 const Profile = () => {
     const { user: loggedUser, token } = useStore((state) => state.authStore)
+    const addAlert = useStore((state) => state.addAlert)
     const { userId } = useParams<{ userId?: string }>()
     const isLoggedUser = !userId || userId && loggedUser.id === +userId
     const [isReport, setIsReport] = useState(false)
@@ -71,15 +72,15 @@ const Profile = () => {
     }
 
     const onLikeClick = async () => {
-        const { ok } = await makeLikeRequest({ token, id: profile.user.id })
-        if (ok) {
+        const ret = await makeLikeRequest({ token, id: profile.user.id, addAlert })
+        if (ret) {
             setProfile(prev => ({ ...prev, like: !profile.like }))
         }
     }
 
     const onBlockclick = async () => {
-        const { ok } = await makeBlockRequest({ token, id: profile.user.id })
-        if (ok) {
+        const ret = await makeBlockRequest({ token, id: profile.user.id, addAlert })
+        if (ret) {
             setProfile(prev => ({ ...prev, block: !profile.block }))
         }
     }

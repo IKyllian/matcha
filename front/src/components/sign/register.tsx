@@ -70,10 +70,12 @@ const Register = () => {
     const navigate = useNavigate()
     const slotsStyles = formStyle.raw()
     const onSubmit = async (data: FormValues) => {
-        console.info('data = ', data)
-        const { user, access_token } = await makeSignUpRequest({ data, addAlert })
-        logUser(user, access_token)
-        setCookie(COOKIE_JWT_TOKEN, access_token)
+        const ret = await makeSignUpRequest({ data, addAlert })
+        if (ret) {
+            const { user, access_token } = ret
+            logUser(user, access_token)
+            setCookie(COOKIE_JWT_TOKEN, access_token)
+        }
     }
 
     useEffect(() => {

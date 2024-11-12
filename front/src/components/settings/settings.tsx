@@ -100,14 +100,13 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
 
     console.info("formData = ", formData)
 
-    const { ok } = await makeSettingsRequest(
+    const ret = await makeSettingsRequest(
       formData,
-      token
+      token,
+      addAlert
     )
 
-    console.info("ok", ok)
-
-    if (ok) {
+    if (ret) {
       addAlert({ message: 'Votre profile a ete update', type: AlertTypeEnum.SUCCESS })
     }
     console.info("values - ", values)

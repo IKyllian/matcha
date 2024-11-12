@@ -4,6 +4,5 @@ import ky from "ky";
 
 export const makeAuthRequest = async (token: string) => {
     const response = await ky.get<{ user: User }>(`${API_URL}/auth?jwt_token=${token}`).json();
-    console.info('AUTH RESPONSE = ', response)
     return response
 }
