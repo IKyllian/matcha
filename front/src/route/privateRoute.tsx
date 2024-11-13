@@ -8,7 +8,7 @@ import { Navigate, useLocation } from "react-router-dom"
 
 const PrivateRoute = ({ children }) => {
     const authStore = useStore((state) => state.authStore)
-    const modals = useStore((state) => state.modals)
+    const { modals } = useStore((state) => state.modalState)
     const isProfileComplete = isUserProfileComplete(authStore.user)
     const location = useLocation()
     const showBanner = !isProfileComplete && !location.pathname

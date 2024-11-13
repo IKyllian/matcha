@@ -1,16 +1,25 @@
 export type ModalType = 'report'
 
-const defaultModals: Record<ModalType, boolean> = {
-  report: false
+const defaultModals: {
+  modals: Record<ModalType, boolean>,
+  userToReportId?: number
+} = {
+  modals: {
+    report: false
+  }
 }
 
 export type ModalStoreType = {
-    modals: Record<ModalType, boolean>
-    changeModalStatus: (modalKey: ModalType) => void,
+  modalState: {
+    modals: Record<ModalType, boolean>,
+    userToReportId?: number
+  }
+  openModal: ({ modalKey, userToReportId }: { modalKey: ModalType, userToReportId: number }) => void,
+  closeModal: (modalKey: ModalType) => void
 }
 
 export const modalSlice = (set): ModalStoreType => ({
-    modals: defaultModals,
-    changeModalStatus: (modalKey: ModalType) => set((state) => ({ ...state, modals: {...state.modals, [modalKey]: !state.modals[modalKey]} })),
-
+  modalState: defaultModals,
+  openModal: ({ modalKey, userToReportId }: { modalKey: ModalType, userToReportId: number }) => set((state) => ({ ...state, modalState: { ...state.modalState, modals: { ...state.modalState, [modalKey]: true }, userToReportId } })),
+  closeModal: (modalKey: ModalType) => set((state) => ({ ...state, modalState: { ...state.modalState, modals: { ...state.modalState, [modalKey]: false }, userToReportId: false } }))
 })

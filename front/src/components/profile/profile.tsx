@@ -35,7 +35,7 @@ type ProfileStateType = {
 const Profile = () => {
     const { user: loggedUser, token } = useStore((state) => state.authStore)
     const addAlert = useStore((state) => state.addAlert)
-    const changeModalStatus = useStore((state) => state.changeModalStatus)
+    const openModal = useStore((state) => state.openModal)
     const { userId } = useParams<{ userId?: string }>()
     const isLoggedUser = !userId || userId && loggedUser.id === +userId
     const [profile, setProfile] = useState<ProfileStateType | undefined>()
@@ -86,7 +86,7 @@ const Profile = () => {
     }
 
     const onReportClick = () => {
-        changeModalStatus('report')
+        openModal({ modalKey: 'report', userToReportId: +userId })
     }
 
     const get_tab_content = () => {

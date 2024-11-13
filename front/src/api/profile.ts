@@ -32,6 +32,18 @@ export const makeBlockRequest = async ({ token, id, addAlert }: RequestFromIdPro
     });
 }
 
+export const makeReportRequest = async ({ token, id, addAlert }: RequestFromIdProps) => {
+    return apiRequest<{ ok: boolean }>({
+        url: `${API_URL}/report`,
+        options: {
+            method: 'POST',
+            json: { user_to_report_id: id }
+        },
+        token,
+        addAlert
+    });
+}
+
 export const makeViewRequest = async ({ token, id, addAlert }: RequestFromIdProps) => {
     return apiRequest<{ ok: boolean }>({
         url: `${API_URL}/view`,
