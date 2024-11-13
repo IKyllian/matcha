@@ -35,9 +35,9 @@ type ProfileStateType = {
 const Profile = () => {
     const { user: loggedUser, token } = useStore((state) => state.authStore)
     const addAlert = useStore((state) => state.addAlert)
+    const changeModalStatus = useStore((state) => state.changeModalStatus)
     const { userId } = useParams<{ userId?: string }>()
     const isLoggedUser = !userId || userId && loggedUser.id === +userId
-    const [isReport, setIsReport] = useState(false)
     const [profile, setProfile] = useState<ProfileStateType | undefined>()
     const [navIndex, setNavIndex] = useState(0)
     const handleClick = (index: number) => setNavIndex(index)
@@ -85,6 +85,10 @@ const Profile = () => {
         }
     }
 
+    const onReportClick = () => {
+        changeModalStatus('report')
+    }
+
     const get_tab_content = () => {
         switch (tabsContent[navIndex]) {
             case 'Likes':
@@ -113,7 +117,7 @@ const Profile = () => {
                                     <div className={css(slotsStyles.profilButtonContainer)}>
                                         <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={profile.like} onClick={onLikeClick} />
                                         <IconButton buttonIcon={BUTTONS_ICON["BLOCKED"]} status={profile.block} onClick={onBlockclick} />
-                                        <IconButton buttonIcon={BUTTONS_ICON["REPORT"]} status={isReport} onClick={() => setIsReport(prev => !prev)} />
+                                        <IconButton buttonIcon={BUTTONS_ICON["REPORT"]} onClick={onReportClick} />
                                     </div>
                                 )
                             }

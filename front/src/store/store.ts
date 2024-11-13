@@ -5,17 +5,19 @@ import { ChatSidebatStoreType, chatSidebarSlice } from "front/store/chatSidebar.
 import { notificationsSlice } from "front/store/notification.store"
 import { MiddlewareType, socketMiddleware } from "front/store/socketMidlleware.store"
 import { alertSlice, AlertStoreType } from "front/store/alert.store"
+import { modalSlice, ModalStoreType } from "front/store/modal.store"
 
-export type StoreType = MiddlewareType & AuthStoreType & ChatStoreType & ChatSidebatStoreType & AlertStoreType
+export type StoreType = MiddlewareType & AuthStoreType & ChatStoreType & ChatSidebatStoreType & AlertStoreType & ModalStoreType
 
 export const useStore = create<StoreType>(
     socketMiddleware(
-        (...a) => ({
+        (...a: any) => ({
             ...authSlice(...a),
             ...chatSlice(...a),
             ...chatSidebarSlice(...a),
             ...notificationsSlice(...a),
-            ...alertSlice(...a)
+            ...alertSlice(...a),
+            ...modalSlice(...a)
         })
     )
 )

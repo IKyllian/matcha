@@ -28,6 +28,7 @@ export const alertStyle = sva({
             flexDirection: 'column',
             alignItems: 'center',
             gap: '10px',
+            maxWidth: '60%',
         },
         iconWrapper: {
             width: '25px',

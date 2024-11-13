@@ -1,7 +1,4 @@
-import { User, USERS } from "front/typing/user";
-import { create } from "zustand";
-import Image from 'front/assets/images/panda2.webp'
-import { socketMiddleware } from "./socketMidlleware.store";
+import { User } from "front/typing/user";
 
 type AuthStatusType = 'CHECKING' | 'CHECKED'
 type AuthType = {
@@ -11,12 +8,6 @@ type AuthType = {
     isLogged: boolean,
     socketInitialized: boolean
 }
-
-// const defaultAuthStore: AuthType = {
-//     isLogged: true,
-//     socketInitialized: false,
-//     user: USERS[0]
-// }
 
 const defaultAuthStore: AuthType = {
     authStatus: 'CHECKING',
@@ -31,7 +22,7 @@ export type AuthStoreType = {
     logoutUser: () => void,
 }
 
-export const authSlice = (set): AuthStoreType => ({
+export const authSlice = (set: any): AuthStoreType => ({
     authStore: defaultAuthStore,
     logUser: (user: Partial<User>, token: string) => set((state) => ({ ...state, authStore: { ...state.authStore, user: user, authStatus: 'CHECKED', isLogged: true, token } })),
     setUser: (user: Partial<User>) => set((state) => ({ ...state, authStore: { ...state.authStore, user: user } })),
