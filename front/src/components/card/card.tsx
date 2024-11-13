@@ -23,7 +23,7 @@ const Card = ({ user, cardType, className }: CardProps) => {
         <div className={css(slotsStyles.cardWrapper, className, {
             height: cardType === 'image-content' ? '370px' : 'auto'
         })}>
-            <ProfilePicture userImages={user.images} width='280px' height='280px' />
+            <ProfilePicture className={slotsStyles.cardImg} userImages={user.images} width='280px' height='280px' />
             {
                 cardType === 'image-content' && (
                     <div className={css(slotsStyles.cardContent)}>

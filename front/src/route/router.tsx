@@ -7,7 +7,7 @@ import Home from "front/components/home/home";
 import Settings from "front/components/settings/settings";
 import Login from "front/components/sign/login";
 import NotificationScreen from "front/components/notifications/notificationScreen";
-import ViewScreen from "front/components/viewed/viewScreen";
+import ViewScreen from "front/components/views/viewScreen";
 import PublicRoute from "front/route/publicRoute";
 
 export const router = createBrowserRouter([

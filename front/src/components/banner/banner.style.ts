@@ -17,6 +17,9 @@ export const bannerStyle = sva({
             borderBottom: '2px solid black',
             position: 'fixed',
             top: '70px',
+            '& > span': {
+              fontWeight: '800',
+            },
             '& > a': {
               padding: '5px 15px',
               border: '2px solid black',

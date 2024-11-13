@@ -11,7 +11,7 @@ const PrivateRoute = ({ children }) => {
     const { modals } = useStore((state) => state.modalState)
     const isProfileComplete = isUserProfileComplete(authStore.user)
     const location = useLocation()
-    const showBanner = !isProfileComplete && !location.pathname
+    const showBanner = !isProfileComplete && !(location.pathname === '/settings')
 
     if (authStore.authStatus === 'CHECKING') {
         return <div>Chargement...</div>

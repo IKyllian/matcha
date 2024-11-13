@@ -3,7 +3,6 @@ import { profileStyle } from "./profile.style"
 import { User } from "front/typing/user"
 import Tabs from "front/components/tabs/tabs"
 import ChipsList from "front/components/chips/chips"
-import { CardType } from "front/components/card/card"
 import { useStore } from "front/store/store"
 import { useNavigate, useParams } from "react-router-dom"
 import IconButton from "front/components/buttons/iconButton"
@@ -52,7 +51,6 @@ const Profile = () => {
 
     const slotsStyles = profileStyle.raw()
     const tabsContent = isLoggedUser ? NAV_CONTENT_LOGGED_USER : NAV_CONTENT_NOT_LOGGED_USER
-    const cardType: CardType = isLoggedUser ? 'image-content' : 'image'
 
     useEffect(() => {
         const request = async () => {
@@ -103,10 +101,10 @@ const Profile = () => {
     return (
         <div className={css(slotsStyles.profileContainer)}>
             <div className={css(slotsStyles.profilInfosContainer)}>
-                <ProfilePicture userImages={profile.user.images} width="300px" height="300px" />
+                <ProfilePicture className={slotsStyles.profileImg} userImages={profile.user.images} width="300px" height="300px" />
                 <div className={css(slotsStyles.profilContent)}>
                     <div className={css(slotsStyles.flexContainer)}>
-                        <p> {profile.user.first_name} {profile.user.last_name}, {profile.user.age}ans ({profile.user.username}) </p>
+                        <p><span className={css(slotsStyles.profileName)}>{profile.user.first_name} {profile.user.last_name}</span> {profile.user.age}ans</p>
                         <div>
                             {
                                 isLoggedUser &&
