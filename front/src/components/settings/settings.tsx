@@ -152,6 +152,20 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     <div className={css(slotsStyles.settingsContainer)}>
       <h2 className={css(slotsStyles.title)}> Completez votre profil </h2>
       <form className={css(slotsStyles.settingsWrapper)} onSubmit={handleSubmit(onSubmit)}>
+        <div className={css(slotsStyles.rowInputs)}>
+          <label htmlFor="last_name">
+            Nom:
+            <input id="last_name" type='text' {...register('last_name')} />
+          </label>
+          <label htmlFor="first_name">
+            Prenom:
+            <input id="first_name" type='text' {...register('first_name')} />
+          </label>
+        </div>
+        <label htmlFor="email">
+          Email:
+          <input id="email" type='text' {...register('email')} />
+        </label>
         <label>
           Genre:
           <div className={css(slotsStyles.radioWrapper)}>

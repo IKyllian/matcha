@@ -5,6 +5,7 @@ export const settingsStyle = sva({
         'title',
         'settingsContainer',
         'settingsWrapper',
+        'rowInputs',
         'inputDate',
         'radioInput',
         'radioLabel',
@@ -23,7 +24,7 @@ export const settingsStyle = sva({
     base: {
         settingsContainer: {
             width: '80%',
-            margin: '90px auto 30px auto',
+            margin: '30px auto 30px auto',
             padding: '24px',
             border: '2px solid black',
             boxShadow: '2.5px 2.5px 0 black',
@@ -39,7 +40,7 @@ export const settingsStyle = sva({
             display: 'flex',
             flexDir: 'column',
             gap: '16px',
-            '& > label': {
+            '& > label, &  > .rowInputs > label': {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
@@ -50,6 +51,9 @@ export const settingsStyle = sva({
                     fontWeight: 'normal'
                 }
             }
+        },
+        rowInputs: {
+            display: 'flex',
         },
         radioWrapper: {
             display: 'flex',
