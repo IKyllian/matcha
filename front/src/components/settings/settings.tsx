@@ -136,7 +136,6 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         break
       }
       for (const file of files) {
-        // setProfilesImages(prev => [...prev, URL.createObjectURL(file)])
         setProfilesImages(prev => [...prev, { file, preview: URL.createObjectURL(file), is_profile_picture: false }])
       }
     }
@@ -154,27 +153,27 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       <form className={css(slotsStyles.settingsWrapper)} onSubmit={handleSubmit(onSubmit)}>
         <div className={css(slotsStyles.rowInputs)}>
           <label htmlFor="last_name">
-            Nom:
+            Nom*:
             <input id="last_name" type='text' {...register('last_name')} />
           </label>
           <label htmlFor="first_name">
-            Prenom:
+            Prenom*:
             <input id="first_name" type='text' {...register('first_name')} />
           </label>
         </div>
         <label htmlFor="email">
-          Email:
+          Email*:
           <input id="email" type='text' {...register('email')} />
         </label>
         <label>
-          Genre:
+          Genre*:
           <div className={css(slotsStyles.radioWrapper)}>
             <InputRadio value="M" label="Homme" register={{ ...register('gender') }} />
             <InputRadio value="F" label="Femme" register={{ ...register('gender') }} />
           </div>
         </label>
         <label>
-          Attirer par:
+          Attirer par*:
           <div className={css(slotsStyles.radioWrapper)}>
             <InputRadio value="M" label="Homme" register={{ ...register('sexual_preference') }} />
             <InputRadio value="F" label="Femme" register={{ ...register('sexual_preference') }} />
@@ -191,7 +190,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         </label>
         <div className={css(slotsStyles.profilPictureContainer)}>
           <label>
-            Photo de profile:
+            Photo de profile*:
           </label>
           {
             profilePicturePreview &&
@@ -240,6 +239,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
             <span> Upload </span>
           </div>
         </label>
+        <span className={css(slotsStyles.textInfo)}>* Champs requis pour interagir avec les autres utilisateurs</span>
         <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
       </form>
     </div>

@@ -19,7 +19,8 @@ export const settingsStyle = sva({
         'filesUploadContainer',
         'picturesContainer',
         'picturesItemContainer',
-        'picturesItem'
+        'picturesItem',
+        'textInfo'
     ],
     base: {
         settingsContainer: {
@@ -40,7 +41,7 @@ export const settingsStyle = sva({
             display: 'flex',
             flexDir: 'column',
             gap: '16px',
-            '& > label, &  > .rowInputs > label': {
+            '& > label': {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
@@ -54,6 +55,17 @@ export const settingsStyle = sva({
         },
         rowInputs: {
             display: 'flex',
+            '& > label': {
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                gap: '8px',
+                fontSize: '18px',
+                fontWeight: '600',
+                '& > *': {
+                    fontWeight: 'normal'
+                }
+            }
         },
         radioWrapper: {
             display: 'flex',
@@ -178,6 +190,9 @@ export const settingsStyle = sva({
                 width: '100%',
                 height: '100%',
             }
+        },
+        textInfo: {
+            fontSize: '12px'
         }
     }
 })
