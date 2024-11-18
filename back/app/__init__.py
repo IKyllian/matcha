@@ -42,8 +42,6 @@ def createApp():
         response = {"error": err.description, "message": "", 'code': err.code, 'description': err.description}
         if len(err.args) > 0:
             response["message"] = err.args[0]
-        # Add some logging so that we can monitor different types of errors 
-        app.logger.error(f"{err.description}: {response["message"]}")
         return jsonify(response), err.code
 
     return app
