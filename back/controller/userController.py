@@ -4,15 +4,11 @@ from services.relations import *
 from services.user import *
 from database_utils.decoratorFunctions import token_required
 from database_utils.requests import *
+from database_utils.convert import getAgeFromTime
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager, decode_token
 from errors.httpErrors import ForbiddenError
-
-def getAgeFromTime(SqlTime):
-    current_time = datetime.now()
-    age = current_time - datetime.strptime(SqlTime, '%Y-%m-%d')
-    return int(divmod(age.total_seconds(), 31536000)[0])
 
 def getTimeFromAge(Age):
     return datetime.today() - relativedelta(years=int(Age))
@@ -23,6 +19,10 @@ def getTags(user_id):
 
 @token_required
 def getProfiles(user_id):
+    user = getUserWithImagesById(user_id)
+    user_latitude = str(user["latitude"])
+    user_longitude = str(user["longitude"])
+
     min_age = request.args.get("min_age", None)
     max_age = request.args.get("max_age", None)
     max_pos = request.args.get("max_pos", None)
@@ -34,32 +34,21 @@ def getProfiles(user_id):
 
     requestQuery = "SELECT user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE user.id != " + str(user_id) + " "
     #Check needAnd to know if you need to add " AND " to requestQuery
-    needAnd = True
+    
     if (min_age):
-        if (needAnd == True):
-            requestQuery += "AND "
-        needAnd = True
+        requestQuery += "AND "
         requestQuery += "user.birth_date <= date('now', '-" + str(min_age) + " years') "
     if (max_age):
-        if (needAnd == True):
-            requestQuery += "AND "
-        needAnd = True
+        requestQuery += "AND "
         requestQuery += "user.birth_date >= date('now', '-" + str(max_age) + " years') "
-    # TODO : Position
-    # if (max_pos):
-    #     if (needAnd == True):
-    #         requestQuery += "AND "
-    #     needAnd = True
-    #     requestQuery += "user.birth_date <= " + str(getTimeFromAge(max_age)) + " "
+    if (max_pos):
+        requestQuery += "AND "
+        requestQuery += "(user.latitude -" + user_latitude + ")*(user.latitude -" + user_latitude + ") + (user.longitude -" + user_longitude + ")*(user.longitude -" + user_longitude + ") <= " + str(max_pos) + " "
     if (min_fame):
-        if (needAnd == True):
-            requestQuery += "AND "
-        needAnd = True
+        requestQuery += "AND "
         requestQuery += "user.fame_rating <= " + str(min_fame)
     if (tags and len(tags) > 0):
-        if (needAnd == True):
-            requestQuery += "AND "
-        needAnd == True
+        requestQuery += "AND "
         requestQuery += "INNER JOIN user_tag ut ON user.id = ut.user_id WHERE ut.tag_id IN ("
         needComma = False
         for tag in tags:
@@ -124,6 +113,8 @@ def setSettings(user_id):
     gender = request.form.get("gender")
     sexual_preference = request.form.get("sexual_preference", None)
     bio = request.form.get("bio", None)
+    latitude = request.form.get("latitude", None)
+    longitude = request.form.get("longitude", None)
     tags = request.form.getlist("tag_ids", None)
     images = []
     index = 0
@@ -143,8 +134,8 @@ def setSettings(user_id):
     print(images)
     
     #First we insert all the data we got from settings
-    makeRequest("UPDATE user SET username = ?, email = ?, first_name = ?, last_name = ?, gender = ?, sexual_preference = ?, bio = ? WHERE id = ?",
-                           (str(username), str(email), str(first_name), str(last_name), str(gender), str(sexual_preference), str(bio), str(user_id)))
+    makeRequest("UPDATE user SET username = ?, email = ?, first_name = ?, last_name = ?, gender = ?, sexual_preference = ?, bio = ?, latitude = ?, longitude = ? WHERE id = ?",
+                           (str(username), str(email), str(first_name), str(last_name), str(gender), str(sexual_preference), str(bio), str(user_id), str(latitude), str(longitude)))
     
     #We delete every tag before inserting the ones we received
     makeRequest("DELETE FROM user_tag WHERE user_id = ?", (str(user_id),))

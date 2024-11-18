@@ -4,3 +4,4 @@ Flask-jwt-extended
 flask-bcrypt
 flask-socketio
 python-dateutil
+ipdata

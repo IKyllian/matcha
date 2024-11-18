@@ -7,6 +7,19 @@ from flask_jwt_extended import create_access_token, decode_token
 from app import bcrypt
 from errors.httpErrors import APIAuthError
 import re
+import ipdata
+
+def get_client_ip():
+    headers_to_check = [
+        'HTTP_X_FORWARDED_FOR', 'X_FORWARDED_FOR',
+        'HTTP_CLIENT_IP', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED',
+        'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR',
+        'HTTP_FORWARDED', 'HTTP_VIA', 'REMOTE_ADDR'
+    ]
+    for header in headers_to_check:
+        if header in request.environ:
+            return request.environ[header].split(',')[0].strip()
+    return request.remote_addr
 
 regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
 
@@ -52,11 +65,23 @@ def signup():
     birth_date = request.json.get("birth_date", None)
     if (getAgeFromTime(birth_date) < 18):
         raise APIAuthError('User must bet at least 18 years old')
-    response = makeRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date) VALUES (?, ?, ?, ?, ?, ?)",
-                           (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date)))
-    user = getUserWithProfilePictureByUsername(username)
-    access_token = create_access_token(identity=user["id"])
-    return jsonify(access_token=access_token, user=user)
+    
+    ipdata.api_key = "060ae89add4de8cc3ff0c9f8da69adbf2515414caa66395cbcddfcec"
+    try :
+        ipAddress = get_client_ip()
+        print("ADDRESS = -----------------------")
+        print(ipAddress)
+
+        if ('10.11.' in ipAddress):
+            ipAddress = '46.231.218.157'
+        data = ipdata.lookup(ipAddress)
+        response = makeRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                            (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date), str(data.latitude), str(data.longitude)))
+        user = getUserWithProfilePictureByUsername(username)
+        access_token = create_access_token(identity=user["id"])
+        return jsonify(access_token=access_token, user=user)
+    except :
+        raise APIAuthError('Location is not parseable')
 
 def getAuth():
     try :
