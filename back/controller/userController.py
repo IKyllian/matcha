@@ -135,8 +135,7 @@ def setSettings(user_id):
     
     #First we insert all the data we got from settings
     makeRequest("UPDATE user SET username = ?, email = ?, first_name = ?, last_name = ?, gender = ?, sexual_preference = ?, bio = ?, latitude = ?, longitude = ? WHERE id = ?",
-                           (str(username), str(email), str(first_name), str(last_name), str(gender), str(sexual_preference), str(bio), str(user_id), str(latitude), str(longitude)))
-    
+                (str(username), str(email), str(first_name), str(last_name), str(gender), str(sexual_preference), str(bio), str(latitude), str(longitude), str(user_id)))
     #We delete every tag before inserting the ones we received
     makeRequest("DELETE FROM user_tag WHERE user_id = ?", (str(user_id),))
     for tag in tags:
