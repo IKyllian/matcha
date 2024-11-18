@@ -9,6 +9,18 @@ from errors.httpErrors import APIAuthError
 import re
 import ipdata
 
+def get_client_ip():
+    headers_to_check = [
+        'HTTP_X_FORWARDED_FOR', 'X_FORWARDED_FOR',
+        'HTTP_CLIENT_IP', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED',
+        'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR',
+        'HTTP_FORWARDED', 'HTTP_VIA', 'REMOTE_ADDR'
+    ]
+    for header in headers_to_check:
+        if header in request.environ:
+            return request.environ[header].split(',')[0].strip()
+    return request.remote_addr
+
 regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
 
 def isEmailValid(email):
@@ -56,7 +68,10 @@ def signup():
     
     ipdata.api_key = "060ae89add4de8cc3ff0c9f8da69adbf2515414caa66395cbcddfcec"
     try :
-        ipAddress = request.remote_addr
+        ipAddress = get_client_ip()
+        print("ADDRESS = -----------------------")
+        print(ipAddress)
+
         if ('10.11.' in ipAddress):
             ipAddress = '46.231.218.157'
         data = ipdata.lookup(ipAddress)
