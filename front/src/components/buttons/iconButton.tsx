@@ -8,7 +8,7 @@ type IconButtonProps = {
   buttonIcon: IconButtonType
 }
 
-const IconButton = ({ status, onClick, buttonIcon }: IconButtonProps) => {
+const IconButton = ({ status = false, onClick, buttonIcon }: IconButtonProps) => {
   const { activeBackgroundColor, inactiveBackgroundColor, activeIcon, inactiveIcon, defaultIconColor, inactiveIconColor } = buttonIcon;
   const slotsStyles = buttonStyle.raw()
   const backgroundColor = status === false && inactiveBackgroundColor ? inactiveBackgroundColor : activeBackgroundColor;

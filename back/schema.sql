@@ -28,7 +28,7 @@ CREATE TABLE user (
     email               NVARCHAR(320)                   NOT NULL,
     first_name          NVARCHAR(20)                    NOT NULL,
     last_name           NVARCHAR(20)                    NOT NULL,
-    birth_date          TIMESTAMP                       NULL,
+    birth_date          TEXT                       NULL,
     gender              NCHAR(1)                        NULL,
     sexual_preference   NCHAR(1)                        NULL,
     bio                 TEXT                            NULL,
@@ -65,6 +65,14 @@ CREATE TABLE block (
     blocked_user_id INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id),
     FOREIGN KEY (blocked_user_id) REFERENCES user(id)
+);
+
+CREATE TABLE report (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id         INTEGER NOT NULL,
+    reported_user_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (reported_user_id) REFERENCES user(id)
 );
 
 CREATE TABLE message (

@@ -1,15 +1,15 @@
 import { useForm } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
 import { useStore } from "front/store/store"
-import { makeSignInRequest } from "front/api/sign"
 import { User } from "front/typing/user"
 import { useEffect } from "react"
-import { useCookies } from "react-cookie"
+import { makeSignUpRequest } from "front/api/sign"
 import { COOKIE_JWT_TOKEN } from "front/constant/cookie"
+import { useCookies } from "react-cookie"
 
-type FormValues = Pick<User, 'username' | 'password'>
+type FormValues = Pick<User, 'first_name' | 'last_name' | 'username' | 'email' | 'password' | 'birth_date'>
 
 type FieldsType = {
     label: string
@@ -17,11 +17,36 @@ type FieldsType = {
     name: keyof FormValues
     required?: boolean
 }
+
 const FIELDS: FieldsType[] = [
     {
-        label: 'Username',
+        label: 'Prenom',
+        name: 'first_name',
+        type: 'text',
+        required: true,
+    },
+    {
+        label: 'Nom',
+        name: 'last_name',
+        type: 'text',
+        required: true,
+    },
+    {
+        label: 'Nom d\'utilisateur',
         name: 'username',
         type: 'text',
+        required: true,
+    },
+    {
+        label: 'Email',
+        name: 'email',
+        type: 'text',
+        required: true,
+    },
+    {
+        label: 'Date de naissance',
+        name: 'birth_date',
+        type: 'date',
         required: true,
     },
     {
@@ -32,7 +57,7 @@ const FIELDS: FieldsType[] = [
     }
 ]
 
-const SignIn = () => {
+const Register = () => {
     const {
         register,
         handleSubmit,
@@ -41,13 +66,14 @@ const SignIn = () => {
     const [cookies, setCookie, removeCookie] = useCookies();
     const authStore = useStore((state) => state.authStore)
     const logUser = useStore((state) => state.logUser)
+    const addAlert = useStore((state) => state.addAlert)
     const navigate = useNavigate()
     const slotsStyles = formStyle.raw()
     const onSubmit = async (data: FormValues) => {
-        console.info('data = ', data)
-        const { access_token, user } = await makeSignInRequest(data)
-        logUser(user)
-        if (access_token) {
+        const ret = await makeSignUpRequest({ data, addAlert })
+        if (ret) {
+            const { user, access_token } = ret
+            logUser(user, access_token)
             setCookie(COOKIE_JWT_TOKEN, access_token)
         }
     }
@@ -61,7 +87,7 @@ const SignIn = () => {
     return (
         <div className={css({ minHeight: '100vh', display: 'flex' })}>
             <div className={css(slotsStyles.wrapper)}>
-                <h2 className={css(slotsStyles.title)}> Connectez-vous </h2>
+                <h2 className={css(slotsStyles.title)}> Incrvivez-vous </h2>
                 <form className={css(slotsStyles.form)} onSubmit={handleSubmit(onSubmit)}>
                     {
                         FIELDS.map(({ name, type, required, label }) => (
@@ -73,9 +99,10 @@ const SignIn = () => {
                     }
                     <button className={css(slotsStyles.button)} type="submit">Valider</button>
                 </form>
+                <span className={css(slotsStyles.textInfo)}>Deja un compte ? <Link to="/login">Connectez-vous</Link></span>
             </div>
         </div>
     )
 }
 
-export default SignIn
+export default Register

@@ -1,37 +1,25 @@
-import { SetStateAction } from "react"
 import { chipSelectStyle } from "./chipSelect.style"
 import { css } from "styled-system/css"
 import Chip from "./chip"
+import { Tags } from "front/typing/user"
 
 type ChypeSelectType = {
-    selectedChips: string[]
-    onChipClick: (chip: string, wasSelected: boolean) => void
+    selectedChips: Tags[]
+    chips: Tags[]
+    onChipClick: (chip: Tags, wasSelected: boolean) => void
 }
 
-const CHIPS = [
-    'Musique',
-    'Gaming',
-    'Tech',
-    'Lecture',
-    'Voyage',
-    'Cinema',
-    'Sport',
-    'Politique',
-    'Science',
-    'Art',
-    'Divertissement',
-]
 
-const ChipSelect = ({ selectedChips, onChipClick }: ChypeSelectType) => {
+const ChipSelect = ({ selectedChips, onChipClick, chips }: ChypeSelectType) => {
     const slotsStyles = chipSelectStyle.raw()
     return (
         <div className={css(slotsStyles.selectContainer)}>
             <div className={css(slotsStyles.chipContainer)}>
-                {CHIPS.map((chip, index) => {
-                    const isSelected = selectedChips.some(c => c === chip)
+                {chips.map((chip, index) => {
+                    const isSelected = selectedChips.some(c => c.id === chip.id)
                     return (
-                        <div key={chip} onClick={() => onChipClick(chip, isSelected)}>
-                            <Chip key={index} value={chip} classname={slotsStyles.inputChip} isSelected={isSelected} />
+                        <div key={chip.tag_name} onClick={() => onChipClick(chip, isSelected)}>
+                            <Chip key={index} value={chip.tag_name} classname={slotsStyles.inputChip} isSelected={isSelected} />
                         </div>
                     )
                 })}

@@ -1,19 +1,8 @@
+import { makeApi } from "front/api/api";
 import { COOKIE_JWT_TOKEN } from "front/constant/cookie";
-import { CHAT_DATA, CHAT_SIDEBAR, ChatType } from "front/typing/chat";
-import { Tags, User, USERS } from "front/typing/user";
-import ky from "ky";
+import { UrlParamsType } from "front/typing/filters";
 import { useEffect, useState } from "react"
 import { useCookies } from "react-cookie";
-
-export type UrlParamsType = {
-    minAge?: number,
-    maxAge?: number,
-    minPos?: number,
-    maxPos?: number,
-    minFame?: number,
-    maxFame?: number,
-    tags?: Tags[]
-}
 
 type UseApiProps<T> = {
     endpoint: EndpointType,
@@ -21,6 +10,7 @@ type UseApiProps<T> = {
     params?: { id: number },
     dependencies?: any[],
     setter: (entity: T) => void,
+    key?: string
 }
 
 const buildUrlParams = (urlParams: UrlParamsType): string => {
@@ -38,38 +28,24 @@ const buildUrlParams = (urlParams: UrlParamsType): string => {
             }
         }
     }
-
     return stringParams
 }
 
-export const API_URL = 'http://localhost:3000/';
+export const API_URL = 'http://localhost:3000';
 
-// -------------------------- Until we have an api -------------------------------------------------------//
-export type EndpointType = 'chat' | 'profile' | 'sidebar';
-const getUserById = (userId: number): User | undefined => USERS.find(user => user.id === userId);
-const getChatById = (chatId: number): ChatType | undefined => CHAT_DATA.find(chat => chat.id === chatId);
-const getDataFromEndpoint = ({ endpoint, params }: { endpoint: EndpointType, params?: { id: number } }) => {
-    switch (endpoint) {
-        case 'chat':
-            return getChatById(params?.id);
-        case 'profile':
-            return getUserById(params?.id);
-        case 'sidebar':
-            return CHAT_SIDEBAR;
-        default:
-            return undefined;
-    }
-}
+export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getViewsOfUser' | 'getMatchesOfUser' | 'profile/settings' | 'getTags';
 
 const getUlrParams = ({ urlParams, endpoint, params }: { endpoint: string, urlParams?: UrlParamsType, params?: { id: number } }) => {
     if (urlParams) {
-        return `${API_URL}${endpoint}${buildUrlParams(urlParams)}`
+        return `${API_URL}/${endpoint}${buildUrlParams(urlParams)}`
+    } else if (params) {
+        return `${API_URL}/${endpoint}/${params.id}`
     }
-    return `${API_URL}${endpoint}/${params.id}`
+    return `${API_URL}/${endpoint}`
 }
 //--------------------------------------------------------------------------------------------------------//
 
-export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], setter }: UseApiProps<T>) => {
+export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], setter, key }: UseApiProps<T>) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [cookies, setCookie, removeCookie] = useCookies();
 
@@ -80,20 +56,11 @@ export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], sett
                 if (!cookie) {
                     throw new Error("No JWT token found")
                 }
-                const api = ky.extend({
-                    hooks: {
-                        beforeRequest: [
-                            (request) => {
-                                request.headers.set('Authorization', `Bearer ${cookie})}`);
-                            }
-                        ]
-                    }
-                })
+                const api = makeApi({ token: cookie })
                 const requestparams = getUlrParams({ endpoint, params, urlParams })
-                // const response = await api.get<T>(requestparams).json();
-                const response = getDataFromEndpoint({ endpoint, params }) as T
-                console.info("REPONSE = ", response)
-                setter(response)
+                const response = await api.get<T>(requestparams).json();
+                console.info("REPONSE = ", requestparams, ' =>>>> ', response)
+                setter(key ? response[key] : response)
             } catch (err) {
                 console.error(err);
             } finally {

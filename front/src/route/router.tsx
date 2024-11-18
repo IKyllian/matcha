@@ -1,13 +1,14 @@
 import Profile from "front/components/profile/profile";
-import Sign from "front/components/sign/sign";
+import Register from "front/components/sign/register";
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./privateRoute";
 import ChatScreen from "front/components/chat/chatScreen";
 import Home from "front/components/home/home";
 import Settings from "front/components/settings/settings";
-import SignIn from "front/components/sign/signIn";
+import Login from "front/components/sign/login";
 import NotificationScreen from "front/components/notifications/notificationScreen";
-import ViewScreen from "front/components/viewed/viewScreen";
+import ViewScreen from "front/components/views/viewScreen";
+import PublicRoute from "front/route/publicRoute";
 
 export const router = createBrowserRouter([
     {
@@ -19,12 +20,20 @@ export const router = createBrowserRouter([
         )
     },
     {
-        path: "/sign",
-        element: <Sign />
+        path: "/register",
+        element: (
+            <PublicRoute>
+                <Register />
+            </PublicRoute>
+        )
     },
     {
-        path: "/signin",
-        element: <SignIn />
+        path: "/login",
+        element: (
+            <PublicRoute>
+                <Login />
+            </PublicRoute>
+        )
     },
     ...["/profile", "/profile/:userId"].map(path => ({
         path,

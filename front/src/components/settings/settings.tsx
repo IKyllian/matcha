@@ -5,21 +5,19 @@ import { css } from "styled-system/css"
 import { useForm } from "react-hook-form"
 import { FaUpload } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
+import { makeSettingsRequest } from "front/api/profile"
+import { useStore } from "front/store/store"
+import { ImageSettingsType, Tags, User } from "front/typing/user"
+import { useApi } from "front/hook/useApi"
+import { AlertTypeEnum } from "front/typing/alert"
 
-type FormValues = {
-  description: string
-  gender: 'male' | 'female',
-  preference: 'male' | 'female' | 'bi',
-  birth_date: any
-}
-
-type InputRatioProps = {
+type InputRadioProps = {
   value: string
   label: string
   register: any
 }
 
-const InputRatio = ({ value, label, register }: InputRatioProps) => {
+const InputRadio = ({ value, label, register }: InputRadioProps) => {
   const slotsStyles = settingsStyle.raw()
   return (
     <label className={css(slotsStyles.radioLabel)}>
@@ -29,35 +27,98 @@ const InputRatio = ({ value, label, register }: InputRatioProps) => {
   )
 }
 
-const Settings = () => {
+const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType }) => {
+  const profileImageFromUser = profileSettings.user.images?.find(i => i.is_profile_picture)?.image_file
   const slotsStyles = settingsStyle.raw()
-  const [selectedChips, setSelectedChips] = useState<string[]>([])
-  const [profilePicturePreview, setProfilPicturePreview] = useState<string | null>(null)
-  const [profilesImages, setProfilesImages] = useState<string[]>([])
-  console.info('profilesImages = ', profilesImages)
+  const { token } = useStore((state) => state.authStore)
+  const addAlert = useStore((state) => state.addAlert)
+  const [selectedChips, setSelectedChips] = useState<Tags[]>(profileSettings.user.tags)
+  const [profilePicturePreview, setProfilPicturePreview] = useState<string | undefined>(profileImageFromUser ? `data:image/png;base64,${profileImageFromUser}` : undefined)
+  const [profilesImages, setProfilesImages] = useState<ImageSettingsType[]>(profileSettings.user.images.map(i => ({
+    file: i.image_file,
+    is_profile_picture: i.is_profile_picture,
+    preview: `data:image/png;base64,${i.image_file}`
+  })))
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>()
+  } = useForm<Partial<User>>({
+    defaultValues: profileSettings.user
+  })
 
-  const onChipClick = (chip: string, wasSelected: boolean) => {
+  console.info('selected = ', selectedChips)
+  const onChipClick = (chip: Tags, wasSelected: boolean) => {
     if (wasSelected) {
-      setSelectedChips(prev => [...prev.filter(c => c !== chip)])
+      setSelectedChips(prev => [...prev.filter(c => c.id !== chip.id)])
     } else {
       setSelectedChips(prev => [...prev, chip])
     }
   }
 
-  const onSubmit = (values: FormValues) => {
+  const onSubmit = async (values: Partial<User>) => {
+    console.info('images = ', [...profilesImages.map(o => ({ file: o.file, is_profile_picture: o.is_profile_picture }))])
+    const data = {
+      ...values,
+      images: [...profilesImages.map(o => ({ file: o.file, is_profile_picture: o.is_profile_picture }))]
+    }
+    console.info('data = ', data)
+
+    const formData = new FormData()
+
+    profilesImages.forEach((image: any, index) => {
+      // if (typeof image === 'string' && image.startsWith("data:")) {
+      //   // Si l'image est en base64, convertit en File
+      //   const [metadata, data] = image.split(',');
+      //   const mime = metadata.match(/:(.*?);/)[1];
+      //   const byteString = atob(data);
+      //   const byteNumbers = new Array(byteString.length);
+      //   for (let i = 0; i < byteString.length; i++) {
+      //     byteNumbers[i] = byteString.charCodeAt(i);
+      //   }
+      //   const byteArray = new Uint8Array(byteNumbers);
+      //   const blob = new Blob([byteArray], { type: mime });
+      //   const file = new File([blob], `image${index + 1}.${mime.split('/')[1]}`, { type: mime });
+      //   formData.append(`images[${index}][file]`, file);
+      // } else {
+      // Si c'est déjà un objet File, l'ajoute directement
+      formData.append(`images[${index}][file]`, image.file);
+      // }
+      formData.append(`images[${index}][is_profile_picture]`, image.is_profile_picture.toString());
+    });
+
+    selectedChips.forEach((tag) => {
+      formData.append(`tag_ids`, tag.id.toString());
+    });
+
+    for (const [key, value] of Object.entries(values)) {
+      if (key !== 'tags' && key !== 'images') {
+        formData.append(key, value)
+      }
+    }
+
+    console.info("formData = ", formData)
+
+    const ret = await makeSettingsRequest(
+      formData,
+      token,
+      addAlert
+    )
+
+    if (ret) {
+      addAlert({ message: 'Votre profile a ete update', type: AlertTypeEnum.SUCCESS })
+    }
     console.info("values - ", values)
   }
 
   const onSingleUpload = (event: any) => {
     console.info("data - ", event)
     const [file] = event.target.files
+    // const filesize: string = ((file.size/1024)/1024).toFixed(4);
     if (file) {
       setProfilPicturePreview(URL.createObjectURL(file))
+      setProfilesImages(prev => [...prev, { file, is_profile_picture: true }])
     }
     console.info("upload", file)
   }
@@ -66,7 +127,7 @@ const Settings = () => {
     console.info("data - ", event)
     const imagesLength = profilesImages.length
     if (imagesLength === 4) {
-      console.info('Max images Uploaded: ', imagesLength)
+      console.error('Max images Uploaded: ', imagesLength)
       return
     }
     const files = event.target.files
@@ -75,7 +136,7 @@ const Settings = () => {
         break
       }
       for (const file of files) {
-        setProfilesImages(prev => [...prev, URL.createObjectURL(file)])
+        setProfilesImages(prev => [...prev, { file, preview: URL.createObjectURL(file), is_profile_picture: false }])
       }
     }
   }
@@ -90,36 +151,46 @@ const Settings = () => {
     <div className={css(slotsStyles.settingsContainer)}>
       <h2 className={css(slotsStyles.title)}> Completez votre profil </h2>
       <form className={css(slotsStyles.settingsWrapper)} onSubmit={handleSubmit(onSubmit)}>
-        <label>
-          Date de naissance:
-          <input type="date" className={css(slotsStyles.inputDate)} {...register('birth_date')} name="birth_date" />
+        <div className={css(slotsStyles.rowInputs)}>
+          <label htmlFor="last_name">
+            Nom*:
+            <input id="last_name" type='text' {...register('last_name')} />
+          </label>
+          <label htmlFor="first_name">
+            Prenom*:
+            <input id="first_name" type='text' {...register('first_name')} />
+          </label>
+        </div>
+        <label htmlFor="email">
+          Email*:
+          <input id="email" type='text' {...register('email')} />
         </label>
         <label>
-          Genre:
+          Genre*:
           <div className={css(slotsStyles.radioWrapper)}>
-            <InputRatio value="male" label="Homme" register={{ ...register('gender') }} />
-            <InputRatio value="female" label="Femme" register={{ ...register('gender') }} />
+            <InputRadio value="M" label="Homme" register={{ ...register('gender') }} />
+            <InputRadio value="F" label="Femme" register={{ ...register('gender') }} />
           </div>
         </label>
         <label>
-          Attirer par:
+          Attirer par*:
           <div className={css(slotsStyles.radioWrapper)}>
-            <InputRatio value="male" label="Homme" register={{ ...register('preference') }} />
-            <InputRatio value="female" label="Femme" register={{ ...register('preference') }} />
-            <InputRatio value="bi" label="Les deux" register={{ ...register('preference') }} />
+            <InputRadio value="M" label="Homme" register={{ ...register('sexual_preference') }} />
+            <InputRadio value="F" label="Femme" register={{ ...register('sexual_preference') }} />
+            <InputRadio value="B" label="Les deux" register={{ ...register('sexual_preference') }} />
           </div>
         </label>
         <label>
           Desription:
-          <textarea className={css(slotsStyles.textAreaInput)} {...register('description')} name="description" ></textarea>
+          <textarea className={css(slotsStyles.textAreaInput)} {...register('bio')} name="bio" ></textarea>
         </label>
         <label>
           Centre d'interets:
-          <ChipSelect selectedChips={selectedChips} onChipClick={onChipClick} />
+          <ChipSelect chips={profileSettings.tags} selectedChips={selectedChips} onChipClick={onChipClick} />
         </label>
         <div className={css(slotsStyles.profilPictureContainer)}>
           <label>
-            Photo de profile:
+            Photo de profile*:
           </label>
           {
             profilePicturePreview &&
@@ -148,16 +219,16 @@ const Settings = () => {
           profilesImages.length > 0 &&
           <div className={css(slotsStyles.picturesContainer)}>
             {
-              profilesImages.map((profileImage, index) => (
-                <div className={css(slotsStyles.picturesItemContainer)}>
+              profilesImages.map((profileImage, index) => profileImage.preview && !profileImage.is_profile_picture ? (
+                <div key={profileImage.preview} className={css(slotsStyles.picturesItemContainer)}>
                   <div className={css(slotsStyles.picturesItem)}>
-                    <img src={profileImage} alt='' />
+                    <img src={profileImage.preview} alt='' />
                   </div>
                   <div className={css(slotsStyles.uploadButton, slotsStyles.imageResetButton)}>
                     <IoClose onClick={() => onImageDelete(index)} />
                   </div>
                 </div>
-              ))
+              ) : null)
             }
           </div>
         }
@@ -168,10 +239,28 @@ const Settings = () => {
             <span> Upload </span>
           </div>
         </label>
+        <span className={css(slotsStyles.textInfo)}>* Champs requis pour interagir avec les autres utilisateurs</span>
         <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
       </form>
     </div>
   )
 }
 
-export default Settings
+type ProfileSettingsType = {
+  user: User,
+  tags: Tags[]
+}
+const ScreenSettings = () => {
+  const [profileSettings, setProfileSettings] = useState<ProfileSettingsType>()
+  const { isLoading } = useApi<ProfileSettingsType>({
+    endpoint: 'profile/settings',
+    setter: setProfileSettings,
+  })
+  console.info("isLoading = ", isLoading)
+  if (isLoading) {
+    return <div>loading...</div>
+  }
+  return <Settings profileSettings={profileSettings} />
+}
+
+export default ScreenSettings

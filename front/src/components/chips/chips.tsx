@@ -1,9 +1,10 @@
 import { css } from "styled-system/css"
 import { chipsStyle } from "./chips.style"
 import Chip from "./chip"
+import { Tags } from "front/typing/user"
 
 type ChipsListProps = {
-    chipsList: string[]
+    chipsList: Tags[]
 }
 
 const ChipsList = ({ chipsList }: ChipsListProps) => {
@@ -12,7 +13,7 @@ const ChipsList = ({ chipsList }: ChipsListProps) => {
         <div className={css(slotsStyles.chipsContainer)}>
             {
                 chipsList.map((chip, index) => (
-                    <Chip key={index} value={chip} />
+                    <Chip key={index} value={chip.tag_name} />
                 ))
             }
         </div>

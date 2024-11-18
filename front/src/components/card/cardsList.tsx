@@ -1,4 +1,4 @@
-import { User } from "front/typing/user"
+import { Image, User } from "front/typing/user"
 import Card, { CardType } from "front/components/card/card"
 import { css } from "styled-system/css"
 import { cardStyle } from "./card.style"
@@ -8,7 +8,7 @@ type CardsProps = {
     cardType: CardType
 }
 
-const CardsList = ({ list, cardType }: CardsProps) => {
+export const CardsList = ({ list, cardType }: CardsProps) => {
     const slotsStyles = cardStyle.raw()
     return (
         <div className={css(slotsStyles.cardsContainer)}>
@@ -21,4 +21,29 @@ const CardsList = ({ list, cardType }: CardsProps) => {
     )
 }
 
-export default CardsList
+type CardsImagesList = {
+    list: Image[]
+}
+
+export const CardsImagesList = ({ list }: CardsImagesList) => {
+    const slotsStyles = cardStyle.raw()
+    return (
+        <div className={css(slotsStyles.cardsContainer)}>
+            {
+                list.map(image => {
+                    const imageSrc = `data:image/jpeg;base64,${image.image_file}`
+                    return (
+                        <div key={imageSrc} className={css(slotsStyles.cardWrapper, {
+                            height: 'auto'
+                        })}>
+                            <img src={imageSrc} className={css({
+                                width: '280px',
+                                height: '280px'
+                            })} alt="Photo de profile" />
+                        </div>
+                    )
+                })
+            }
+        </div>
+    )
+}
