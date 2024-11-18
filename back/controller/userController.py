@@ -4,15 +4,11 @@ from services.relations import *
 from services.user import *
 from database_utils.decoratorFunctions import token_required
 from database_utils.requests import *
+from database_utils.convert import getAgeFromTime
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager, decode_token
 from errors.httpErrors import ForbiddenError
-
-def getAgeFromTime(SqlTime):
-    current_time = datetime.now()
-    age = current_time - datetime.strptime(SqlTime, '%Y-%m-%d')
-    return int(divmod(age.total_seconds(), 31536000)[0])
 
 def getTimeFromAge(Age):
     return datetime.today() - relativedelta(years=int(Age))
@@ -125,6 +121,8 @@ def setSettings(user_id):
     sexual_preference = request.form.get("sexual_preference", None)
     bio = request.form.get("bio", None)
     tags = request.form.getlist("tag_ids", None)
+    latitude = request.get("latitude", None)
+    longitude = request.get("longitude", None)
     images = []
     index = 0
 
@@ -143,8 +141,8 @@ def setSettings(user_id):
     print(images)
     
     #First we insert all the data we got from settings
-    makeRequest("UPDATE user SET username = ?, email = ?, first_name = ?, last_name = ?, gender = ?, sexual_preference = ?, bio = ? WHERE id = ?",
-                           (str(username), str(email), str(first_name), str(last_name), str(gender), str(sexual_preference), str(bio), str(user_id)))
+    makeRequest("UPDATE user SET username = ?, email = ?, first_name = ?, last_name = ?, gender = ?, sexual_preference = ?, bio = ?, latitude = ?, longitude = ? WHERE id = ?",
+                           (str(username), str(email), str(first_name), str(last_name), str(gender), str(sexual_preference), str(bio), str(user_id), str(latitude), str(longitude)))
     
     #We delete every tag before inserting the ones we received
     makeRequest("DELETE FROM user_tag WHERE user_id = ?", (str(user_id),))
