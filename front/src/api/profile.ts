@@ -56,12 +56,12 @@ export const makeViewRequest = async ({ token, id, addAlert }: RequestFromIdProp
     });
 }
 
-export const makeSettingsRequest = async (data: any, token: string, addAlert: AlertStoreType['addAlert']) => {
+export const makeSettingsRequest = async ({ data, token, addAlert }: { data: any, token: string, addAlert: AlertStoreType['addAlert'] }) => {
     return apiRequest<{ ok: boolean }>({
         url: `${API_URL}/profile/setSettings`,
         options: {
             method: 'POST',
-            json: { body: data }
+            body: data
         },
         token,
         addAlert

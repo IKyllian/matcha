@@ -76,6 +76,12 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
 
     const formData = new FormData()
 
+    for (const [key, value] of Object.entries(values)) {
+      if (key !== 'tags' && key !== 'images' && key !== 'fame_rating') {
+        formData.append(key, value)
+      }
+    }
+
     profilesImages.forEach((image: any, index) => {
       // if (typeof image === 'string' && image.startsWith("data:")) {
       //   // Si l'image est en base64, convertit en File
@@ -101,12 +107,6 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       formData.append(`tag_ids`, tag.id.toString());
     });
 
-    for (const [key, value] of Object.entries(values)) {
-      if (key !== 'tags' && key !== 'images' && key !== 'fame_rating') {
-        formData.append(key, value)
-      }
-    }
-
     if (positionSelected) {
       console.info('set new position = ', positionSelected)
       formData.append('longitude', positionSelected.longitude.toString())
@@ -116,9 +116,11 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     console.info("formData = ", formData)
 
     const ret = await makeSettingsRequest(
-      formData,
-      token,
-      addAlert
+      {
+        data: formData,
+        token,
+        addAlert
+      }
     )
 
     if (ret) {

@@ -8,13 +8,13 @@ with open('schema.sql') as f:
 
 cur = connection.cursor()
 
-cur.execute("INSERT INTO user (username, pass, email, first_name, last_name) VALUES (?, ?, ?, ?, ?)",
-            ('user1', 'pass','adam@gmail.com', 'Adam', 'C')
-            )
+# cur.execute("INSERT INTO user (username, pass, email, first_name, last_name) VALUES (?, ?, ?, ?, ?)",
+#             ('user1', 'pass','adam@gmail.com', 'Adam', 'C')
+#             )
 
-cur.execute("INSERT INTO user (username, pass, email, first_name, last_name) VALUES (?, ?, ?, ?, ?)",
-            ('user2', 'pass','kyllian@gmail.com', 'Kyllian', 'last')
-            )
+# cur.execute("INSERT INTO user (username, pass, email, first_name, last_name) VALUES (?, ?, ?, ?, ?)",
+#             ('user2', 'pass','kyllian@gmail.com', 'Kyllian', 'last')
+#             )
 
 connection.commit()
 connection.close()

@@ -31,7 +31,7 @@ const buildUrlParams = (urlParams: UrlParamsType): string => {
     return stringParams
 }
 
-export const API_URL = 'http://10.11.11.1:3000';
+export const API_URL = 'http://localhost:3000';
 
 export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getViewsOfUser' | 'getMatchesOfUser' | 'profile/settings' | 'getTags';
 
