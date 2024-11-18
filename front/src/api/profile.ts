@@ -67,3 +67,12 @@ export const makeSettingsRequest = async (data: any, token: string, addAlert: Al
         addAlert
     });
 }
+
+export const makePositionRequest = async ({ city }) => {
+    return apiRequest({
+        url: `https://nominatim.openstreetmap.org/search?city=${city}&format=json`,
+        options: {
+            method: 'GET',
+        },
+    });
+}

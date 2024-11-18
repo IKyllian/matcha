@@ -20,7 +20,10 @@ export const settingsStyle = sva({
         'picturesContainer',
         'picturesItemContainer',
         'picturesItem',
-        'textInfo'
+        'textInfo',
+        'positionListContainer',
+        'positionItem',
+        'positionContainer'
     ],
     base: {
         settingsContainer: {
@@ -50,11 +53,16 @@ export const settingsStyle = sva({
                 fontWeight: '600',
                 '& > *': {
                     fontWeight: 'normal'
+                },
+                '& > input': {
+                    border: '2px solid black',
+                    padding: '8px'
                 }
             }
         },
         rowInputs: {
             display: 'flex',
+            gap: '8px',
             '& > label': {
                 display: 'flex',
                 flexDirection: 'column',
@@ -64,6 +72,10 @@ export const settingsStyle = sva({
                 fontWeight: '600',
                 '& > *': {
                     fontWeight: 'normal'
+                },
+                '& > input': {
+                    border: '2px solid black',
+                    padding: '8px'
                 }
             }
         },
@@ -193,6 +205,26 @@ export const settingsStyle = sva({
         },
         textInfo: {
             fontSize: '12px'
+        },
+        positionContainer: {
+            position: 'relative'
+        },
+        positionListContainer: {
+            position: 'absolute',
+            top: '84px',
+            display: 'flex',
+            flexDir: 'column',
+            backgroundColor: 'white',
+            width: '100%',
+        },
+        positionItem: {
+            padding: '8px 4px',
+            '&:hover': {
+                backgroundColor: '#dce2f7'
+            },
+            '&[data-border="1"]': {
+                borderBottom: '1px solid black'
+            },
         }
     }
 })

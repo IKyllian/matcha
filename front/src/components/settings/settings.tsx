@@ -1,11 +1,11 @@
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import ChipSelect from "front/components/chips/chipSelect"
 import { settingsStyle } from "./settings.style"
 import { css } from "styled-system/css"
 import { useForm } from "react-hook-form"
 import { FaUpload } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
-import { makeSettingsRequest } from "front/api/profile"
+import { makePositionRequest, makeSettingsRequest } from "front/api/profile"
 import { useStore } from "front/store/store"
 import { ImageSettingsType, Tags, User } from "front/typing/user"
 import { useApi } from "front/hook/useApi"
@@ -15,6 +15,12 @@ type InputRadioProps = {
   value: string
   label: string
   register: any
+}
+
+type PositionType = {
+  displayName: string,
+  latitude: number,
+  longitude: number
 }
 
 const InputRadio = ({ value, label, register }: InputRadioProps) => {
@@ -28,7 +34,7 @@ const InputRadio = ({ value, label, register }: InputRadioProps) => {
 }
 
 const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType }) => {
-  const profileImageFromUser = profileSettings.user.images?.find(i => i.is_profile_picture)?.image_file
+  const profileImageFromUser = profileSettings?.user?.images?.find(i => i.is_profile_picture)?.image_file
   const slotsStyles = settingsStyle.raw()
   const { token } = useStore((state) => state.authStore)
   const addAlert = useStore((state) => state.addAlert)
@@ -39,6 +45,9 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     is_profile_picture: i.is_profile_picture,
     preview: `data:image/png;base64,${i.image_file}`
   })))
+  const [inputPositionsList, setInputPositionsList] = useState<PositionType[]>([])
+  const [positionSelected, setPositionSelected] = useState<PositionType>()
+  const [inputPosition, setInputPosition] = useState<string>('')
 
   const {
     register,
@@ -93,9 +102,15 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     });
 
     for (const [key, value] of Object.entries(values)) {
-      if (key !== 'tags' && key !== 'images') {
+      if (key !== 'tags' && key !== 'images' && key !== 'fame_rating') {
         formData.append(key, value)
       }
+    }
+
+    if (positionSelected) {
+      console.info('set new position = ', positionSelected)
+      formData.append('longitude', positionSelected.longitude.toString())
+      formData.append('latitude', positionSelected.latitude.toString())
     }
 
     console.info("formData = ", formData)
@@ -147,6 +162,32 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     setProfilesImages([...newArray])
   }
 
+  const onPositionClick = (value: PositionType) => {
+    setInputPosition(value.displayName)
+    setPositionSelected(value)
+  }
+
+  const handleChange = (e) => {
+    const value = e.target.value
+    setInputPosition(value)
+  }
+
+  useEffect(() => {
+    const timeoutId = setTimeout(async () => {
+      if (inputPosition.trim() === "" || inputPosition.trim().length < 2) {
+        setInputPositionsList([])
+        return
+      }
+      console.info('CALL API')
+      const ret: any = await makePositionRequest({ city: inputPosition })
+      if (ret && Array.isArray(ret)) {
+        setInputPositionsList(ret.map(p => ({ displayName: p.display_name, latitude: p.lat, longitude: p.lon })))
+      }
+    }, 500)
+
+    return () => clearTimeout(timeoutId)
+  }, [inputPosition])
+
   return (
     <div className={css(slotsStyles.settingsContainer)}>
       <h2 className={css(slotsStyles.title)}> Completez votre profil </h2>
@@ -183,6 +224,27 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         <label>
           Desription:
           <textarea className={css(slotsStyles.textAreaInput)} {...register('bio')} name="bio" ></textarea>
+        </label>
+        <label className={css(slotsStyles.positionContainer)}>
+          Position:
+          <input type='text' onChange={handleChange} value={inputPosition} />
+          {
+            inputPositionsList.length > 0 && (
+              <div className={css(slotsStyles.positionListContainer)}>
+                {
+                  inputPositionsList.map((position, index) =>
+                    <span
+                      key={position.displayName}
+                      className={css(slotsStyles.positionItem)}
+                      data-border={+(index < inputPositionsList.length - 1)}
+                      onClick={() => onPositionClick(position)}
+                    >
+                      {position.displayName}
+                    </span>)
+                }
+              </div>
+            )
+          }
         </label>
         <label>
           Centre d'interets:

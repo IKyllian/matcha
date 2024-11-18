@@ -6,8 +6,8 @@ const Banner = () => {
   const slotsStyles = bannerStyle.raw()
   return (
     <div className={css(slotsStyles.bannerContainer)}>
-        <span> Complétez votre profil pour interagir avec les autres utilisateurs </span>
-        <Link to='settings'> Settings </Link>
+      <span> Complétez votre profil pour interagir avec les autres utilisateurs </span>
+      <Link to='/settings'> Settings </Link>
     </div>
   )
 }
