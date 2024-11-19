@@ -32,7 +32,9 @@ CREATE TABLE user (
     gender              NCHAR(1)                        NULL,
     sexual_preference   NCHAR(1)                        NULL,
     bio                 TEXT                            NULL,
-    fame_rating         REAL                            NULL
+    fame_rating         REAL                            NULL,
+    latitude            REAL                            NOT NULL,
+    longitude           REAL                            NOT NULL
 );
 
 CREATE TABLE image (
