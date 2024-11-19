@@ -18,7 +18,9 @@ def isAccountValid(user):
 
 def decodeImages(images):
     for image in images:
-        image["image_file"] = image["image_file"].decode("utf-8")
+        decoded = image["image_file"].decode("utf-8")
+        mime_type = image["mime_type"]
+        image["image_file"] = f"data:{mime_type};base64,{decoded}"
         image["is_profile_picture"] = bool(image["is_profile_picture"])
     return images
 

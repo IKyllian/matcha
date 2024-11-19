@@ -68,16 +68,10 @@ def signup():
     
     ipdata.api_key = "060ae89add4de8cc3ff0c9f8da69adbf2515414caa66395cbcddfcec"
     try :
-        # ipAddress = get_client_ip()
-        # print("ADDRESS = -----------------------")
-        # print(ipAddress)
-
-        # if ('10.11.' in ipAddress):
-        #     ipAddress = '46.231.218.157'
-        # print("data = ", data)
-        # data = ipdata.lookup(ipAddress)
-        # print("data = ", data)
-        data = { 'latitude': '45.74800109863281', 'longitude': '4.849999904632568' }
+        ipAddress = get_client_ip()
+        if ('10.11.' in ipAddress or '127.0.'in ipAddress):
+            ipAddress = '46.231.218.157'
+        data = ipdata.lookup(ipAddress)
         makeRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                             (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date), str(data['latitude']), str(data['longitude'])))
         user = getUserWithProfilePictureByUsername(username)

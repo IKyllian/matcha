@@ -40,6 +40,8 @@ CREATE TABLE user (
 CREATE TABLE image (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
     image_file          BINARY(64)  NOT NULL,
+    mime_type           TEXT        NOT NULL,
+    file_name           TEXT        NOT NULL,
     is_profile_picture  BOOLEAN     NOT NULL,
     user_id             INTEGER     NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id)

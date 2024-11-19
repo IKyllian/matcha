@@ -31,7 +31,7 @@ export const CardsImagesList = ({ list }: CardsImagesList) => {
         <div className={css(slotsStyles.cardsContainer)}>
             {
                 list.map(image => {
-                    const imageSrc = `data:image/jpeg;base64,${image.image_file}`
+                    const imageSrc = image.image_file
                     return (
                         <div key={imageSrc} className={css(slotsStyles.cardWrapper, {
                             height: 'auto'

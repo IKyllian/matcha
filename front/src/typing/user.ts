@@ -85,6 +85,8 @@ export type Tags = {
 export type Image = {
     id: number
     image_file: string
+    mime_type: string
+    file_name: string
     is_profile_picture: boolean
     user_id: number
 }
@@ -115,6 +117,7 @@ export type FormValuesSettings = {
 export type ImageSettingsType = {
     file: any,
     is_profile_picture: boolean
+    file_name?: string
     preview?: string
 }
 

@@ -121,10 +121,14 @@ def setSettings(user_id):
 
     while f"images[{index}][file]" in request.files:
         image_file = request.files.get(f"images[{index}][file]")
+        mime_type = image_file.content_type if image_file.content_type else "text/plain"
+        file_name = image_file.filename if image_file.filename else ""
         is_profile_picture = request.form.get(f"images[{index}][is_profile_picture]") == 'true'
         images.append({
         'file': image_file,
-        'is_profile_picture': is_profile_picture
+        'is_profile_picture': is_profile_picture,
+        'mime_type': mime_type,
+        'file_name': file_name
         })
         index += 1
     
@@ -144,8 +148,8 @@ def setSettings(user_id):
     #We delete every image before inserting the ones we received
     makeRequest("DELETE FROM image WHERE user_id = ?", (str(user_id),))
     for image in images:
-        makeRequest("INSERT INTO image (image_file, user_id, is_profile_picture) VALUES (?, ?, ?)",
-                    (base64.b64encode(image["file"].read()), str(user_id), bool(image["is_profile_picture"])))
+        makeRequest("INSERT INTO image (image_file, mime_type, file_name, user_id, is_profile_picture) VALUES (?, ?, ?, ?, ?)",
+                    (base64.b64encode(image["file"].read()), image["mime_type"], image['file_name'], str(user_id), bool(image["is_profile_picture"])))
 
     return jsonify(ok=True)
 

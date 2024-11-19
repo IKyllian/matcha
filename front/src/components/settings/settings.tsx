@@ -39,11 +39,12 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const { token } = useStore((state) => state.authStore)
   const addAlert = useStore((state) => state.addAlert)
   const [selectedChips, setSelectedChips] = useState<Tags[]>(profileSettings.user.tags)
-  const [profilePicturePreview, setProfilPicturePreview] = useState<string | undefined>(profileImageFromUser ? `data:image/png;base64,${profileImageFromUser}` : undefined)
+  const [profilePicturePreview, setProfilPicturePreview] = useState<string | undefined>(profileImageFromUser ? profileImageFromUser : undefined)
   const [profilesImages, setProfilesImages] = useState<ImageSettingsType[]>(profileSettings.user.images.map(i => ({
     file: i.image_file,
     is_profile_picture: i.is_profile_picture,
-    preview: `data:image/png;base64,${i.image_file}`
+    preview: i.image_file,
+    file_name: i.file_name
   })))
   const [inputPositionsList, setInputPositionsList] = useState<PositionType[]>([])
   const [positionSelected, setPositionSelected] = useState<PositionType>()
@@ -83,23 +84,27 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     }
 
     profilesImages.forEach((image: any, index) => {
-      // if (typeof image === 'string' && image.startsWith("data:")) {
-      //   // Si l'image est en base64, convertit en File
-      //   const [metadata, data] = image.split(',');
-      //   const mime = metadata.match(/:(.*?);/)[1];
-      //   const byteString = atob(data);
-      //   const byteNumbers = new Array(byteString.length);
-      //   for (let i = 0; i < byteString.length; i++) {
-      //     byteNumbers[i] = byteString.charCodeAt(i);
-      //   }
-      //   const byteArray = new Uint8Array(byteNumbers);
-      //   const blob = new Blob([byteArray], { type: mime });
-      //   const file = new File([blob], `image${index + 1}.${mime.split('/')[1]}`, { type: mime });
-      //   formData.append(`images[${index}][file]`, file);
-      // } else {
-      // Si c'est déjà un objet File, l'ajoute directement
-      formData.append(`images[${index}][file]`, image.file);
-      // }
+      const imageFile: string = image?.file
+      if (typeof imageFile === 'string' && imageFile.startsWith("data:")) {
+        // Si l'image est en base64, convertit en File
+        const byteString = atob(imageFile.split(",")[1]); // Décoder Base64
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+
+        const mimeType = imageFile.match(/data:(.*?);base64/)[1];
+        const blob = new Blob([ab], { type: mimeType });
+        const fileName = image.file_name ? image.file_name : `image${index + 1}.${mimeType.split('/')[1]}`
+        const file = new File([blob], fileName, { type: mimeType });
+
+        formData.append(`images[${index}][file]`, file);
+      } else {
+        // Si c'est déjà un objet File, l'ajoute directement
+        formData.append(`images[${index}][file]`, imageFile);
+      }
       formData.append(`images[${index}][is_profile_picture]`, image.is_profile_picture.toString());
     });
 
