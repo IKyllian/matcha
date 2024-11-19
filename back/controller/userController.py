@@ -32,8 +32,6 @@ def getProfiles(user_id):
     max_pos = request.args.get("max_pos", None)
     min_fame = request.args.get("min_fame", None)
     tags = request.args.get("tags", None)
-
-    print('tags - ', tags)
     if (not max_pos):
         distance = ""
 
