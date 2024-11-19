@@ -22,17 +22,23 @@ def getProfiles(user_id):
     user = getUserWithImagesById(user_id)
     user_latitude = str(user["latitude"])
     user_longitude = str(user["longitude"])
+    distance = "(6371 * acos(cos(radians(" + user_latitude + ")) * cos(radians(user.latitude)) * cos(radians(user.longitude) - radians(" + user_longitude + ")) + sin(radians(" + user_latitude + ")) * sin(radians(user.latitude)))) AS distance,"
 
     min_age = request.args.get("min_age", None)
     max_age = request.args.get("max_age", None)
     max_pos = request.args.get("max_pos", None)
     min_fame = request.args.get("min_fame", None)
     tags = request.args.get("tags", None)
+    if (not max_pos):
+        distance = ""
+
+    print("REQUEST ==========")
+    print(request.args)
 
     if (min_age and max_age and int(min_age) > int(max_age)):
         raise ForbiddenError("Invalid Params : min_age should be lower than max_age")
 
-    requestQuery = "SELECT user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE user.id != " + str(user_id) + " "
+    requestQuery = "SELECT " + distance + " user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE user.id != " + str(user_id) + " "
     #Check needAnd to know if you need to add " AND " to requestQuery
     
     if (min_age):
@@ -43,21 +49,23 @@ def getProfiles(user_id):
         requestQuery += "user.birth_date >= date('now', '-" + str(max_age) + " years') "
     if (max_pos):
         requestQuery += "AND "
-        requestQuery += "(user.latitude -" + user_latitude + ")*(user.latitude -" + user_latitude + ") + (user.longitude -" + user_longitude + ")*(user.longitude -" + user_longitude + ") <= " + str(max_pos) + " "
+        requestQuery += " distance <= " + str(max_pos) + " "
+        #requestQuery += "(user.latitude -" + user_latitude + ")*(user.latitude -" + user_latitude + ") + (user.longitude -" + user_longitude + ")*(user.longitude -" + user_longitude + ") <= " + str(max_pos) + " "
     if (min_fame):
         requestQuery += "AND "
         requestQuery += "user.fame_rating <= " + str(min_fame)
-    if (tags and len(tags) > 0):
-        requestQuery += "AND "
-        requestQuery += "INNER JOIN user_tag ut ON user.id = ut.user_id WHERE ut.tag_id IN ("
-        needComma = False
-        for tag in tags:
-            if (needComma):
-                requestQuery += ", "
-            needComma = True
-            requestQuery += str(tag)
-        requestQuery += ") GROUP BY user.id HAVING COUNT(DISTINCT ut.tag_id) = " + str(len(tags))
-    
+    # if (tags and len(tags) > 0):
+    #     requestQuery += "AND "
+    #     requestQuery += "INNER JOIN user_tag ut ON user.id = ut.user_id WHERE ut.tag_id IN ("
+    #     needComma = False
+    #     for tag in tags:
+    #         if (needComma):
+    #             requestQuery += ", "
+    #         needComma = True
+    #         requestQuery += str(tag)
+    #     requestQuery += ") GROUP BY user.id HAVING COUNT(DISTINCT ut.tag_id) = " + str(len(tags))
+    print("QUERY ==========")
+    print(requestQuery)
     users = makeRequest(requestQuery)
 
     for user in users:
@@ -135,7 +143,7 @@ def setSettings(user_id):
     
     #First we insert all the data we got from settings
     makeRequest("UPDATE user SET username = ?, email = ?, first_name = ?, last_name = ?, gender = ?, sexual_preference = ?, bio = ?, latitude = ?, longitude = ? WHERE id = ?",
-                           (str(username), str(email), str(first_name), str(last_name), str(gender), str(sexual_preference), str(bio), str(user_id), str(latitude), str(longitude)))
+                           (str(username), str(email), str(first_name), str(last_name), str(gender), str(sexual_preference), str(bio), str(latitude), str(longitude), str(user_id)))
     
     #We delete every tag before inserting the ones we received
     makeRequest("DELETE FROM user_tag WHERE user_id = ?", (str(user_id),))
