@@ -32,37 +32,55 @@ def getProfiles(user_id):
     max_pos = request.args.get("max_pos", None)
     min_fame = request.args.get("min_fame", None)
     tags = request.args.get("tags", None)
+
+    print('tags - ', tags)
     if (not max_pos):
         distance = ""
 
     if (min_age and max_age and int(min_age) > int(max_age)):
         raise ForbiddenError("Invalid Params : min_age should be lower than max_age")
 
-    requestQuery = "SELECT " + distance + " user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE user.id != " + str(user_id) + " "
+    requestQuery = "SELECT " + distance + " user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
     #Check needAnd to know if you need to add " AND " to requestQuery
-    
+    whereConditions = []
+    whereConditions.append(f"user.id != {str(user_id)}")
     if (min_age):
-        requestQuery += "AND "
-        requestQuery += "user.birth_date <= date('now', '-" + str(min_age) + " years') "
+        whereConditions.append(f"user.birth_date <= date('now', '-{str(min_age)} years')")
+        # requestQuery += "user.birth_date <= date('now', '-" + str(min_age) + " years') "
     if (max_age):
-        requestQuery += "AND "
-        requestQuery += "user.birth_date >= date('now', '-" + str(max_age) + " years') "
+        whereConditions.append(f"user.birth_date >= date('now', '-{str(max_age)} years')")
+        # requestQuery += "user.birth_date >= date('now', '-" + str(max_age) + " years') "
     if (max_pos):
-        requestQuery += "AND "
-        requestQuery += " distance <= " + str(max_pos) + " "
+        whereConditions.append(f"distance <= {str(max_pos)}")
+        # requestQuery += " distance <= " + str(max_pos) + " "
     if (min_fame):
-        requestQuery += "AND "
-        requestQuery += "user.fame_rating <= " + str(min_fame)
+        whereConditions.append(f"user.fame_rating <= {str(min_fame)}")
+        # requestQuery += "user.fame_rating <= " + str(min_fame)
+    tagJoin = ""
     if (tags and len(tags) > 0):
-        requestQuery += "AND "
-        requestQuery += "INNER JOIN user_tag ut ON user.id = ut.user_id WHERE ut.tag_id IN ("
-        needComma = False
-        for tag in tags:
-            if (needComma):
-                requestQuery += ", "
-            needComma = True
-            requestQuery += str(tag)
-        requestQuery += ") GROUP BY user.id HAVING COUNT(DISTINCT ut.tag_id) = " + str(len(tags))
+        tagJoin = " INNER JOIN user_tag ut ON user.id = ut.user_id"
+        whereConditions.append(f"ut.tag_id IN ({tags})")
+    # if (tags and len(tags) > 0):
+    #     requestQuery += "INNER JOIN user_tag ut ON user.id = ut.user_id WHERE ut.tag_id IN ("
+    #     needComma = False
+    #     for tag in tags:
+    #         if (needComma):
+    #             requestQuery += ", "
+    #         needComma = True
+    #         requestQuery += str(tag)
+    groupByState = 'GROUP BY user.id '
+    havingState = f"HAVING COUNT(DISTINCT ut.tag_id) = {str(len(tags))}"
+    requestQuery += tagJoin
+    if (len(whereConditions) > 0):
+        requestQuery += ' WHERE '
+        requestQuery += " AND ".join(whereConditions)
+        # for condition in whereConditions:
+           
+        #    requestQuery += f"{condition} "
+        # requestQuery += ") GROUP BY user.id HAVING COUNT(DISTINCT ut.tag_id) = " + str(len(tags))
+    requestQuery += groupByState
+    requestQuery += havingState
+    print('requestQuery = ', requestQuery)
     users = makeRequest(requestQuery)
 
     for user in users:
