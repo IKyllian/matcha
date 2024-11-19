@@ -32,9 +32,6 @@ def getProfiles(user_id):
     if (not max_pos):
         distance = ""
 
-    print("REQUEST ==========")
-    print(request.args)
-
     if (min_age and max_age and int(min_age) > int(max_age)):
         raise ForbiddenError("Invalid Params : min_age should be lower than max_age")
 
@@ -64,8 +61,6 @@ def getProfiles(user_id):
     #         needComma = True
     #         requestQuery += str(tag)
     #     requestQuery += ") GROUP BY user.id HAVING COUNT(DISTINCT ut.tag_id) = " + str(len(tags))
-    print("QUERY ==========")
-    print(requestQuery)
     users = makeRequest(requestQuery)
 
     for user in users:
