@@ -8,6 +8,7 @@ from app import bcrypt
 from errors.httpErrors import APIAuthError
 import re
 import ipdata
+import os
 
 def get_client_ip():
     headers_to_check = [
@@ -66,11 +67,11 @@ def signup():
     if (getAgeFromTime(birth_date) < 18):
         raise APIAuthError('User must bet at least 18 years old')
     
-    ipdata.api_key = "060ae89add4de8cc3ff0c9f8da69adbf2515414caa66395cbcddfcec"
+    ipdata.api_key = os.getenv("IP_DATA_API_KEY")
     try :
         ipAddress = get_client_ip()
         if ('10.11.' in ipAddress or '127.0.'in ipAddress):
-            ipAddress = '46.231.218.157'
+            ipAddress = os.getenv("PUBLIC_IP")
         data = ipdata.lookup(ipAddress)
         makeRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                             (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date), str(data['latitude']), str(data['longitude'])))

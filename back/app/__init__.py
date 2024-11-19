@@ -6,16 +6,23 @@ from flask_socketio import SocketIO
 from datetime import timedelta
 from flask import jsonify
 from errors.httpErrors import APIError
+from dotenv import load_dotenv
+import os
 
 socketio = SocketIO(cors_allowed_origins = "*")
 bcrypt = Bcrypt()
 jwt = JWTManager()
 
+print('env = ', os.getenv("JWT_SECRET_KEY"))
+print('env = ', os.getenv("HOST"))
+print('env = ', os.getenv("IP_DATA_API_KEY"))
+print('env = ', os.getenv("PUBLIC_IP"))
 def createApp():
     app = Flask(__name__)
+    load_dotenv()
     CORS(app)
     bcrypt.init_app(app)
-    app.config["JWT_SECRET_KEY"] = "secret_matcha_jwt_key"
+    app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=120)
     jwt.init_app(app)
     socketio.init_app(app)

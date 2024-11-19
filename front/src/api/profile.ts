@@ -1,4 +1,3 @@
-import { API_URL } from "front/hook/useApi";
 import { apiRequest } from "front/api/api";
 import { AlertStoreType } from "front/store/alert.store";
 
@@ -10,7 +9,7 @@ type RequestFromIdProps = {
 
 export const makeLikeRequest = async ({ token, id, addAlert }: RequestFromIdProps) => {
     return apiRequest<{ ok: boolean }>({
-        url: `${API_URL}/like`,
+        url: `${import.meta.env.VITE_API_URL}/like`,
         options: {
             method: 'POST',
             json: { user_to_like_id: id }
@@ -22,7 +21,7 @@ export const makeLikeRequest = async ({ token, id, addAlert }: RequestFromIdProp
 
 export const makeBlockRequest = async ({ token, id, addAlert }: RequestFromIdProps) => {
     return apiRequest<{ ok: boolean }>({
-        url: `${API_URL}/block`,
+        url: `${import.meta.env.VITE_API_URL}/block`,
         options: {
             method: 'POST',
             json: { user_to_block_id: id }
@@ -34,7 +33,7 @@ export const makeBlockRequest = async ({ token, id, addAlert }: RequestFromIdPro
 
 export const makeReportRequest = async ({ token, id, addAlert }: RequestFromIdProps) => {
     return apiRequest<{ ok: boolean }>({
-        url: `${API_URL}/report`,
+        url: `${import.meta.env.VITE_API_URL}/report`,
         options: {
             method: 'POST',
             json: { user_to_report_id: id }
@@ -46,7 +45,7 @@ export const makeReportRequest = async ({ token, id, addAlert }: RequestFromIdPr
 
 export const makeViewRequest = async ({ token, id, addAlert }: RequestFromIdProps) => {
     return apiRequest<{ ok: boolean }>({
-        url: `${API_URL}/view`,
+        url: `${import.meta.env.VITE_API_URL}/view`,
         options: {
             method: 'POST',
             json: { user_to_view_id: id }
@@ -58,7 +57,7 @@ export const makeViewRequest = async ({ token, id, addAlert }: RequestFromIdProp
 
 export const makeSettingsRequest = async ({ data, token, addAlert }: { data: any, token: string, addAlert: AlertStoreType['addAlert'] }) => {
     return apiRequest<{ ok: boolean }>({
-        url: `${API_URL}/profile/setSettings`,
+        url: `${import.meta.env.VITE_API_URL}/profile/setSettings`,
         options: {
             method: 'POST',
             body: data
