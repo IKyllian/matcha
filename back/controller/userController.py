@@ -50,20 +50,19 @@ def getProfiles(user_id):
     if (max_pos):
         requestQuery += "AND "
         requestQuery += " distance <= " + str(max_pos) + " "
-        #requestQuery += "(user.latitude -" + user_latitude + ")*(user.latitude -" + user_latitude + ") + (user.longitude -" + user_longitude + ")*(user.longitude -" + user_longitude + ") <= " + str(max_pos) + " "
     if (min_fame):
         requestQuery += "AND "
         requestQuery += "user.fame_rating <= " + str(min_fame)
-    # if (tags and len(tags) > 0):
-    #     requestQuery += "AND "
-    #     requestQuery += "INNER JOIN user_tag ut ON user.id = ut.user_id WHERE ut.tag_id IN ("
-    #     needComma = False
-    #     for tag in tags:
-    #         if (needComma):
-    #             requestQuery += ", "
-    #         needComma = True
-    #         requestQuery += str(tag)
-    #     requestQuery += ") GROUP BY user.id HAVING COUNT(DISTINCT ut.tag_id) = " + str(len(tags))
+    if (tags and len(tags) > 0):
+        requestQuery += "AND "
+        requestQuery += "INNER JOIN user_tag ut ON user.id = ut.user_id WHERE ut.tag_id IN ("
+        needComma = False
+        for tag in tags:
+            if (needComma):
+                requestQuery += ", "
+            needComma = True
+            requestQuery += str(tag)
+        requestQuery += ") GROUP BY user.id HAVING COUNT(DISTINCT ut.tag_id) = " + str(len(tags))
     users = makeRequest(requestQuery)
 
     for user in users:
@@ -125,8 +124,6 @@ def setSettings(user_id):
     images = []
     index = 0
 
-    print('latitude', latitude)
-    print('longitude', longitude)
     if (not latitude or not longitude):
         print('GET pos from ip adress')
         ipdata.api_key = os.getenv("IP_DATA_API_KEY")
