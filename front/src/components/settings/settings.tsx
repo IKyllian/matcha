@@ -5,11 +5,12 @@ import { css } from "styled-system/css"
 import { useForm } from "react-hook-form"
 import { FaUpload } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
-import { makePositionRequest, makeSettingsRequest } from "front/api/profile"
+import { makePositionRequest, makeReversePositionRequest, makeSettingsRequest } from "front/api/profile"
 import { useStore } from "front/store/store"
 import { ImageSettingsType, Tags, User } from "front/typing/user"
 import { useApi } from "front/hook/useApi"
 import { AlertTypeEnum } from "front/typing/alert"
+import { makeIpAddressRequest } from "front/api/auth"
 
 type InputRadioProps = {
   value: string
@@ -50,6 +51,24 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const [positionSelected, setPositionSelected] = useState<PositionType>()
   const [inputPosition, setInputPosition] = useState<string>('')
 
+
+  useEffect(() => {
+    const getPos = async () => {
+      const lat = profileSettings.user.latitude
+      const lon = profileSettings.user.longitude
+      if (lat && lon) {
+        const { display_name } = await makeReversePositionRequest({ lat, lon })
+        setPositionSelected({
+          displayName: display_name,
+          latitude: lat,
+          longitude: lon
+        })
+        setInputPosition(display_name)
+      }
+    }
+    getPos()
+  }, [])
+
   const {
     register,
     handleSubmit,
@@ -78,7 +97,8 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     const formData = new FormData()
 
     for (const [key, value] of Object.entries(values)) {
-      if (key !== 'tags' && key !== 'images' && key !== 'fame_rating') {
+      if (key !== 'tags' && key !== 'images' && key !== 'fame_rating' && key !== 'latitude' && key !== 'longitude') {
+        console.info(key)
         formData.append(key, value)
       }
     }
@@ -118,13 +138,15 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       formData.append('latitude', positionSelected.latitude.toString())
     }
 
-    console.info("formData = ", formData)
+    console.info('formData = ', formData)
 
+    const { ip } = await makeIpAddressRequest()
     const ret = await makeSettingsRequest(
       {
         data: formData,
         token,
-        addAlert
+        addAlert,
+        ip
       }
     )
 

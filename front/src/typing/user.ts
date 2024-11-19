@@ -17,6 +17,8 @@ export type User = {
     birth_date?: any
     sexual_preference?: 'M' | 'F' | 'B'
     images?: Image[]
+    latitude: number
+    longitude: number
 }
 
 export const USERS: User[] = [
@@ -31,6 +33,8 @@ export const USERS: User[] = [
         email: 'qwe@gmail.com',
         age: 25,
         tags: [],
+        latitude: 1,
+        longitude: 1,
         pictures: [
             Image,
             Image,
@@ -49,6 +53,8 @@ export const USERS: User[] = [
         password: 'weqweqweqwe',
         age: 30,
         tags: [],
+        latitude: 1,
+        longitude: 1,
         pictures: [
             Image,
             Image,
@@ -66,6 +72,8 @@ export const USERS: User[] = [
         location: 'Tokyo, Japan',
         password: 'weqweqweqwe',
         age: 28,
+        latitude: 1,
+        longitude: 1,
         tags: [],
         pictures: [
             Image,

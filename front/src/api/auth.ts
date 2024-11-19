@@ -5,3 +5,8 @@ export const makeAuthRequest = async (token: string) => {
     const response = await ky.get<{ user: User }>(`${import.meta.env.VITE_API_URL}/auth?jwt_token=${token}`).json();
     return response
 }
+
+export const makeIpAddressRequest = async () => {
+    const response = await ky.get<{ ip?: string }>('https://api.ipify.org?format=json').json()
+    return response
+}

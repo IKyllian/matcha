@@ -13,10 +13,6 @@ socketio = SocketIO(cors_allowed_origins = "*")
 bcrypt = Bcrypt()
 jwt = JWTManager()
 
-print('env = ', os.getenv("JWT_SECRET_KEY"))
-print('env = ', os.getenv("HOST"))
-print('env = ', os.getenv("IP_DATA_API_KEY"))
-print('env = ', os.getenv("PUBLIC_IP"))
 def createApp():
     app = Flask(__name__)
     load_dotenv()

@@ -10,18 +10,6 @@ import re
 import ipdata
 import os
 
-def get_client_ip():
-    headers_to_check = [
-        'HTTP_X_FORWARDED_FOR', 'X_FORWARDED_FOR',
-        'HTTP_CLIENT_IP', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED',
-        'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR',
-        'HTTP_FORWARDED', 'HTTP_VIA', 'REMOTE_ADDR'
-    ]
-    for header in headers_to_check:
-        if header in request.environ:
-            return request.environ[header].split(',')[0].strip()
-    return request.remote_addr
-
 regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
 
 def isEmailValid(email):

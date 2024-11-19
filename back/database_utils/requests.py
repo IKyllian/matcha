@@ -1,5 +1,6 @@
 import base64
 import sqlite3
+from flask import request
 
 #Used to check if you can like an account
 def isAccountValid(user):
@@ -37,3 +38,16 @@ def makeRequest(query, params = ()):
     connection.commit()
     connection.close()
     return unpacked
+
+
+def get_client_ip():
+    headers_to_check = [
+        'HTTP_X_FORWARDED_FOR', 'X_FORWARDED_FOR',
+        'HTTP_CLIENT_IP', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED',
+        'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR',
+        'HTTP_FORWARDED', 'HTTP_VIA', 'REMOTE_ADDR'
+    ]
+    for header in headers_to_check:
+        if header in request.environ:
+            return request.environ[header].split(',')[0].strip()
+    return request.remote_addr

@@ -8,6 +8,7 @@ import { useEffect } from "react"
 import { makeSignUpRequest } from "front/api/sign"
 import { COOKIE_JWT_TOKEN } from "front/constant/cookie"
 import { useCookies } from "react-cookie"
+import { makeIpAddressRequest } from "front/api/auth"
 
 type FormValues = Pick<User, 'first_name' | 'last_name' | 'username' | 'email' | 'password' | 'birth_date'>
 
@@ -70,7 +71,8 @@ const Register = () => {
     const navigate = useNavigate()
     const slotsStyles = formStyle.raw()
     const onSubmit = async (data: FormValues) => {
-        const ret = await makeSignUpRequest({ data, addAlert })
+        const { ip } = await makeIpAddressRequest()
+        const ret = await makeSignUpRequest({ data, addAlert, ip })
         if (ret) {
             const { user, access_token } = ret
             logUser(user, access_token)
