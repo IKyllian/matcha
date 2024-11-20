@@ -4,6 +4,18 @@ from database_utils.requests import *
 from database_utils.decoratorFunctions import token_required
 from errors.httpErrors import ForbiddenError
 
+def calculate_fame(likes_received, likes_given):
+    base_fame = 2.5
+    fame = base_fame + (likes_received * 0.1) - (likes_given * 0.05)
+    return max(0, min(fame, 5))
+
+def updateFame(user_id):
+    likes = makeRequest("SELECT (SELECT COUNT(*) FROM like WHERE user_id = :id) AS likes_given, (SELECT COUNT(*) FROM like WHERE liked_user_id = :id) AS likes_received",
+                        ((str(user_id)),))
+
+    fame = calculate_fame(likes[0]["likes_received"], likes[0]["likes_given"])
+    makeRequest("UPDATE user SET fame_rating = ? WHERE id = ?", ((str(fame)), (str(user_id))))
+
 @token_required
 def likeUserById(user_id):
     user_to_like_id = request.json.get("user_to_like_id", None)
@@ -20,6 +32,9 @@ def likeUserById(user_id):
     else :
         makeRequest("INSERT INTO like (user_id, liked_user_id) VALUES (?, ?)",
                            (str(user_id), str(user_to_like_id)))
+        
+    updateFame(user_id)
+    updateFame(user_to_like_id)
     return jsonify(ok=True)
 
 def decodeImagesFromLikes(likes):
