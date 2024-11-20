@@ -11,6 +11,7 @@ export type User = {
     location: string;
     bio: string;
     age: number;
+    fame_rating: number;
     tags: Tags[];
     pictures: any[];
     gender?: 'M' | 'F'
@@ -32,6 +33,7 @@ export const USERS: User[] = [
         password: 'weqweqweqwe',
         email: 'qwe@gmail.com',
         age: 25,
+        fame_rating: 2.5,
         tags: [],
         latitude: 1,
         longitude: 1,
@@ -52,6 +54,7 @@ export const USERS: User[] = [
         location: 'New York, USA',
         password: 'weqweqweqwe',
         age: 30,
+        fame_rating: 2.5,
         tags: [],
         latitude: 1,
         longitude: 1,
@@ -72,6 +75,7 @@ export const USERS: User[] = [
         location: 'Tokyo, Japan',
         password: 'weqweqweqwe',
         age: 28,
+        fame_rating: 2.5,
         latitude: 1,
         longitude: 1,
         tags: [],

@@ -72,12 +72,6 @@ def getProfiles(user_id):
             tagJoin += " INNER JOIN user_tag ut" + str(i) + " ON user.id = ut"+ str(i) +".user_id AND ut" + str(i) + ".tag_id = :tag_" + str(i - 1)
             queryParams.update({f"tag_{i}": tag for i, tag in enumerate(tags)})
             i+=1
-        
-        # tagJoin = " INNER JOIN user_tag ut ON user.id = ut.user_id"
-        # tag_params = [f":tag_{i}" for i in range(len(tags))]
-        # whereConditions.append(f"ut.tag_id IN ({', '.join(tag_params)})") # TODO - Passer en et exclusif
-        # queryParams.update({f"tag_{i}": tag for i, tag in enumerate(tags)})
-        print("tagJoin=",tagJoin)
         requestQuery += tagJoin
 
     if (len(whereConditions) > 0):
@@ -86,8 +80,6 @@ def getProfiles(user_id):
 
     groupByClose = ' GROUP BY user.id '
     requestQuery += groupByClose
-    print('reqQuery=', requestQuery)
-    print('queryParam=', queryParams)
 
     users = makeRequest(requestQuery, queryParams)
     for user in users:

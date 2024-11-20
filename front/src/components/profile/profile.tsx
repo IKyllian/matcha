@@ -14,6 +14,7 @@ import ProfileLikes from "./profileLikes"
 import ProfileMatches from "./profileMatches"
 import ProfilePicture from "front/components/utils/profilePicture"
 import { CardsImagesList } from "front/components/card/cardsList"
+import StarRating from './StarRating'
 
 const NAV_CONTENT_LOGGED_USER = [
     'Likes',
@@ -104,7 +105,11 @@ const Profile = () => {
                 <ProfilePicture className={slotsStyles.profileImg} userImages={profile.user.images} width="300px" height="300px" />
                 <div className={css(slotsStyles.profilContent)}>
                     <div className={css(slotsStyles.flexContainer)}>
-                        <p><span className={css(slotsStyles.profileName)}>{profile.user.first_name} {profile.user.last_name}</span> {profile.user.age}ans</p>
+                        <div className={css(slotsStyles.userInfoContainer)}>
+                            <p><span className={css(slotsStyles.profileName)}>{profile.user.first_name} {profile.user.last_name}</span> {profile.user.age} ans</p>
+                            <StarRating containerClassName='starClass' isReadOnly initialRating={profile.user.fame_rating} unit="float" />
+                        </div>
+                       
                         <div>
                             {
                                 isLoggedUser &&
