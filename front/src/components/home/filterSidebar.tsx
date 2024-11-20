@@ -75,7 +75,7 @@ const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
         </label>
         <label>
           Position
-          <input {...register('max_pos')} type='range' />
+          <input {...register('max_pos')} type='range' defaultValue={undefined} />
         </label>
         <label>
           Fame
