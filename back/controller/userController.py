@@ -9,6 +9,9 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager, decode_token
 from errors.httpErrors import ForbiddenError
+import ipdata
+import os
+from errors.httpErrors import APIAuthError
 
 def getTimeFromAge(Age):
     return datetime.today() - relativedelta(years=int(Age))
@@ -35,24 +38,27 @@ def getProfiles(user_id):
     if (min_age and max_age and int(min_age) > int(max_age)):
         raise ForbiddenError("Invalid Params : min_age should be lower than max_age")
 
-    requestQuery = "SELECT " + distance + " user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE user.id != " + str(user_id) + " "
+    requestQuery = "SELECT " + distance + " user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
     #Check needAnd to know if you need to add " AND " to requestQuery
-    
+    whereConditions = []
+    whereConditions.append(f"user.id != {str(user_id)}")
     if (min_age):
-        requestQuery += "AND "
-        requestQuery += "user.birth_date <= date('now', '-" + str(min_age) + " years') "
+        whereConditions.append(f"user.birth_date <= date('now', '-{str(min_age)} years')")
+        # requestQuery += "user.birth_date <= date('now', '-" + str(min_age) + " years') "
     if (max_age):
-        requestQuery += "AND "
-        requestQuery += "user.birth_date >= date('now', '-" + str(max_age) + " years') "
+        whereConditions.append(f"user.birth_date >= date('now', '-{str(max_age)} years')")
+        # requestQuery += "user.birth_date >= date('now', '-" + str(max_age) + " years') "
     if (max_pos):
-        requestQuery += "AND "
-        requestQuery += " distance <= " + str(max_pos) + " "
-        #requestQuery += "(user.latitude -" + user_latitude + ")*(user.latitude -" + user_latitude + ") + (user.longitude -" + user_longitude + ")*(user.longitude -" + user_longitude + ") <= " + str(max_pos) + " "
+        whereConditions.append(f"distance <= {str(max_pos)}")
+        # requestQuery += " distance <= " + str(max_pos) + " "
     if (min_fame):
-        requestQuery += "AND "
-        requestQuery += "user.fame_rating <= " + str(min_fame)
+        whereConditions.append(f"user.fame_rating <= {str(min_fame)}")
+        # requestQuery += "user.fame_rating <= " + str(min_fame)
+    tagJoin = ""
+    if (tags and len(tags) > 0):
+        tagJoin = " INNER JOIN user_tag ut ON user.id = ut.user_id"
+        whereConditions.append(f"ut.tag_id IN ({tags})")
     # if (tags and len(tags) > 0):
-    #     requestQuery += "AND "
     #     requestQuery += "INNER JOIN user_tag ut ON user.id = ut.user_id WHERE ut.tag_id IN ("
     #     needComma = False
     #     for tag in tags:
@@ -60,7 +66,19 @@ def getProfiles(user_id):
     #             requestQuery += ", "
     #         needComma = True
     #         requestQuery += str(tag)
-    #     requestQuery += ") GROUP BY user.id HAVING COUNT(DISTINCT ut.tag_id) = " + str(len(tags))
+    groupByState = 'GROUP BY user.id '
+    havingState = f"HAVING COUNT(DISTINCT ut.tag_id) = {str(len(tags))}"
+    requestQuery += tagJoin
+    if (len(whereConditions) > 0):
+        requestQuery += ' WHERE '
+        requestQuery += " AND ".join(whereConditions)
+        # for condition in whereConditions:
+           
+        #    requestQuery += f"{condition} "
+        # requestQuery += ") GROUP BY user.id HAVING COUNT(DISTINCT ut.tag_id) = " + str(len(tags))
+    requestQuery += groupByState
+    requestQuery += havingState
+    print('requestQuery = ', requestQuery)
     users = makeRequest(requestQuery)
 
     for user in users:
@@ -122,24 +140,38 @@ def setSettings(user_id):
     images = []
     index = 0
 
+    if (not latitude or not longitude):
+        print('GET pos from ip adress')
+        ipdata.api_key = os.getenv("IP_DATA_API_KEY")
+        try :
+            ipAddress = get_client_ip()
+            if ('10.11.' in ipAddress or '127.0.'in ipAddress):
+                ipAddress = os.getenv("PUBLIC_IP")
+            data = ipdata.lookup(ipAddress)
+            latitude = data['latitude']
+            longitude = data['longitude']
+        except :
+            raise APIAuthError('Location is not parseable')
+
     while f"images[{index}][file]" in request.files:
         image_file = request.files.get(f"images[{index}][file]")
+        mime_type = image_file.content_type if image_file.content_type else "text/plain"
+        file_name = image_file.filename if image_file.filename else ""
         is_profile_picture = request.form.get(f"images[{index}][is_profile_picture]") == 'true'
         images.append({
         'file': image_file,
-        'is_profile_picture': is_profile_picture
+        'is_profile_picture': is_profile_picture,
+        'mime_type': mime_type,
+        'file_name': file_name
         })
         index += 1
     
     if (not checkImages(images)):
         raise ForbiddenError("Invalid images sent")
-    
-    print(images)
-    
+        
     #First we insert all the data we got from settings
     makeRequest("UPDATE user SET username = ?, email = ?, first_name = ?, last_name = ?, gender = ?, sexual_preference = ?, bio = ?, latitude = ?, longitude = ? WHERE id = ?",
-                           (str(username), str(email), str(first_name), str(last_name), str(gender), str(sexual_preference), str(bio), str(latitude), str(longitude), str(user_id)))
-    
+                (str(username), str(email), str(first_name), str(last_name), str(gender), str(sexual_preference), str(bio), str(latitude), str(longitude), str(user_id)))
     #We delete every tag before inserting the ones we received
     makeRequest("DELETE FROM user_tag WHERE user_id = ?", (str(user_id),))
     for tag in tags:
@@ -148,8 +180,8 @@ def setSettings(user_id):
     #We delete every image before inserting the ones we received
     makeRequest("DELETE FROM image WHERE user_id = ?", (str(user_id),))
     for image in images:
-        makeRequest("INSERT INTO image (image_file, user_id, is_profile_picture) VALUES (?, ?, ?)",
-                    (base64.b64encode(image["file"].read()), str(user_id), bool(image["is_profile_picture"])))
+        makeRequest("INSERT INTO image (image_file, mime_type, file_name, user_id, is_profile_picture) VALUES (?, ?, ?, ?, ?)",
+                    (base64.b64encode(image["file"].read()), image["mime_type"], image['file_name'], str(user_id), bool(image["is_profile_picture"])))
 
     return jsonify(ok=True)
 

@@ -1,8 +1,7 @@
 import { io } from "socket.io-client";
 import { MessageType } from "front/typing/chat";
-import { API_URL } from "front/hook/useApi";
 
-// const socket = io(API_URL);
+// const socket = io(import.meta.env.VITE_API_URL);
 
 export type MiddlewareType = {
   sendMessage: (params: { chatId: number, userId: number, message: string }) => void;

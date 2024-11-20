@@ -11,13 +11,12 @@ type ProfilePictureProps = {
 }
 const ProfilePicture = ({ userImages, width = '100%', height = '100%', className }: ProfilePictureProps) => {
     const imageBase64 = userImages?.find(i => i.is_profile_picture)?.image_file
-    const imageSrc = `data:image/png;base64,${imageBase64}`
     return (
         <div className={css({
             width,
             height
         })}>
-            <img src={imageBase64 ? imageSrc : DefaultProfilePicture} alt="Image de profile" className={css({
+            <img src={imageBase64 ? imageBase64 : DefaultProfilePicture} alt="Image de profile" className={css({
                 width: '100%',
                 height: '100%'
             }, className)} />

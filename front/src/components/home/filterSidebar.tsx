@@ -54,7 +54,7 @@ const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
   const submit = (values: FormValues) => {
     onSubmit({
       ...values,
-      tags: [...selectedChips]
+      tags: [...selectedChips.map(tag => tag.id)]
     })
   }
 

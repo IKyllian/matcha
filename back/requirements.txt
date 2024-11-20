@@ -5,3 +5,4 @@ flask-bcrypt
 flask-socketio
 python-dateutil
 ipdata
+python-dotenv

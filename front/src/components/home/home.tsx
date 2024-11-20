@@ -10,11 +10,13 @@ import HomeSuggestion from "./homeSuggestion";
 import { UrlParamsType } from "front/typing/filters";
 import { User } from "front/typing/user";
 import { useApi } from "front/hook/useApi";
+import { useStore } from "front/store/store";
 
 type HomeTabs = 'Liste' | 'Suggestion'
 
 const Home = () => {
   const slotsStyles = homeStyle.raw()
+  const user = useStore(state => state.authStore.user)
   const [filters, setFilters] = useState<UrlParamsType>({ min_age: 20 })
   const [filteredList, setFilteredList] = useState<Partial<User[]>>([])
   const [showSidebar, setShowSidebar] = useState(false)

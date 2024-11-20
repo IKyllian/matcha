@@ -1,20 +1,27 @@
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import ChipSelect from "front/components/chips/chipSelect"
 import { settingsStyle } from "./settings.style"
 import { css } from "styled-system/css"
 import { useForm } from "react-hook-form"
 import { FaUpload } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
-import { makeSettingsRequest } from "front/api/profile"
+import { makePositionRequest, makeReversePositionRequest, makeSettingsRequest } from "front/api/profile"
 import { useStore } from "front/store/store"
 import { ImageSettingsType, Tags, User } from "front/typing/user"
 import { useApi } from "front/hook/useApi"
 import { AlertTypeEnum } from "front/typing/alert"
+import { makeIpAddressRequest } from "front/api/auth"
 
 type InputRadioProps = {
   value: string
   label: string
   register: any
+}
+
+type PositionType = {
+  displayName: string,
+  latitude: number,
+  longitude: number
 }
 
 const InputRadio = ({ value, label, register }: InputRadioProps) => {
@@ -28,17 +35,39 @@ const InputRadio = ({ value, label, register }: InputRadioProps) => {
 }
 
 const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType }) => {
-  const profileImageFromUser = profileSettings.user.images?.find(i => i.is_profile_picture)?.image_file
+  const profileImageFromUser = profileSettings?.user?.images?.find(i => i.is_profile_picture)?.image_file
   const slotsStyles = settingsStyle.raw()
   const { token } = useStore((state) => state.authStore)
   const addAlert = useStore((state) => state.addAlert)
   const [selectedChips, setSelectedChips] = useState<Tags[]>(profileSettings.user.tags)
-  const [profilePicturePreview, setProfilPicturePreview] = useState<string | undefined>(profileImageFromUser ? `data:image/png;base64,${profileImageFromUser}` : undefined)
+  const [profilePicturePreview, setProfilPicturePreview] = useState<string | undefined>(profileImageFromUser ? profileImageFromUser : undefined)
   const [profilesImages, setProfilesImages] = useState<ImageSettingsType[]>(profileSettings.user.images.map(i => ({
     file: i.image_file,
     is_profile_picture: i.is_profile_picture,
-    preview: `data:image/png;base64,${i.image_file}`
+    preview: i.image_file,
+    file_name: i.file_name
   })))
+  const [inputPositionsList, setInputPositionsList] = useState<PositionType[]>([])
+  const [positionSelected, setPositionSelected] = useState<PositionType>()
+  const [inputPosition, setInputPosition] = useState<string>('')
+
+
+  useEffect(() => {
+    const getPos = async () => {
+      const lat = profileSettings.user.latitude
+      const lon = profileSettings.user.longitude
+      if (lat && lon) {
+        const { display_name } = await makeReversePositionRequest({ lat, lon })
+        setPositionSelected({
+          displayName: display_name,
+          latitude: lat,
+          longitude: lon
+        })
+        setInputPosition(display_name)
+      }
+    }
+    getPos()
+  }, [])
 
   const {
     register,
@@ -67,24 +96,35 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
 
     const formData = new FormData()
 
+    for (const [key, value] of Object.entries(values)) {
+      if (key !== 'tags' && key !== 'images' && key !== 'fame_rating' && key !== 'latitude' && key !== 'longitude') {
+        console.info(key)
+        formData.append(key, value)
+      }
+    }
+
     profilesImages.forEach((image: any, index) => {
-      // if (typeof image === 'string' && image.startsWith("data:")) {
-      //   // Si l'image est en base64, convertit en File
-      //   const [metadata, data] = image.split(',');
-      //   const mime = metadata.match(/:(.*?);/)[1];
-      //   const byteString = atob(data);
-      //   const byteNumbers = new Array(byteString.length);
-      //   for (let i = 0; i < byteString.length; i++) {
-      //     byteNumbers[i] = byteString.charCodeAt(i);
-      //   }
-      //   const byteArray = new Uint8Array(byteNumbers);
-      //   const blob = new Blob([byteArray], { type: mime });
-      //   const file = new File([blob], `image${index + 1}.${mime.split('/')[1]}`, { type: mime });
-      //   formData.append(`images[${index}][file]`, file);
-      // } else {
-      // Si c'est déjà un objet File, l'ajoute directement
-      formData.append(`images[${index}][file]`, image.file);
-      // }
+      const imageFile: string = image?.file
+      if (typeof imageFile === 'string' && imageFile.startsWith("data:")) {
+        // Si l'image est en base64, convertit en File
+        const byteString = atob(imageFile.split(",")[1]); // Décoder Base64
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+
+        const mimeType = imageFile.match(/data:(.*?);base64/)[1];
+        const blob = new Blob([ab], { type: mimeType });
+        const fileName = image.file_name ? image.file_name : `image${index + 1}.${mimeType.split('/')[1]}`
+        const file = new File([blob], fileName, { type: mimeType });
+
+        formData.append(`images[${index}][file]`, file);
+      } else {
+        // Si c'est déjà un objet File, l'ajoute directement
+        formData.append(`images[${index}][file]`, imageFile);
+      }
       formData.append(`images[${index}][is_profile_picture]`, image.is_profile_picture.toString());
     });
 
@@ -92,18 +132,22 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       formData.append(`tag_ids`, tag.id.toString());
     });
 
-    for (const [key, value] of Object.entries(values)) {
-      if (key !== 'tags' && key !== 'images') {
-        formData.append(key, value)
-      }
+    if (positionSelected) {
+      console.info('set new position = ', positionSelected)
+      formData.append('longitude', positionSelected.longitude.toString())
+      formData.append('latitude', positionSelected.latitude.toString())
     }
 
-    console.info("formData = ", formData)
+    console.info('formData = ', formData)
 
+    const { ip } = await makeIpAddressRequest()
     const ret = await makeSettingsRequest(
-      formData,
-      token,
-      addAlert
+      {
+        data: formData,
+        token,
+        addAlert,
+        ip
+      }
     )
 
     if (ret) {
@@ -147,6 +191,32 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     setProfilesImages([...newArray])
   }
 
+  const onPositionClick = (value: PositionType) => {
+    setInputPosition(value.displayName)
+    setPositionSelected(value)
+  }
+
+  const handleChange = (e) => {
+    const value = e.target.value
+    setInputPosition(value)
+  }
+
+  useEffect(() => {
+    const timeoutId = setTimeout(async () => {
+      if (inputPosition.trim() === "" || inputPosition.trim().length < 2) {
+        setInputPositionsList([])
+        return
+      }
+      console.info('CALL API')
+      const ret: any = await makePositionRequest({ city: inputPosition })
+      if (ret && Array.isArray(ret)) {
+        setInputPositionsList(ret.map(p => ({ displayName: p.display_name, latitude: p.lat, longitude: p.lon })))
+      }
+    }, 500)
+
+    return () => clearTimeout(timeoutId)
+  }, [inputPosition])
+
   return (
     <div className={css(slotsStyles.settingsContainer)}>
       <h2 className={css(slotsStyles.title)}> Completez votre profil </h2>
@@ -183,6 +253,27 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         <label>
           Desription:
           <textarea className={css(slotsStyles.textAreaInput)} {...register('bio')} name="bio" ></textarea>
+        </label>
+        <label className={css(slotsStyles.positionContainer)}>
+          Position:
+          <input type='text' onChange={handleChange} value={inputPosition} />
+          {
+            inputPositionsList.length > 0 && (
+              <div className={css(slotsStyles.positionListContainer)}>
+                {
+                  inputPositionsList.map((position, index) =>
+                    <span
+                      key={position.displayName}
+                      className={css(slotsStyles.positionItem)}
+                      data-border={+(index < inputPositionsList.length - 1)}
+                      onClick={() => onPositionClick(position)}
+                    >
+                      {position.displayName}
+                    </span>)
+                }
+              </div>
+            )
+          }
         </label>
         <label>
           Centre d'interets:

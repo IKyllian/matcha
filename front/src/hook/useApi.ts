@@ -31,17 +31,15 @@ const buildUrlParams = (urlParams: UrlParamsType): string => {
     return stringParams
 }
 
-export const API_URL = 'http://localhost:3000';
-
 export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getViewsOfUser' | 'getMatchesOfUser' | 'profile/settings' | 'getTags';
 
 const getUlrParams = ({ urlParams, endpoint, params }: { endpoint: string, urlParams?: UrlParamsType, params?: { id: number } }) => {
     if (urlParams) {
-        return `${API_URL}/${endpoint}${buildUrlParams(urlParams)}`
+        return `${import.meta.env.VITE_API_URL}/${endpoint}${buildUrlParams(urlParams)}`
     } else if (params) {
-        return `${API_URL}/${endpoint}/${params.id}`
+        return `${import.meta.env.VITE_API_URL}/${endpoint}/${params.id}`
     }
-    return `${API_URL}/${endpoint}`
+    return `${import.meta.env.VITE_API_URL}/${endpoint}`
 }
 //--------------------------------------------------------------------------------------------------------//
 
