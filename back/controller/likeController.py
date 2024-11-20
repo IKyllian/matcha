@@ -12,10 +12,8 @@ def calculate_fame(likes_received, likes_given):
 def updateFame(user_id):
     likes = makeRequest("SELECT (SELECT COUNT(*) FROM like WHERE user_id = :id) AS likes_given, (SELECT COUNT(*) FROM like WHERE liked_user_id = :id) AS likes_received",
                         ((str(user_id)),))
-    print('likes[0] =', likes[0])
 
     fame = calculate_fame(likes[0]["likes_received"], likes[0]["likes_given"])
-    print('fame =', fame)
     makeRequest("UPDATE user SET fame_rating = ? WHERE id = ?", ((str(fame)), (str(user_id))))
 
 @token_required
