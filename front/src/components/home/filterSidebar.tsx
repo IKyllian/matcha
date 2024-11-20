@@ -31,11 +31,16 @@ const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue
   } = useForm<FormValues>({
     defaultValues: filters
   })
   const [tags, setTags] = useState<Tags[]>([])
   const [selectedChips, setSelectedChips] = useState<Tags[]>([])
+
+  const watchMinPos = watch('max_pos')
+  const watchMinFame = watch('min_fame')
 
   const { isLoading } = useApi<Tags[]>({
     endpoint: 'getTags',
@@ -69,17 +74,17 @@ const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
       <form className={css(slotsStyles.filtersContainer)} onSubmit={handleSubmit(submit)} >
         <label>
           Age
-          <MultiRangeInput min={18} max={100} />
-          <input {...register('min_age')} type='range' min={18} max={100} defaultValue={18} />
-          <input {...register('max_age')} type='range' min={18} max={100} defaultValue={100} />
+          <MultiRangeInput setValue={setValue} min={18} max={100} defaultMin={filters.min_age} defaultMax={filters.max_age} />
         </label>
         <label>
           Position
-          <input {...register('max_pos')} type='range' defaultValue={undefined} />
+          <span>{watchMinPos}</span>
+          <input {...register('max_pos')} className={css(slotsStyles.rangeInput)} type='range' step={30} min={40} max={1000} defaultValue={1000} />
         </label>
         <label>
           Fame
-          <input {...register('min_fame')} type='range' max={5} min={0} defaultValue={undefined} disabled />
+          <span>{watchMinFame}</span>
+          <input {...register('min_fame')} className={css(slotsStyles.rangeInput)} type='range' max={5} min={0} defaultValue={0} />
         </label>
         <label>
           Centre d'interets
