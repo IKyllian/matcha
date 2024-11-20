@@ -18,12 +18,17 @@ const buildUrlParams = (urlParams: UrlParamsType): string => {
     const entries = Object.entries(urlParams)
     for (const [index, [key, value]] of Object.entries(entries)) {
         if (value) {
-            if (+index !== 0) {
-                stringParams += "&"
-            }
             if (Array.isArray(value)) {
-                stringParams += `${key}=${value.toString()}`
+                if (value.length > 0) {
+                    if (+index !== 0) {
+                        stringParams += "&"
+                    }
+                    stringParams += `${key}=${value.toString()}`
+                }
             } else {
+                if (+index !== 0) {
+                    stringParams += "&"
+                }
                 stringParams += `${key}=${value}`
             }
         }

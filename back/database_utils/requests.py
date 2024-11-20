@@ -31,7 +31,6 @@ def makeRequest(query, params = ()):
 
     cur = connection.cursor()
     response = cur.execute(query, params)
-
     rows = response.fetchall()
     unpacked = [{k: item[k] for k in item.keys()} for item in rows]
 

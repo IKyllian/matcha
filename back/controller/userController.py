@@ -16,6 +16,10 @@ from errors.httpErrors import APIAuthError
 def getTimeFromAge(Age):
     return datetime.today() - relativedelta(years=int(Age))
 
+def calculate_date_from_age(years):
+    today = datetime.now()
+    return (today - timedelta(days=years * 365.25)).strftime('%Y-%m-%d')
+
 @token_required
 def getTags(user_id):
     return jsonify(tags=getAllTags())
@@ -25,68 +29,65 @@ def getProfiles(user_id):
     user = getUserWithImagesById(user_id)
     user_latitude = str(user["latitude"])
     user_longitude = str(user["longitude"])
-    distance = "(6371 * acos(cos(radians(" + user_latitude + ")) * cos(radians(user.latitude)) * cos(radians(user.longitude) - radians(" + user_longitude + ")) + sin(radians(" + user_latitude + ")) * sin(radians(user.latitude)))) AS distance,"
+    distance = f"(6371 * acos(cos(radians({user_latitude})) * cos(radians(user.latitude)) * cos(radians(user.longitude) - radians({user_longitude})) + sin(radians({user_latitude})) * sin(radians(user.latitude)))) AS distance,"
 
     min_age = request.args.get("min_age", None)
     max_age = request.args.get("max_age", None)
     max_pos = request.args.get("max_pos", None)
     min_fame = request.args.get("min_fame", None)
     tags = request.args.get("tags", None)
+    if (type(tags) is str):
+        tags = tags.split(',')
+
     if (not max_pos):
         distance = ""
 
     if (min_age and max_age and int(min_age) > int(max_age)):
         raise ForbiddenError("Invalid Params : min_age should be lower than max_age")
-
-    requestQuery = "SELECT " + distance + " user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
+    queryParams = {}
+    requestQuery = "SELECT " + distance + " user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
     #Check needAnd to know if you need to add " AND " to requestQuery
     whereConditions = []
     whereConditions.append(f"user.id != {str(user_id)}")
+
     if (min_age):
-        whereConditions.append(f"user.birth_date <= date('now', '-{str(min_age)} years')")
-        # requestQuery += "user.birth_date <= date('now', '-" + str(min_age) + " years') "
+        min_birth_date = calculate_date_from_age(int(min_age))
+        whereConditions.append(f"user.birth_date <= :min_birth_date")
+        queryParams.update({'min_birth_date': str(min_birth_date)})
     if (max_age):
-        whereConditions.append(f"user.birth_date >= date('now', '-{str(max_age)} years')")
-        # requestQuery += "user.birth_date >= date('now', '-" + str(max_age) + " years') "
+        max_birth_date = calculate_date_from_age(int(max_age))
+        whereConditions.append(f"user.birth_date >= :max_birth_date")
+        queryParams.update({'max_birth_date': str(max_birth_date)})
     if (max_pos):
-        whereConditions.append(f"distance <= {str(max_pos)}")
-        # requestQuery += " distance <= " + str(max_pos) + " "
+        whereConditions.append(f"distance <= :max_pos")
+        queryParams.update({'max_pos': str(max_pos)})
     if (min_fame):
-        whereConditions.append(f"user.fame_rating <= {str(min_fame)}")
-        # requestQuery += "user.fame_rating <= " + str(min_fame)
-    tagJoin = ""
+        whereConditions.append(f"user.fame_rating <= :min_fame")
+        queryParams.update({'min_fame': str(min_fame)})
+    
     if (tags and len(tags) > 0):
         tagJoin = " INNER JOIN user_tag ut ON user.id = ut.user_id"
-        whereConditions.append(f"ut.tag_id IN ({tags})")
-    # if (tags and len(tags) > 0):
-    #     requestQuery += "INNER JOIN user_tag ut ON user.id = ut.user_id WHERE ut.tag_id IN ("
-    #     needComma = False
-    #     for tag in tags:
-    #         if (needComma):
-    #             requestQuery += ", "
-    #         needComma = True
-    #         requestQuery += str(tag)
-    groupByState = 'GROUP BY user.id '
-    havingState = f"HAVING COUNT(DISTINCT ut.tag_id) = {str(len(tags))}"
-    requestQuery += tagJoin
+        tag_params = [f":tag_{i}" for i in range(len(tags))]
+        whereConditions.append(f"ut.tag_id IN ({', '.join(tag_params)})") # TODO - Passer en et exclusif
+        queryParams.update({f"tag_{i}": tag for i, tag in enumerate(tags)})
+        requestQuery += tagJoin
+
     if (len(whereConditions) > 0):
         requestQuery += ' WHERE '
         requestQuery += " AND ".join(whereConditions)
-        # for condition in whereConditions:
-           
-        #    requestQuery += f"{condition} "
-        # requestQuery += ") GROUP BY user.id HAVING COUNT(DISTINCT ut.tag_id) = " + str(len(tags))
-    requestQuery += groupByState
-    requestQuery += havingState
-    print('requestQuery = ', requestQuery)
-    users = makeRequest(requestQuery)
 
+    groupByClose = ' GROUP BY user.id '
+    requestQuery += groupByClose
+
+    users = makeRequest(requestQuery, queryParams)
     for user in users:
         if (user["image_file"]):
             img = {
                 "id": user["image_id"],
                 "image_file": user["image_file"],
-                "is_profile_picture": user["is_profile_picture"]
+                "is_profile_picture": user["is_profile_picture"],
+                "mime_type": user["mime_type"],
+                "file_name": user["file_name"]
             }
             decoded = decodeImages([img])
             del user["image_id"]

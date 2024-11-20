@@ -1,5 +1,6 @@
 import base64
 import sqlite3
+import random
 
 import bcrypt
 
@@ -45,6 +46,7 @@ users = [
         'latitude' : '42.74800109863281',
         'longitude' : '6.849999904632568',
         'image_name' : 'blank.png',
+        'tag_ids' : [1, 6, 10]
     },
     {
         'name': 'adam',
@@ -57,7 +59,8 @@ users = [
         'birth_date' : '2000-07-01',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
-        'image_name' : 'google.png'
+        'image_name' : 'google.png',
+        'tag_ids' : [5, 8, 9]
     },
     {
         'name': 'kyllian',
@@ -70,7 +73,8 @@ users = [
         'birth_date' : '2000-04-10',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
-        'image_name' : 'google.png'
+        'image_name' : 'google.png',
+        'tag_ids' : [4, 8, 6, 10, 3]
     },
     {
         'name': 'chafik',
@@ -83,7 +87,8 @@ users = [
         'birth_date' : '1980-04-10',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
-        'image_name' : 'pizza.png'
+        'image_name' : 'pizza.png',
+        'tag_ids' : [4, 8]
     },
     {
         'name': 'naruto',
@@ -96,7 +101,8 @@ users = [
         'birth_date' : '1988-05-11',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
-        'image_name' : 'naruto.png'
+        'image_name' : 'naruto.png',
+        'tag_ids' : [2, 6, 7, 9, 3]
     },
     {
         'name': 'rozhou',
@@ -109,7 +115,8 @@ users = [
         'birth_date' : '2002-08-01',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
-        'image_name' : 'panda.jpeg'
+        'image_name' : 'panda.jpeg',
+        'tag_ids' : [1, 6, 2, 10]
     },
     {
         'name': 'jynx',
@@ -122,7 +129,8 @@ users = [
         'birth_date' : '1999-04-10',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
-        'image_name' : 'jynx.jpeg'
+        'image_name' : 'jynx.jpeg',
+        'tag_ids' : [1, 5, 3, 4, 8]
     },
     {
         'name': 'vi',
@@ -135,9 +143,12 @@ users = [
         'birth_date' : '1996-04-10',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
-        'image_name' : 'vi.png'
+        'image_name' : 'vi.png',
+        'tag_ids' : [1, 5, 6]
     }
 ]
+
+
 
 user_id = 1
 for user in users:
@@ -151,7 +162,12 @@ for user in users:
         mime_type = f"image/{imageNameSplit[1]}"
         encoded_content = base64.b64encode(file_content)
     cur.execute("INSERT INTO image (image_file, user_id, is_profile_picture, file_name, mime_type) VALUES (?, ?, ?, ?, ?)",
-                ((encoded_content), str(user_id), str(True), image_name, mime_type))
+                ((encoded_content), str(user_id), str(1), image_name, mime_type))
+    
+    for i in user['tag_ids']:
+         cur.execute("INSERT INTO user_tag (user_id, tag_id) VALUES (?, ?)",
+                (str(user_id), str(i)))
+
     user_id += 1
 
 connection.commit()
