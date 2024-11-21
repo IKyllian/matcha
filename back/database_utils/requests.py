@@ -38,6 +38,18 @@ def makeRequest(query, params = ()):
     connection.close()
     return unpacked
 
+def makeInsertRequest(query, params = ()):
+    connection = sqlite3.connect('database.db')
+    connection.row_factory = sqlite3.Row
+
+    cur = connection.cursor()
+    response = cur.execute(query, params)
+    lastRowId = response.lastrowid
+
+    connection.commit()
+    connection.close()
+    return lastRowId
+
 
 def get_client_ip():
     headers_to_check = [

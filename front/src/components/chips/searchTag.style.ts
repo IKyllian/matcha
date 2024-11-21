@@ -4,18 +4,20 @@ export const searchTagStyle = sva({
     slots: ['searchTagContainer', 'tagInput', 'icon'],
     base: {
         searchTagContainer: {
-            position: 'relative'
+            position: 'relative',
+            padding: '8px',
+            borderBottom: '2px solid black'
         },
         tagInput: {
             border: '2px solid black',
             borderRadius: '15px',
             width: '100%',
-            padding: '4px 6px'
+            padding: '4px 6px 4px 35px'
         },
         icon: {
             position: 'absolute',
-            right: '15px',
-            top: '10px'
+            left: '20px',
+            top: '19px'
         }
     }
 })

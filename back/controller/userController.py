@@ -34,8 +34,11 @@ def createTag(user_id):
     if (any(t["tag_name"]==tag_name for t in allTags)):
         raise ForbiddenError('Tag already exists')
 
-    makeRequest("INSERT INTO tag(tag_name) VALUES (?)", ((tag_name),))
-    return jsonify(ok=True)
+    createdTagId = makeInsertRequest("INSERT INTO tag(tag_name) VALUES (?)", ((tag_name),))
+    tag = makeRequest("SELECT * FROM tag WHERE id = :tagId", {"tagId" : createdTagId})
+    if (not len(tag)):
+        raise ForbiddenError('Error during tag creation')
+    return jsonify(tag=tag[0])
 
 @token_required
 def getProfiles(user_id):

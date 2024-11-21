@@ -22,6 +22,7 @@ const SearchTag = ({ onChange }: SearchTagProps) => {
         <div className={css(slotsStyles.searchTagContainer)}>
             <input
                 className={css(slotsStyles.tagInput)}
+                placeholder='Recheche...'
                 name='searchTag'
                 {...register('searchTag')}
                 onChange={_.debounce((e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value), 500)}

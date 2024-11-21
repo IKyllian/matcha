@@ -1,14 +1,12 @@
 import { sva } from "styled-system/css";
 
 export const chipSelectStyle = sva({
-    slots: ['chipContainer', 'boxContainer', 'inputChip', 'selectContainer', 'divider'],
+    slots: ['chipContainer', 'boxContainer', 'inputChip', 'selectContainer', 'divider', 'formDisplayIcon', 'openFormButtonContainer'],
     base: {
         selectContainer: {
             display: 'flex',
             flexDir: 'column',
-            gap: '8px',
             border: '2px solid black',
-            padding: '8px',
             borderRadius: '7px'
         },
         chipContainer: {
@@ -16,8 +14,9 @@ export const chipSelectStyle = sva({
             gap: '8px',
             flexWrap: 'wrap',
             justifyContent: 'center',
+            alignItems: 'center',
             overflowY: 'scroll',
-            height: '100px',
+            height: '150px',
             padding: '12px 4px'
         },
         inputChip: {
@@ -30,5 +29,22 @@ export const chipSelectStyle = sva({
             height: '2px',
             backgroundColor: 'black'
         },
+        formDisplayIcon: {
+            fontSize: '25px'
+        },
+        openFormButtonContainer: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '4px',
+            border: '2px solid black',
+            boxShadow: '1.3px 1.3px 0 black',
+            borderRadius: '50%',
+            backgroundColor: 'buttonPrimaryBackground',
+            '&:focus': {
+                boxShadow: '0px 0px 0 black',
+                transition: 'box-shadow 0.3s',
+            }
+        }
     }
 })
