@@ -11,7 +11,7 @@ export const chipsStyle = sva({
         chip: {
             padding: '2px 10px',
             borderRadius: '8px',
-            border: '1px solid black',
+            border: '1.5px solid black',
             fontSize: '11px',
             fontWeight: 'bold',
             backgroundColor: '#f8d6b3',
