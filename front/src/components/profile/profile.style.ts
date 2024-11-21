@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css";
 
 export const profileStyle = sva({
-    slots: ['profileContainer', 'profilInfosContainer', 'profileName', 'profilContent', 'profileImg', 'flexContainer', 'profilButtonContainer'],
+    slots: ['profileContainer', 'profilInfosContainer', 'userInfoContainer', 'profileName', 'profilContent', 'profileImg', 'flexContainer', 'profilButtonContainer', 'starsContainer'],
     base: {
         profileContainer: {
             padding: '24px'
@@ -40,6 +40,14 @@ export const profileStyle = sva({
         profilButtonContainer: {
             display: 'flex',
             gap: '8px'
+        },
+        starsContainer: {
+            display: 'flex'
+        },
+        userInfoContainer: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
         }
     }
 })

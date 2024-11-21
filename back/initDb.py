@@ -119,10 +119,10 @@ users = [
         'tag_ids' : [1, 6, 2, 10]
     },
     {
-        'name': 'jynx',
+        'name': 'jinx',
         'pass' : password,
-        'email' : 'jynx@gmail.com',
-        'first_name' : 'Jynx',
+        'email' : 'jinx@gmail.com',
+        'first_name' : 'Jinx',
         'last_name' : 'Arcane',
         'gender' : 'F',
         'sexual_preference' : 'M',
