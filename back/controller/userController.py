@@ -95,8 +95,7 @@ def getProfiles(user_id):
 
     groupByClose = ' GROUP BY user.id '
     requestQuery += groupByClose
-
-    print(requestQuery)
+    
     users = makeRequest(requestQuery, queryParams)
     for user in users:
         if (user["image_file"]):
