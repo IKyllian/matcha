@@ -1,5 +1,6 @@
 import { apiRequest } from "front/api/api";
 import { AlertStoreType } from "front/store/alert.store";
+import { Tags } from "front/typing/user";
 
 type RequestFromIdProps = {
     token: string,
@@ -66,6 +67,18 @@ export const makeSettingsRequest = async ({ data, token, addAlert, ip }: { data:
         addAlert,
         ip
     });
+}
+
+export const makeTagsCreateRequest = async ({ tag_name, token, addAlert }: { tag_name: string, token: string, addAlert: AlertStoreType['addAlert'] }) => {
+    return apiRequest<{ tag: Tags }>({
+        url: `${import.meta.env.VITE_API_URL}/createTag`,
+        options: {
+            method: 'POST',
+            json: { tag_name }
+        },
+        token,
+        addAlert
+    })
 }
 
 export const makePositionRequest = async ({ city }) => {
