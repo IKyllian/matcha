@@ -58,11 +58,13 @@ def getProfiles(user_id):
     if (min_age and max_age and int(min_age) > int(max_age)):
         raise ForbiddenError("Invalid Params : min_age should be lower than max_age")
     queryParams = {}
-    requestQuery = "SELECT " + distance + " user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
+    requestQuery = f"SELECT {str(distance)} user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
+    requestQuery += f" LEFT JOIN block ON user.id = block.blocked_user_id AND block.user_id = {str(user_id)} "
     #Check needAnd to know if you need to add " AND " to requestQuery
     whereConditions = []
     whereConditions.append(f"user.id != {str(user_id)}")
 
+    whereConditions.append("block.blocked_user_id IS NULL ")
     if (min_age):
         min_birth_date = calculate_date_from_age(int(min_age))
         whereConditions.append(f"user.birth_date <= :min_birth_date")
@@ -94,6 +96,7 @@ def getProfiles(user_id):
     groupByClose = ' GROUP BY user.id '
     requestQuery += groupByClose
 
+    print(requestQuery)
     users = makeRequest(requestQuery, queryParams)
     for user in users:
         if (user["image_file"]):
