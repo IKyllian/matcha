@@ -25,7 +25,9 @@ def decodeImagesFromViews(views):
             img = {
                 "id": view["image_id"],
                 "image_file": view["image_file"],
-                "is_profile_picture": view["is_profile_picture"]
+                "is_profile_picture": view["is_profile_picture"],
+                "mime_type": view["mime_type"],
+                "file_name": view["file_name"]
             }
             decoded = decodeImages([img])
             del view["image_id"]
@@ -35,12 +37,12 @@ def decodeImagesFromViews(views):
     return views
 
 @token_required
-def getUserViews(user_id, viewed_id):
-    views = makeRequest("SELECT user.id, user.first_name, user.last_name, image.image_file AS profile_picture FROM view LEFT JOIN user ON view.user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE view.viewed_user_id = ?", (str(viewed_id),))
+def getUserViews(user_id):
+    views = makeRequest("SELECT user.id, user.first_name, user.last_name, image.id, image.image_file AS profile_picture, image.mime_type, image.file_name FROM view LEFT JOIN user ON view.user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE view.viewed_user_id = ?", (str(user_id),))
     return jsonify(views=views)
 
 @token_required
 def getViewsOfUser(user_id):
-    views = makeRequest("SELECT user.id, user.first_name, user.last_name, image.id AS image_id, image.image_file, image.is_profile_picture FROM view LEFT JOIN user ON view.viewed_user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE view.user_id = ?", (str(user_id),))
+    views = makeRequest("SELECT user.id, user.first_name, user.last_name, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM view LEFT JOIN user ON view.viewed_user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE view.user_id = ?", (str(user_id),))
     views = decodeImagesFromViews(views)
     return jsonify(views=views)
