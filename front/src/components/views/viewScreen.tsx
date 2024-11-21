@@ -9,7 +9,7 @@ const ViewScreen = () => {
   const slotsStyles = viewScreenStyle.raw()
   const [viewedList, setViewList] = useState<Partial<User[]>>([])
   const { isLoading } = useApi<Partial<User[]>>({
-    endpoint: 'getViewsOfUser',
+    endpoint: 'getUserViews',
     setter: setViewList,
     key: 'views',
   })

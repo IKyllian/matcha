@@ -36,7 +36,7 @@ const Home = () => {
 
   const onFiltersChange = useCallback((filters: UrlParamsType) => {
     console.info('filters = ', filters)
-    setFilters({ ...filters, max_pos: undefined })
+    setFilters({ ...filters })
   }, [])
 
   return (
