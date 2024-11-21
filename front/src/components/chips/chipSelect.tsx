@@ -11,9 +11,10 @@ type ChypeSelectType = {
     selectedChips: Tags[]
     chips: Tags[]
     onChipClick: (chip: Tags, wasSelected: boolean) => void
+    disableForm?: boolean
 }
 
-const ChipSelect = ({ selectedChips, onChipClick, chips }: ChypeSelectType) => {
+const ChipSelect = ({ selectedChips, onChipClick, chips, disableForm = true }: ChypeSelectType) => {
     const slotsStyles = chipSelectStyle.raw()
     const [allTags, setAllTags] = useState<Tags[]>(chips)
     const [filteredTags, setFilteredTags] = useState<Tags[]>(chips)
@@ -49,13 +50,13 @@ const ChipSelect = ({ selectedChips, onChipClick, chips }: ChypeSelectType) => {
                         </div>
                     )
                 })}
-                {!displayForm &&
+                {!displayForm && !disableForm &&
                     <div onClick={changeFormDisplay} className={css(slotsStyles.openFormButtonContainer)}>
                         <FaPlus />
                     </div>
                 }
             </div>
-            {displayForm &&
+            {displayForm && !disableForm &&
                 <AddTagForm onSubmit={onTagCreated} onCancel={changeFormDisplay} />
             }
         </div>

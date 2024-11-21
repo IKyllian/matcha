@@ -277,7 +277,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         </label>
         <label>
           Centre d'interets:
-          <ChipSelect chips={profileSettings.tags} selectedChips={selectedChips} onChipClick={onChipClick} />
+          <ChipSelect chips={profileSettings.tags} selectedChips={selectedChips} onChipClick={onChipClick} disableForm={false} />
         </label>
         <div className={css(slotsStyles.profilPictureContainer)}>
           <label>
