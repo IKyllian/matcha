@@ -56,7 +56,8 @@ export const settingsStyle = sva({
                 },
                 '& > input': {
                     border: '2px solid black',
-                    padding: '8px'
+                    padding: '8px',
+                    borderRadius: '7px'
                 }
             }
         },
@@ -75,7 +76,8 @@ export const settingsStyle = sva({
                 },
                 '& > input': {
                     border: '2px solid black',
-                    padding: '8px'
+                    padding: '8px',
+                    borderRadius: '7px'
                 }
             }
         },

@@ -233,7 +233,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         </div>
         <label htmlFor="email">
           Email*:
-          <input id="email" type='text' {...register('email')} />
+          <input id="email" type='text' disabled {...register('email')} />
         </label>
         <label>
           Genre*:
