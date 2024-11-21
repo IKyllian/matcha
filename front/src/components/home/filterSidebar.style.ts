@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css";
 
 export const filterSidebarStyle = sva({
-  slots: ['sidebarContainer', 'filtersContainer', 'rangeInput', 'title', 'button', 'closeButton'],
+  slots: ['sidebarContainer', 'filtersContainer', 'rangeInput', 'title', 'button', 'closeButton', 'inputCheckbox'],
   base: {
     title: {
       fontSize: '24px',
@@ -58,6 +58,9 @@ export const filterSidebarStyle = sva({
       }
     },
     rangeInput: {
+      accentColor: 'buttonPrimaryBackground'
+    },
+    inputCheckbox: {
       accentColor: 'buttonPrimaryBackground'
     }
   }

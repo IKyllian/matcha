@@ -35,7 +35,7 @@ export const notificationsScreenStyle = sva({
       cursor: 'pointer',
       transition: 'background-color 0.2s ease-in-out',
       '&:hover': {
-        backgroundColor: '#f5f5f5'
+        backgroundColor: '#d2eef7'
       },
       '& > span': {
         flex: 1

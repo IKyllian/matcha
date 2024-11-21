@@ -45,6 +45,7 @@ users = [
         'birth_date' : '1950-04-10',
         'latitude' : '42.74800109863281',
         'longitude' : '6.849999904632568',
+        'fame_rating' : '2.5',
         'image_name' : 'blank.png',
         'tag_ids' : [1, 6, 10]
     },
@@ -59,6 +60,7 @@ users = [
         'birth_date' : '2000-07-01',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
+        'fame_rating' : '2.5',
         'image_name' : 'google.png',
         'tag_ids' : [5, 8, 9]
     },
@@ -73,6 +75,7 @@ users = [
         'birth_date' : '2000-04-10',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
+        'fame_rating' : '2.5',
         'image_name' : 'google.png',
         'tag_ids' : [4, 8, 6, 10, 3]
     },
@@ -87,6 +90,7 @@ users = [
         'birth_date' : '1980-04-10',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
+        'fame_rating' : '2.5',
         'image_name' : 'pizza.png',
         'tag_ids' : [4, 8]
     },
@@ -101,6 +105,7 @@ users = [
         'birth_date' : '1988-05-11',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
+        'fame_rating' : '2.5',
         'image_name' : 'naruto.png',
         'tag_ids' : [2, 6, 7, 9, 3]
     },
@@ -115,6 +120,7 @@ users = [
         'birth_date' : '2002-08-01',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
+        'fame_rating' : '2.5',
         'image_name' : 'panda.jpeg',
         'tag_ids' : [1, 6, 2, 10]
     },
@@ -129,6 +135,7 @@ users = [
         'birth_date' : '1999-04-10',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
+        'fame_rating' : '2.5',
         'image_name' : 'jynx.jpeg',
         'tag_ids' : [1, 5, 3, 4, 8]
     },
@@ -143,6 +150,7 @@ users = [
         'birth_date' : '1996-04-10',
         'latitude' : '45.74800109863281',
         'longitude' : '4.849999904632568',
+        'fame_rating' : '2.5',
         'image_name' : 'vi.png',
         'tag_ids' : [1, 5, 6]
     }
@@ -152,8 +160,8 @@ users = [
 
 user_id = 1
 for user in users:
-    cur.execute("INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (user['name'], user['pass'],user['email'], user['first_name'], user['last_name'], user['gender'], user['sexual_preference'], user['birth_date'], user['latitude'], user['longitude'], ))
+    cur.execute("INSERT INTO user (username, pass, email, first_name, last_name, fame_rating, gender, sexual_preference, birth_date, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (user['name'], user['pass'],user['email'], user['first_name'], user['last_name'], user['fame_rating'] , user['gender'], user['sexual_preference'], user['birth_date'], user['latitude'], user['longitude'], ))
     image_name = './pictures/' + user['image_name']
     with open(image_name, "rb") as file:
         file_content = file.read()
