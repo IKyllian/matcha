@@ -9,3 +9,5 @@ chat_bp.route("/easteregg", methods = ["GET"]) (easteregg)
 
 chat_bp.route("/chat/<int:chatter_id>", methods = ["GET"]) (getChatById)
 
+# chat_bp.route("/chat/<int:chatter_id>/send", methods = ["POST"]) (createMessage)
+
