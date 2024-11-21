@@ -25,6 +25,19 @@ def getTags(user_id):
     return jsonify(tags=getAllTags())
 
 @token_required
+def createTag(user_id):
+    tag_name = request.json.get("tag_name", None)
+    if (not tag_name.isalnum()):
+        raise ForbiddenError('Tag name must only contain alphanum characters')
+    tag_name = str(tag_name).lower()
+    allTags = getAllTags()
+    if (any(t["tag_name"]==tag_name for t in allTags)):
+        raise ForbiddenError('Tag already exists')
+
+    makeRequest("INSERT INTO tag(tag_name) VALUES (?)", ((tag_name),))
+    return jsonify(ok=True)
+
+@token_required
 def getProfiles(user_id):
     user = getUserWithImagesById(user_id)
     user_latitude = str(user["latitude"])
