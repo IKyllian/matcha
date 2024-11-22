@@ -67,8 +67,9 @@ def signup():
         if ('10.11.' in ipAddress or '127.0.'in ipAddress):
             ipAddress = os.getenv("PUBLIC_IP")
         data = ipdata.lookup(ipAddress)
-        makeRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date), str(2.5), str(data['latitude']), str(data['longitude'])))
+        #TODO Create a unique ID url_identifier -> Send it by email, put is_activated to false by default
+        makeRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, is_validated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date), str(2.5), str(data['latitude'], "1"), str(data['longitude'])))
         user = getUserWithProfilePictureByUsername(username)
         access_token = create_access_token(identity=user["id"])
         return jsonify(access_token=access_token, user=user)
