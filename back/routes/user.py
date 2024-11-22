@@ -18,5 +18,3 @@ user_bp.route("/profile/settings", methods = ["GET"]) (getSettings)
 user_bp.route("/profile/setSettings", methods = ["POST"]) (setSettings)
 
 user_bp.route("/profile/viewHistory", methods = ["GET"]) (getViewHistory)
-
-user_bp.route("/notifications", methods = ["GET"]) (getNotifications)

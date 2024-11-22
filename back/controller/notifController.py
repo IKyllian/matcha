@@ -1,18 +1,24 @@
 from datetime import datetime
 from flask import jsonify, request
+from services.user import getUserWithProfilePictureById
 from controller.userController import getProfileById
 from database_utils.requests import *
 from database_utils.decoratorFunctions import token_required
 
+def getAllNotifs(user_id):
+    notifs = makeRequest("SELECT id, content, sender_id, receiver_id, created_at, was_seen FROM notification WHERE receiver_id = :id ORDER BY created_at DESC", (str(user_id),))
+    receiver = getUserWithProfilePictureById(user_id)
+    for notif in notifs:
+        sender = getUserWithProfilePictureById(notif["sender_id"])
+        notif["sender"] = sender
+        notif["receiver"] = receiver
+        del notif["sender_id"]
+        del notif["receiver_id"]
+    return notifs
+
 @token_required
 def getNotif(user_id):
-    notifs = makeRequest("SELECT id, content, sender_id, receiver_id, created_at, was_seen FROM notification WHERE receiver_id = :id ORDER BY created_at DESC", (str(user_id),))
-    receiver = getProfileById(user_id)
-    sender = getProfileById(notifs["sender_id"])
-    notifs["sender"] = sender
-    notifs["receiver"] = receiver
-    del notifs["sender_id"]
-    del notifs["receiver_id"]
+    notifs = getAllNotifs(user_id)
     return jsonify(notifications=notifs)
 
 @token_required

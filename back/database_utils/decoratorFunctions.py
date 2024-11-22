@@ -15,7 +15,7 @@ def token_required(f):
             authorization = request.headers['Authorization']
             token = authorization.split()[1]
         if not token: # throw error if no token provided
-            raise TokenError("Vous n'avez pas de token valide")
+            raise TokenError("Vous n'avez pas de token")
         try:
            # decode the token to obtain user public_id
             data = decode_token(token)
@@ -23,7 +23,7 @@ def token_required(f):
             response = makeRequest("SELECT username, is_activated FROM user WHERE id = ?", (str(user_id),))
             if len(response) < 1:
                 raise TokenError("Votre token n'est pas associe a un utilisateur")
-            if (response["is_activated"] != 1):
+            if (response[0]["is_activated"] != 1):
                 raise TokenError("Votre compte n'est pas actif, veuillez valider votre email")
         except:
             raise TokenError("Vous n'avez pas de token valide")

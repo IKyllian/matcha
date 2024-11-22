@@ -210,8 +210,3 @@ def setSettings(user_id):
 def getViewHistory(user_id):
     response = makeRequest("SELECT user_id FROM view WHERE viewed_user_id = ?", (str(user_id)))
     return jsonify(history=response)
-
-@token_required
-def getNotifications(user_id):
-    response = makeRequest("SELECT id, content, sender_id, receiver_id, created_at, was_seen FROM notification WHERE receiver_id = ?", (str(user_id)))
-    return response

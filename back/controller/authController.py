@@ -1,5 +1,6 @@
 import base64
 from flask import request, jsonify
+from controller.notifController import getAllNotifs
 from controller.userController import getAgeFromTime
 from services.user import getUserWithProfilePictureById, getUserWithProfilePictureByUsername
 from database_utils.requests import *
@@ -33,7 +34,8 @@ def signin():
         raise APIAuthError("Mauvais nom d'utilisateur ou mot de passe")
     user = getUserWithProfilePictureByUsername(username)
     access_token = create_access_token(identity=user["id"])
-    return jsonify(access_token=access_token, user=user)
+    notifications = getNotif()
+    return jsonify(access_token=access_token, user=user, notifications=notifications)
 
 def signup():
     username = request.json.get("username", None)
@@ -68,10 +70,11 @@ def signup():
             ipAddress = os.getenv("PUBLIC_IP")
         data = ipdata.lookup(ipAddress)
         #TODO Create a unique ID url_identifier -> Send it by email, put is_activated to false by default
-        makeRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, is_validated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date), str(2.5), str(data['latitude'], "1"), str(data['longitude'])))
+        makeRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, is_activated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date), str(2.5), str(data['latitude']), str(data['longitude']), str(1)))
         user = getUserWithProfilePictureByUsername(username)
         access_token = create_access_token(identity=user["id"])
+        print("YO2")
         return jsonify(access_token=access_token, user=user)
     except :
         raise APIAuthError('Location est invalide')
@@ -82,6 +85,8 @@ def getAuth():
         data = decode_token(token)
         user_id = data["sub"]
         user = getUserWithProfilePictureById(user_id)
-        return jsonify(user=user)
+        #notifications = getAllNotifs(user_id)
+        notifications = []
+        return jsonify(user=user, notifications=notifications)
     except :
         raise APIAuthError('Token invalide')
