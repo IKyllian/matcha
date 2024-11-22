@@ -23,7 +23,7 @@ def token_required(f):
             response = makeRequest("SELECT username, is_activated FROM user WHERE id = ?", (str(user_id),))
             if len(response) < 1:
                 raise TokenError("Votre token n'est pas associe a un utilisateur")
-            if (not response["is_activated"]):
+            if (response["is_activated"] != 1):
                 raise TokenError("Votre compte n'est pas actif, veuillez valider votre email")
         except:
             raise TokenError("Vous n'avez pas de token valide")

@@ -42,6 +42,7 @@ def getChatById(user_id, chatter_id):
 @token_required
 def createMessage(user_id, chatter_id, message):
     created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    makeRequest("INSERT INTO message(sender_id, receiver_id, created_at, message) VALUES (?, ?, ?, ?)",
+    response = makeInsertRequest("INSERT INTO message(sender_id, receiver_id, created_at, message) VALUES (?, ?, ?, ?)",
                 ((user_id), (chatter_id), (created_at), (message)))
-    return jsonify(ok=True)
+    messageSent = makeRequest("SELECT * FROM message WHERE id = :id", (str(response),))
+    return jsonify(message=messageSent)

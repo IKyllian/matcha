@@ -3,12 +3,13 @@ from flask import Blueprint
 
 from controller.notifController import *
 
-chat_bp = Blueprint("chat", __name__)
+notif_bp = Blueprint("notif", __name__)
 
-chat_bp.route("/notifications", methods = ["GET"]) (getNotif)
+notif_bp.route("/notifications", methods = ["GET"]) (getNotif)
 
-chat_bp.route("/deleteNotification/<int:notif_id>", methods = ["DELETE"]) (deleteNotif)
+notif_bp.route("/deleteNotification/<int:notif_id>", methods = ["DELETE"]) (deleteNotif)
 
-chat_bp.route("/deleteAllNotifications", methods = ["DELETE"]) (deleteAllNotifs)
+notif_bp.route("/deleteAllNotifications", methods = ["DELETE"]) (deleteAllNotifs)
 
+notif_bp.route("/seeNotifications", methods = ["PATCH"]) (seeNotifs)
 
