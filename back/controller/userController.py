@@ -28,11 +28,11 @@ def getTags(user_id):
 def createTag(user_id):
     tag_name = request.json.get("tag_name", None)
     if (not tag_name.isalnum()):
-        raise ForbiddenError('Tag name must only contain alphanum characters')
+        raise ForbiddenError('Le nom de tag est invalide')
     tag_name = str(tag_name).lower()
     allTags = getAllTags()
     if (any(t["tag_name"]==tag_name for t in allTags)):
-        raise ForbiddenError('Tag already exists')
+        raise ForbiddenError('Le tag existe deja')
 
     createdTagId = makeInsertRequest("INSERT INTO tag(tag_name) VALUES (?)", ((tag_name),))
     tag = makeRequest("SELECT * FROM tag WHERE id = :tagId", {"tagId" : createdTagId})
@@ -59,7 +59,7 @@ def getProfiles(user_id):
         distance = ""
 
     if (min_age and max_age and int(min_age) > int(max_age)):
-        raise ForbiddenError("Invalid Params : min_age should be lower than max_age")
+        raise ForbiddenError("Parametre invalide : min_age doit etre plus petit que max_age")
     queryParams = {}
     requestQuery = f"SELECT {str(distance)} user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
     requestQuery += f" LEFT JOIN block ON user.id = block.blocked_user_id AND block.user_id = {str(user_id)} "
@@ -172,7 +172,7 @@ def setSettings(user_id):
             latitude = data['latitude']
             longitude = data['longitude']
         except :
-            raise APIAuthError('Location is not parseable')
+            raise APIAuthError('Location est invalide')
 
     while f"images[{index}][file]" in request.files:
         image_file = request.files.get(f"images[{index}][file]")
@@ -188,7 +188,7 @@ def setSettings(user_id):
         index += 1
     
     if (not checkImages(images)):
-        raise ForbiddenError("Invalid images sent")
+        raise ForbiddenError("Images invalides envoyees")
         
     #First we insert all the data we got from settings
     makeRequest("UPDATE user SET username = ?, email = ?, first_name = ?, last_name = ?, gender = ?, sexual_preference = ?, bio = ?, latitude = ?, longitude = ? WHERE id = ?",
@@ -210,8 +210,3 @@ def setSettings(user_id):
 def getViewHistory(user_id):
     response = makeRequest("SELECT user_id FROM view WHERE viewed_user_id = ?", (str(user_id)))
     return jsonify(history=response)
-
-@token_required
-def getNotifications(user_id):
-    response = makeRequest("SELECT id, content, sender_id, receiver_id, created_at, was_seen FROM notification WHERE receiver_id = ?", (str(user_id)))
-    return response

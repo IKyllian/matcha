@@ -7,7 +7,7 @@ from errors.httpErrors import ForbiddenError
 def viewUserById(user_id):
     user_to_view_id = request.json.get("user_to_view_id", None)
     if (user_id == user_to_view_id):
-        raise ForbiddenError("Can't view your own profile")
+        raise ForbiddenError("Vous ne pouvez pas voir votre profil")
     view = makeRequest("SELECT id FROM view WHERE view.user_id = ? AND view.viewed_user_id = ?", (str(user_id), str(user_to_view_id),))
     if (len(view) > 0):
         return jsonify(ok=True)

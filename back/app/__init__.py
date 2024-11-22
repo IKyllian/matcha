@@ -28,12 +28,14 @@ def createApp():
     from routes.like import like_bp
     from routes.block import block_bp
     from routes.view import view_bp
+    from routes.notif import notif_bp
     app.register_blueprint(user_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(like_bp)
     app.register_blueprint(block_bp)
     app.register_blueprint(view_bp)
+    app.register_blueprint(notif_bp)
     
     @app.errorhandler(APIError)
     def handle_exception(err):

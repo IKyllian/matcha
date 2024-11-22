@@ -16,3 +16,8 @@ class NotFoundError(APIError):
   """Custom Not Found Error Class."""
   code = 403
   description = "Not found"
+
+class TokenError(APIError):
+    """Custom Authentication Error Class."""
+    code = 401
+    description = "Token Error"
