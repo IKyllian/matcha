@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form"
+import { RegisterOptions, useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom"
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
@@ -16,7 +16,7 @@ type FieldsType = {
     label: string
     type: string
     name: keyof FormValues
-    required?: boolean
+    options?: RegisterOptions<FormValues>
 }
 
 const FIELDS: FieldsType[] = [
@@ -24,37 +24,54 @@ const FIELDS: FieldsType[] = [
         label: 'Prenom',
         name: 'first_name',
         type: 'text',
-        required: true,
+        options: {
+            maxLength: 20,
+            required: true
+        }
     },
     {
         label: 'Nom',
         name: 'last_name',
         type: 'text',
-        required: true,
+        options: {
+            maxLength: 20
+        }
     },
     {
         label: 'Nom d\'utilisateur',
         name: 'username',
         type: 'text',
-        required: true,
+        options: {
+            required: true
+        }
     },
     {
         label: 'Email',
         name: 'email',
         type: 'text',
-        required: true,
+        options: {
+            required: true,
+            pattern: {
+                value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                message: 'Mail invalide'
+            }
+        }
     },
     {
         label: 'Date de naissance',
         name: 'birth_date',
         type: 'date',
-        required: true,
+        options: {
+            required: true
+        }
     },
     {
         label: 'Mot de passe',
         name: 'password',
         type: 'password',
-        required: true,
+        options: {
+            required: true
+        }
     }
 ]
 
@@ -62,7 +79,7 @@ const Register = () => {
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState: { errors }
     } = useForm<FormValues>()
     const [cookies, setCookie, removeCookie] = useCookies();
     const authStore = useStore((state) => state.authStore)
@@ -92,10 +109,11 @@ const Register = () => {
                 <h2 className={css(slotsStyles.title)}> Incrvivez-vous </h2>
                 <form className={css(slotsStyles.form)} onSubmit={handleSubmit(onSubmit)}>
                     {
-                        FIELDS.map(({ name, type, required, label }) => (
+                        FIELDS.map(({ name, type, label, options }) => (
                             <label key={name} className={css(slotsStyles.label)}>
                                 {label}
-                                <input {...register(name)} className={css(slotsStyles.inputStyles)} type={type} name={name} required={required} />
+                                <input {...register(name, options)} className={css(slotsStyles.inputStyles)} type={type} name={name} />
+                                {errors?.[name]?.message && <span className={css(slotsStyles.inputError)}>{errors[name].message.toString()}</span>}
                             </label>
                         ))
                     }

@@ -77,7 +77,6 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     defaultValues: profileSettings.user
   })
 
-  console.info('selected = ', selectedChips)
   const onChipClick = (chip: Tags, wasSelected: boolean) => {
     if (wasSelected) {
       setSelectedChips(prev => [...prev.filter(c => c.id !== chip.id)])
@@ -87,18 +86,15 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   }
 
   const onSubmit = async (values: Partial<User>) => {
-    console.info('images = ', [...profilesImages.map(o => ({ file: o.file, is_profile_picture: o.is_profile_picture }))])
     const data = {
       ...values,
       images: [...profilesImages.map(o => ({ file: o.file, is_profile_picture: o.is_profile_picture }))]
     }
-    console.info('data = ', data)
 
     const formData = new FormData()
 
     for (const [key, value] of Object.entries(values)) {
       if (key !== 'tags' && key !== 'images' && key !== 'fame_rating' && key !== 'latitude' && key !== 'longitude') {
-        console.info(key)
         formData.append(key, value)
       }
     }
@@ -154,7 +150,6 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       addAlert({ message: 'Votre profile a ete update', type: AlertTypeEnum.SUCCESS })
       setUser(user)
     }
-    console.info("values - ", values)
   }
 
   const checkFileNameExist = (file) => {
