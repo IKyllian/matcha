@@ -129,7 +129,7 @@ export type FormValuesSettings = {
 export type ImageSettingsType = {
     file: any,
     is_profile_picture: boolean
-    file_name?: string
+    file_name: string
     preview?: string
 }
 

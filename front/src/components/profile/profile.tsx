@@ -57,7 +57,7 @@ const Profile = () => {
         const request = async () => {
             await makeViewRequest({ token, id: +userId })
         }
-        if (+userId !== loggedUser.id) {
+        if (!isLoggedUser) {
             request()
         }
     }, [])
@@ -109,7 +109,6 @@ const Profile = () => {
                             <p><span className={css(slotsStyles.profileName)}>{profile.user.first_name} {profile.user.last_name}</span> {profile.user.age} ans</p>
                             <StarRating containerClassName='starClass' isReadOnly initialRating={profile.user.fame_rating} unit="float" />
                         </div>
-                       
                         <div>
                             {
                                 isLoggedUser &&

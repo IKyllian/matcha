@@ -1,6 +1,6 @@
 import { apiRequest } from "front/api/api";
 import { AlertStoreType } from "front/store/alert.store";
-import { Tags } from "front/typing/user";
+import { Tags, User } from "front/typing/user";
 
 type RequestFromIdProps = {
     token: string,
@@ -57,7 +57,7 @@ export const makeViewRequest = async ({ token, id, addAlert }: RequestFromIdProp
 }
 
 export const makeSettingsRequest = async ({ data, token, addAlert, ip }: { data: any, token: string, addAlert: AlertStoreType['addAlert'], ip?: string }) => {
-    return apiRequest<{ ok: boolean }>({
+    return apiRequest<{ user: Partial<User> }>({
         url: `${import.meta.env.VITE_API_URL}/profile/setSettings`,
         options: {
             method: 'POST',

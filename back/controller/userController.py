@@ -204,7 +204,8 @@ def setSettings(user_id):
         makeRequest("INSERT INTO image (image_file, mime_type, file_name, user_id, is_profile_picture) VALUES (?, ?, ?, ?, ?)",
                     (base64.b64encode(image["file"].read()), image["mime_type"], image['file_name'], str(user_id), bool(image["is_profile_picture"])))
 
-    return jsonify(ok=True)
+    user = getUserWithProfilePictureById(user_id)
+    return jsonify(user=user)
 
 @token_required
 def getViewHistory(user_id):
