@@ -8,14 +8,18 @@ type ProfilePictureProps = {
     width?: string
     height?: string
     className?: SystemStyleObject
+    onClick?: () => void
 }
-const ProfilePicture = ({ userImages, width = '100%', height = '100%', className }: ProfilePictureProps) => {
+const ProfilePicture = ({ userImages, width = '100%', height = '100%', className, onClick }: ProfilePictureProps) => {
     const imageBase64 = userImages?.find(i => i.is_profile_picture)?.image_file
     return (
-        <div className={css({
-            width,
-            height
-        })}>
+        <div
+            className={css({
+                width,
+                height
+            })}
+            onClick={onClick ? onClick : undefined}
+        >
             <img src={imageBase64 ? imageBase64 : DefaultProfilePicture} alt="Image de profile" className={css({
                 width: '100%',
                 height: '100%'

@@ -1,14 +1,9 @@
 import { apiRequest } from "front/api/api";
 import { AlertStoreType } from "front/store/alert.store";
+import { RequestProps } from "front/typing/api";
 import { Tags, User } from "front/typing/user";
 
-type RequestFromIdProps = {
-    token: string,
-    id: number,
-    addAlert?: AlertStoreType['addAlert']
-}
-
-export const makeLikeRequest = async ({ token, id, addAlert }: RequestFromIdProps) => {
+export const makeLikeRequest = async ({ token, id, addAlert }: RequestProps) => {
     return apiRequest<{ ok: boolean }>({
         url: `${import.meta.env.VITE_API_URL}/like`,
         options: {
@@ -20,7 +15,7 @@ export const makeLikeRequest = async ({ token, id, addAlert }: RequestFromIdProp
     });
 }
 
-export const makeBlockRequest = async ({ token, id, addAlert }: RequestFromIdProps) => {
+export const makeBlockRequest = async ({ token, id, addAlert }: RequestProps) => {
     return apiRequest<{ ok: boolean }>({
         url: `${import.meta.env.VITE_API_URL}/block`,
         options: {
@@ -32,7 +27,7 @@ export const makeBlockRequest = async ({ token, id, addAlert }: RequestFromIdPro
     });
 }
 
-export const makeReportRequest = async ({ token, id, addAlert }: RequestFromIdProps) => {
+export const makeReportRequest = async ({ token, id, addAlert }: RequestProps) => {
     return apiRequest<{ ok: boolean }>({
         url: `${import.meta.env.VITE_API_URL}/report`,
         options: {
@@ -44,7 +39,7 @@ export const makeReportRequest = async ({ token, id, addAlert }: RequestFromIdPr
     });
 }
 
-export const makeViewRequest = async ({ token, id, addAlert }: RequestFromIdProps) => {
+export const makeViewRequest = async ({ token, id, addAlert }: RequestProps) => {
     return apiRequest<{ ok: boolean }>({
         url: `${import.meta.env.VITE_API_URL}/view`,
         options: {

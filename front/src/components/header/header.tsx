@@ -1,7 +1,6 @@
 import { css } from "styled-system/css"
 import { headerStyle } from "./header.style"
 import { Link } from "react-router-dom"
-import { USERS } from "front/typing/user"
 import { MdLogout } from "react-icons/md";
 import { IoMdNotifications } from "react-icons/io";
 import NotificationsModal from "front/components/notifications/notificationsModal";
@@ -11,13 +10,14 @@ import { COOKIE_JWT_TOKEN } from "front/constant/cookie";
 import { useStore } from "front/store/store";
 import ProfilePicture from "../utils/profilePicture";
 
-const USER = USERS[0]
 const Header = () => {
     const [openNotif, setOpenNotif] = useState(false)
     const { user } = useStore((state) => state.authStore)
+    const notifications = useStore((state) => state.notifications)
     const logoutUser = useStore((state) => state.logoutUser)
     const [cookies, setCookie, removeCookie] = useCookies();
     const slotsStyles = headerStyle.raw()
+    const notSeenNotifNumber = notifications.filter(n => !n.was_seen)?.length || 0
 
     const onCloseNotification = () => {
         setOpenNotif(prev => !prev)
@@ -35,7 +35,8 @@ const Header = () => {
                 <Link to='/chat'>Chat</Link>
                 <Link to='/profile'>Profil</Link>
                 <div className={css(slotsStyles.notificationContainer)}>
-                    <IoMdNotifications onClick={onCloseNotification} className={css(slotsStyles.notificationIcon)} />
+                    {notSeenNotifNumber > 0 && <div className={css(slotsStyles.notificationBadgeNumber)}><span>{notSeenNotifNumber}</span></div>}
+                    <IoMdNotifications onClick={() => setOpenNotif(true)} className={css(slotsStyles.notificationIcon)} />
                     {openNotif && <NotificationsModal onClose={onCloseNotification} />}
                 </div>
                 <div className={css(slotsStyles.headerAvatar)}>

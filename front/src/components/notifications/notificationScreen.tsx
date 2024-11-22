@@ -1,28 +1,89 @@
-import { getMessageByNotificationType } from "front/utils/notification.utils"
 import { notificationsScreenStyle } from "./notificationScreen.style"
-import { NOTIFICATIONS } from "front/typing/notification"
 import { FaTrash } from "react-icons/fa";
 import { css } from "styled-system/css";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useApi } from "front/hook/useApi";
+import { makeDeleteAllNotificationRequest, makeDeleteNotificationRequest, makeViewNotificationRequest } from "front/api/notification";
+import { useStore } from "front/store/store";
+import { NotificationType } from "front/typing/notification";
+import ProfilePicture from "front/components/utils/profilePicture";
 
 const NotificationScreen = () => {
   const slotsStyles = notificationsScreenStyle.raw()
+  const { token } = useStore(state => state.authStore)
+  const unseeNitifications = useStore(state => state.unseeNitifications)
+  const navigate = useNavigate()
+  const [notifications, setNotifications] = useState<NotificationType[]>()
+  const {
+    isLoading
+  } = useApi({
+    endpoint: 'notifications',
+    setter: setNotifications,
+    key: 'notifications',
+  })
+
+  useEffect(() => {
+    const makeRequest = async () => {
+      const ret = await makeViewNotificationRequest({ token })
+      if (ret) {
+        unseeNitifications()
+      }
+    }
+    if (notifications.find(n => !n.was_seen)) {
+      makeRequest()
+    }
+  })
+
+  const onNotifclick = (senderId: number) => {
+    navigate(`/profile/${senderId}`)
+  }
+
+  const onNotifDelete = async (notifId: number) => {
+    const ret = await makeDeleteNotificationRequest({
+      token, id: notifId
+    })
+    if (ret) {
+      setNotifications(prev => [...prev.filter(n => n.id !== notifId)])
+    }
+  }
+
+  const onAllDelete = async () => {
+    const ret = await makeDeleteAllNotificationRequest({ token })
+    if (ret) {
+      setNotifications([])
+    }
+  }
+
+  if (isLoading) {
+    return (<p>Loading...</p>)
+  }
+
   return (
     <div className={css(slotsStyles.screenContainer)}>
       <h1 className={css(slotsStyles.title)}> Notifications </h1>
-      <div className={css(slotsStyles.buttonContainer)}>
-        <button className={css(slotsStyles.button)}> Clear all </button>
-      </div>
-      <div className={css(slotsStyles.notificationContainer)}>
-        {
-          NOTIFICATIONS.map((notification, index) => (
-            <div key={index} className={css(slotsStyles.notificationItem)}>
-              <img src={notification.sender.img} className={css(slotsStyles.imgSender)} />
-              <span> {getMessageByNotificationType(notification)} </span>
-              <FaTrash />
+      {
+        notifications.length > 0 ? (
+          <>
+            <div className={css(slotsStyles.buttonContainer)}>
+              <button className={css(slotsStyles.button)} onClick={onAllDelete}> Clear all </button>
             </div>
-          ))
-        }
-      </div>
+            <div className={css(slotsStyles.notificationContainer)}>
+              {
+                notifications.map((notification, index) => (
+                  <div key={index} className={css(slotsStyles.notificationItem)}>
+                    <ProfilePicture onClick={() => onNotifclick(notification.sender.id)} userImages={notification.sender.images} className={slotsStyles.imgSender} width="52px" height="52px" />
+                    <span>{notification.content}</span>
+                    <FaTrash onClick={() => onNotifDelete(notification.id)} />
+                  </div>
+                ))
+              }
+            </div>
+          </>) : (
+          <span>Vous n'avez pas de notifications pour le moment</span>
+        )
+      }
+
     </div>
   )
 }

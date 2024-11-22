@@ -1,10 +1,12 @@
 import { css } from "styled-system/css"
 import { notificationsModalStyle } from "./notificationsModal.style"
-import { NOTIFICATIONS, NotificationType, NotificationTypeEnum } from "front/typing/notification"
 import { FaTrash } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useCloseRef from "front/hook/useCloseRef";
-import { getMessageByNotificationType } from "front/utils/notification.utils";
+import { makeDeleteNotificationRequest, makeViewNotificationRequest } from "front/api/notification";
+import { useStore } from "front/store/store";
+import { useEffect } from "react";
+import ProfilePicture from "../utils/profilePicture";
 
 type NotificationsModalProps = {
   onClose: () => void
@@ -12,27 +14,54 @@ type NotificationsModalProps = {
 
 const NotificationsModal = ({ onClose }: NotificationsModalProps) => {
   const slotsStyles = notificationsModalStyle.raw()
+  const { token } = useStore(state => state.authStore)
+  const notifications = useStore(state => state.notifications)
+  const unseeNitifications = useStore(state => state.unseeNitifications)
+  const deleteNotificationById = useStore(state => state.deleteNotificationById)
   const ref = useCloseRef({ onClose })
+  const navigate = useNavigate()
 
-  const onDelete = (notifId: number) => {
-    console.info('notifId = ', notifId)
+  useEffect(() => {
+    const makeRequest = async () => {
+      const ret = await makeViewNotificationRequest({ token })
+      if (ret) {
+        unseeNitifications()
+      }
+    }
+    if (notifications.find(n => !n.was_seen)) {
+      makeRequest()
+    }
+  })
+
+  const onNotifDelete = async (notifId: number) => {
+    const ret = await makeDeleteNotificationRequest({
+      token, id: notifId
+    })
+    if (ret) {
+      deleteNotificationById(notifId)
+    }
+  }
+
+  const onNotifclick = (senderId: number) => {
+    onClose()
+    navigate(`/profile/${senderId}`)
   }
 
   return (
     <div className={css(slotsStyles.modalContainer)} ref={ref}>
-      {!NOTIFICATIONS.length && <span style={{ textAlign: 'center' }}> Pas de notifications </span>}
-      {NOTIFICATIONS.length &&
+      {notifications.length === 0 && <span style={{ textAlign: 'center' }}> Pas de notifications </span>}
+      {notifications.length > 0 &&
         <>
           {
-            NOTIFICATIONS.slice(0, 3).map(notif => (
+            notifications.slice(0, 3).map(notif => (
               <div key={notif.id} className={css(slotsStyles.notifItem)}>
-                <img className={css(slotsStyles.imgSender)} src={notif.sender.img} alt='image de profil' />
-                <span> {getMessageByNotificationType(notif)} </span>
-                <FaTrash className={css(slotsStyles.deleteIcon)} onClick={() => onDelete(notif.id)} />
+                <ProfilePicture userImages={notif.sender.images} height="24px" width="24px" onClick={() => onNotifclick(notif.sender.id)} className={slotsStyles.imgSender} />
+                <span>{notif.content}</span>
+                <FaTrash className={css(slotsStyles.deleteIcon)} onClick={() => onNotifDelete(notif.id)} />
               </div>
             ))
           }
-          <Link className={css(slotsStyles.link)} to=''> All notifications </Link>
+          <Link className={css(slotsStyles.link)} to='/notifications' onClick={onClose}> All notifications </Link>
         </>
       }
     </div>

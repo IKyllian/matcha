@@ -1,7 +1,18 @@
 import { sva } from "styled-system/css";
 
 export const headerStyle = sva({
-    slots: ['headerContainer', 'headerLogo', 'headerAvatar', 'headerContentWrapper', 'notificationIcon', 'notificationContainer', 'logoutIcon', 'logoutWrapper', 'divider'],
+    slots: [
+        'headerContainer',
+        'headerLogo',
+        'headerAvatar',
+        'headerContentWrapper',
+        'notificationIcon',
+        'notificationContainer',
+        'logoutIcon',
+        'logoutWrapper',
+        'divider',
+        'notificationBadgeNumber'
+    ],
     base: {
         headerContainer: {
             display: 'flex',
@@ -73,6 +84,23 @@ export const headerStyle = sva({
             height: '30px',
             width: '2px',
             backgroundColor: 'black',
+        },
+        notificationBadgeNumber: {
+            position: 'absolute',
+            width: '15px',
+            height: '15px',
+            top: '-5px',
+            right: '-2px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'lightRed',
+            borderRadius: '50%',
+            color: 'white',
+            '& > span': {
+                fontSize: '9px',
+                fontWeight: 'bold'
+            }
         }
     }
 })
