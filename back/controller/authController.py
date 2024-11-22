@@ -40,11 +40,17 @@ def signup():
     password = request.json.get("password", None)
     if (len(username) < 3 or len(username) > 20 or any(not c.isalnum() for c in username)):
         raise APIAuthError("Nom d'utilisateur invalide")
+    usernameUsed = makeRequest("SELECT COUNT(*) AS count FROM user WHERE username = :username", (str(username),))
+    if (int(usernameUsed[0]["count"]) > 0):
+        raise APIAuthError("Le nom d'utilisateur est deja utilisee")
     if (len(password) < 8 or len(password) > 20):
         raise APIAuthError('Mot de passe invalide')
     email = request.json.get("email", None)
     if (not isEmailValid(email)):
         raise APIAuthError('Email invalide')
+    emailUsed = makeRequest("SELECT COUNT(*) AS count FROM user WHERE email = :email", (str(email),))
+    if (int(emailUsed[0]["count"]) > 0):
+        raise APIAuthError("L'email est deja utilisee")
     first_name = request.json.get("first_name", None)
     if (len(first_name) < 3 or len(first_name) > 20 or any(not c.isalpha() for c in first_name)):
         raise APIAuthError('Prenom invalide')
@@ -54,7 +60,7 @@ def signup():
     birth_date = request.json.get("birth_date", None)
     if (getAgeFromTime(birth_date) < 18):
         raise APIAuthError("L'utilisateur doit avoir au moins 18 ans")
-    
+
     ipdata.api_key = os.getenv("IP_DATA_API_KEY")
     try :
         ipAddress = get_client_ip()
