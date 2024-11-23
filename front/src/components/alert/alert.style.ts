@@ -28,7 +28,7 @@ export const alertStyle = sva({
             flexDirection: 'column',
             alignItems: 'center',
             gap: '10px',
-            maxWidth: '60%',
+            width: 'fit-content'
         },
         iconWrapper: {
             width: '25px',
@@ -50,7 +50,6 @@ export const alertStyle = sva({
             boxShadow: '2px 2px 0 black',
             padding: '7px 11px',
             width: 'auto',
-            maxWidth: '60%',
         },
         notifEnter: {
             animation: 'fadeIn 0.5s ease-out',

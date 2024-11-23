@@ -17,7 +17,7 @@ type HomeTabs = 'Liste' | 'Suggestion'
 const Home = () => {
   const slotsStyles = homeStyle.raw()
   const user = useStore(state => state.authStore.user)
-  const [filters, setFilters] = useState<UrlParamsType>({ min_age: 18, max_age: 100, min_fame: 0, max_pos: 1000 })
+  const [filters, setFilters] = useState<UrlParamsType>({ min_age: 18, max_age: 100, min_fame: 0, max_pos: 1000, displayLikedUser: true })
   const [filteredList, setFilteredList] = useState<Partial<User[]>>([])
   const [showSidebar, setShowSidebar] = useState(false)
   const [navIndex, setNavIndex] = useState(0)

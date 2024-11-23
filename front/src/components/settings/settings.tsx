@@ -39,6 +39,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const slotsStyles = settingsStyle.raw()
   const { token } = useStore((state) => state.authStore)
   const addAlert = useStore((state) => state.addAlert)
+  const setUser = useStore((state) => state.setUser)
   const [selectedChips, setSelectedChips] = useState<Tags[]>(profileSettings.user.tags)
   const [profilePicturePreview, setProfilPicturePreview] = useState<string | undefined>(profileImageFromUser ? profileImageFromUser : undefined)
   const [profilesImages, setProfilesImages] = useState<ImageSettingsType[]>(profileSettings.user.images.map(i => ({
@@ -50,7 +51,6 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const [inputPositionsList, setInputPositionsList] = useState<PositionType[]>([])
   const [positionSelected, setPositionSelected] = useState<PositionType>()
   const [inputPosition, setInputPosition] = useState<string>('')
-
 
   useEffect(() => {
     const getPos = async () => {
@@ -77,7 +77,6 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     defaultValues: profileSettings.user
   })
 
-  console.info('selected = ', selectedChips)
   const onChipClick = (chip: Tags, wasSelected: boolean) => {
     if (wasSelected) {
       setSelectedChips(prev => [...prev.filter(c => c.id !== chip.id)])
@@ -87,18 +86,15 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   }
 
   const onSubmit = async (values: Partial<User>) => {
-    console.info('images = ', [...profilesImages.map(o => ({ file: o.file, is_profile_picture: o.is_profile_picture }))])
     const data = {
       ...values,
       images: [...profilesImages.map(o => ({ file: o.file, is_profile_picture: o.is_profile_picture }))]
     }
-    console.info('data = ', data)
 
     const formData = new FormData()
 
     for (const [key, value] of Object.entries(values)) {
       if (key !== 'tags' && key !== 'images' && key !== 'fame_rating' && key !== 'latitude' && key !== 'longitude') {
-        console.info(key)
         formData.append(key, value)
       }
     }
@@ -141,7 +137,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     console.info('formData = ', formData)
 
     const { ip } = await makeIpAddressRequest()
-    const ret = await makeSettingsRequest(
+    const { user } = await makeSettingsRequest(
       {
         data: formData,
         token,
@@ -150,19 +146,29 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       }
     )
 
-    if (ret) {
+    if (user) {
       addAlert({ message: 'Votre profile a ete update', type: AlertTypeEnum.SUCCESS })
+      setUser(user)
     }
-    console.info("values - ", values)
+  }
+
+  const checkFileNameExist = (file) => {
+    const exist = profilesImages.find(p => p.file_name === file.name)
+    if (exist) {
+      addAlert({
+        message: `L'image "${file.name}" existe deja`, type: AlertTypeEnum.ERROR
+      })
+      return true
+    }
   }
 
   const onSingleUpload = (event: any) => {
-    console.info("data - ", event)
     const [file] = event.target.files
     // const filesize: string = ((file.size/1024)/1024).toFixed(4);
     if (file) {
+      if (checkFileNameExist(file)) return
       setProfilPicturePreview(URL.createObjectURL(file))
-      setProfilesImages(prev => [...prev, { file, is_profile_picture: true }])
+      setProfilesImages(prev => [...prev, { file, is_profile_picture: true, file_name: file.name }])
     }
     console.info("upload", file)
   }
@@ -176,17 +182,26 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     }
     const files = event.target.files
     for (let i = 0; i < files.length; i++) {
+      if (checkFileNameExist(files[i])) return
       if (i + imagesLength === 4) {
         break
       }
-      for (const file of files) {
-        setProfilesImages(prev => [...prev, { file, preview: URL.createObjectURL(file), is_profile_picture: false }])
-      }
+      setProfilesImages(prev => [...prev, { file: files[i], file_name: files[i].name, preview: URL.createObjectURL(files[i]), is_profile_picture: false }])
     }
   }
 
-  const onImageDelete = (index: number) => {
+  const onImageDelete = ({ file_name, isProfilePicture = false }: { file_name?: string, isProfilePicture?: boolean }) => {
     const newArray = [...profilesImages]
+    const index = isProfilePicture ? newArray.findIndex(e => e.is_profile_picture) : newArray.findIndex(e => e.file_name === file_name)
+    if (index < 0) {
+      addAlert({
+        message: 'Erreur pendant la supression de l\'image', type: AlertTypeEnum.ERROR
+      })
+      return
+    }
+    if (isProfilePicture) {
+      setProfilPicturePreview(null)
+    }
     newArray.splice(index, 1)
     setProfilesImages([...newArray])
   }
@@ -292,13 +307,13 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
           {
             !profilePicturePreview &&
             <label htmlFor="profile-picture" className={css(slotsStyles.uploadButton)}>
-              <input type="file" id="profile-picture" hidden onChange={onSingleUpload} />
+              <input type="file" accept="image/*" id="profile-picture" hidden onChange={onSingleUpload} />
               <FaUpload />
             </label>
           }
           {
             profilePicturePreview &&
-            <div className={css(slotsStyles.uploadButton, slotsStyles.imageResetButton)} onClick={() => setProfilPicturePreview(null)}>
+            <div className={css(slotsStyles.uploadButton, slotsStyles.imageResetButton)} onClick={() => onImageDelete({ isProfilePicture: true })}>
               <IoClose />
             </div>
           }
@@ -310,13 +325,13 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
           profilesImages.length > 0 &&
           <div className={css(slotsStyles.picturesContainer)}>
             {
-              profilesImages.map((profileImage, index) => profileImage.preview && !profileImage.is_profile_picture ? (
-                <div key={profileImage.preview} className={css(slotsStyles.picturesItemContainer)}>
+              profilesImages.map(({ preview, is_profile_picture, file_name }, index) => preview && !is_profile_picture ? (
+                <div key={preview} className={css(slotsStyles.picturesItemContainer)}>
                   <div className={css(slotsStyles.picturesItem)}>
-                    <img src={profileImage.preview} alt='' />
+                    <img src={preview} alt='' />
                   </div>
                   <div className={css(slotsStyles.uploadButton, slotsStyles.imageResetButton)}>
-                    <IoClose onClick={() => onImageDelete(index)} />
+                    <IoClose onClick={() => onImageDelete({ file_name })} />
                   </div>
                 </div>
               ) : null)
@@ -324,7 +339,14 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
           </div>
         }
         <label>
-          <input type="file" id="photos" multiple accept="image/*" hidden onChange={onMultipleUpload} />
+          <input
+            type="file"
+            id="photos"
+            multiple
+            accept="image/*"
+            hidden
+            onChange={onMultipleUpload}
+          />
           <div className={css(slotsStyles.filesUploadContainer)}>
             <FaUpload />
             <span> Upload </span>

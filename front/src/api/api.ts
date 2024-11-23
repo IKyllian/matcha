@@ -7,7 +7,7 @@ export const makeApi = ({ token, ip }: { token?: string, ip?: string }) => {
         hooks: {
             beforeRequest: [
                 (request) => {
-                    if (token) request.headers.set('Authorization', `Bearer ${token})}`)
+                    if (token) request.headers.set('Authorization', `Bearer ${token}`)
                     if (ip) request.headers.set('X-Forwarded-For', `${ip}`)
                 }
             ]

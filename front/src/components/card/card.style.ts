@@ -33,18 +33,27 @@ export const cardStyle = sva({
         },
         textWrapper: {
             display: 'flex',
+            flex: '1',
             flexDir: 'column'
         },
         cardPrimaryText: {
             fontSize: '20px',
             fontWeight: '600',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            width: '230px',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
         },
         cardSecondaryText: {
             display: 'flex',
             alignItems: 'center',
             gap: '4px',
             fontSize: '14px',
+            width: '230px',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
         }
     }
 })

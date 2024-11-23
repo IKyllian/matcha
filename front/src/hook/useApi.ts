@@ -36,7 +36,7 @@ const buildUrlParams = (urlParams: UrlParamsType): string => {
     return stringParams
 }
 
-export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getViewsOfUser' | 'getMatchesOfUser' | 'profile/settings' | 'getTags' | 'getUserViews';
+export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getViewsOfUser' | 'getMatchesOfUser' | 'profile/settings' | 'getTags' | 'getUserViews' | 'notifications';
 
 const getUlrParams = ({ urlParams, endpoint, params }: { endpoint: string, urlParams?: UrlParamsType, params?: { id: number } }) => {
     if (urlParams) {

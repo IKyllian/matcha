@@ -7,6 +7,7 @@ import { useCookies } from "react-cookie";
 const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [cookies, setCookie, removeCookie] = useCookies();
     const logUser = useStore((state) => state.logUser)
+    const setNotifications = useStore((state) => state.setNotifications)
     const setAuthStatus = useStore((state) => state.setAuthStatus)
 
     useEffect(() => {
@@ -15,9 +16,12 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
             console.info("COOKIE = ", cookie)
             if (cookie) {
                 try {
-                    const { user } = await makeAuthRequest(cookie)
+                    const { user, notifications } = await makeAuthRequest(cookie)
                     if (user) {
                         logUser(user, cookie)
+                        if (notifications) {
+                            setNotifications(notifications)
+                        }
                     }
                 } catch (e) {
                     console.error("Error auth request: ", e)

@@ -5,5 +5,6 @@ export type UrlParamsType = {
     max_age?: number,
     max_pos?: number,
     min_fame?: number,
-    tags?: number[]
+    tags?: number[],
+    displayLikedUser?: boolean
 }

@@ -46,6 +46,10 @@ export const notificationsModalStyle = sva({
     },
     link: {
       textAlign: 'center',
+      cursor: 'pointer',
+      '&:hover': {
+        textDecoration: 'underline'
+      }
     }
   }
 })
