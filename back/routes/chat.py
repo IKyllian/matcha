@@ -7,5 +7,9 @@ chat_bp = Blueprint("chat", __name__)
 
 chat_bp.route("/easteregg", methods = ["GET"]) (easteregg)
 
+chat_bp.route("/getChatList", methods = ["GET"]) (getChatList)
+
 chat_bp.route("/chat/<int:chatter_id>", methods = ["GET"]) (getChatById)
+
+# chat_bp.route("/chat/<int:chatter_id>/send", methods = ["POST"]) (createMessage)
 

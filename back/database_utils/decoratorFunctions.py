@@ -1,6 +1,6 @@
 from functools import wraps
-
 from flask import app, jsonify, make_response, request
+from errors.httpErrors import TokenError
 from flask_jwt_extended import decode_token
 from flask_jwt_extended import get_jwt_identity
 from database_utils.requests import makeRequest
@@ -15,16 +15,19 @@ def token_required(f):
             authorization = request.headers['Authorization']
             token = authorization.split()[1]
         if not token: # throw error if no token provided
-            return make_response(jsonify({"message": "A valid token is missing!"}), 401)
+            raise TokenError("Vous n'avez pas de token")
         try:
            # decode the token to obtain user public_id
             data = decode_token(token)
             user_id = data["sub"]
-            response = makeRequest("SELECT username FROM user WHERE id = ?", (str(user_id),))
+            response = makeRequest("SELECT username, is_activated FROM user WHERE id = ?", (str(user_id),))
             if len(response) < 1:
-                return make_response(jsonify({"message": "Token not associated to a user!"}), 401)
+                raise TokenError("Votre token n'est pas associe a un utilisateur")
+            if (response[0]["is_activated"] != 1):
+                raise TokenError("Votre compte n'est pas actif, veuillez valider votre email")
         except:
-            return make_response(jsonify({"message": "Invalid token!"}), 401)
+            raise TokenError("Vous n'avez pas de token valide")
+        
          # Return the user information attached to the token
         return f(user_id, *args, **kwargs)
     return decorator

@@ -35,7 +35,9 @@ CREATE TABLE user (
     bio                 TEXT                            NULL,
     fame_rating         REAL                            NULL,
     latitude            REAL                            NOT NULL,
-    longitude           REAL                            NOT NULL
+    longitude           REAL                            NOT NULL,
+    is_activated        BOOLEAN                         NOT NULL,
+    url_identifier      TEXT                            NULL
 );
 
 CREATE TABLE image (

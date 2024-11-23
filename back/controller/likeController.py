@@ -20,11 +20,11 @@ def updateFame(user_id):
 def likeUserById(user_id):
     user_to_like_id = request.json.get("user_to_like_id", None)
     if (user_id == user_to_like_id):
-        raise ForbiddenError("Can't like your own profile")
+        raise ForbiddenError("Vous ne pouvez pas like votre profil")
     if (not isAccountValid(getUserWithImagesById(user_to_like_id))):
-        raise ForbiddenError("Account you're trying to like is invalid")
+        raise ForbiddenError("Le profil n'est pas complet et ne peut pas interagir")
     if (not isAccountValid(getUserWithImagesById(user_id))):
-        raise ForbiddenError("Account trying to like is invalid")
+        raise ForbiddenError("Completer votre profil pour interagir")
     
     like = makeRequest("SELECT id FROM like WHERE like.user_id = ? AND like.liked_user_id = ?", (str(user_id), str(user_to_like_id),))
     if (len(like) > 0):

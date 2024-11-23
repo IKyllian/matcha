@@ -8,7 +8,7 @@ from errors.httpErrors import ForbiddenError
 def blockUserById(user_id):
     user_to_block_id = request.json.get("user_to_block_id", None)
     if (user_id == user_to_block_id):
-        raise ForbiddenError("Can't block your own profile")
+        raise ForbiddenError("Vous ne pouvez pas blocker votre profil")
     block = makeRequest("SELECT id FROM block WHERE block.user_id = ? AND block.blocked_user_id = ?", (str(user_id), str(user_to_block_id),))
     if (len(block) > 0):
         makeRequest("DELETE FROM block WHERE block.user_id = ? AND block.blocked_user_id = ?", (str(user_id), str(user_to_block_id),))
@@ -31,7 +31,7 @@ def getBlocksOfUser(user_id):
 def reportUserById(user_id):
     user_to_report_id = request.json.get("user_to_report_id", None)
     if (user_id == user_to_report_id):
-        raise ForbiddenError("Can't report your own profile")
+        raise ForbiddenError("Vous ne pouvez pas signaler votre profil")
     report = getReports(user_id, user_to_report_id)
     if (len(report) > 0):
         makeRequest("DELETE FROM report WHERE report.user_id = ? AND report.reported_user_id = ?", (str(user_id), str(user_to_report_id),))
