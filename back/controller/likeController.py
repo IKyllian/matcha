@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from services.user import getUserWithImagesById
 from database_utils.requests import *
-from database_utils.decoratorFunctions import token_required
+from decorators.authDecorator import token_required
 from errors.httpErrors import ForbiddenError
 
 def calculate_fame(likes_received, likes_given):

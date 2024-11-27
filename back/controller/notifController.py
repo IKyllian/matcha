@@ -3,7 +3,7 @@ from flask import jsonify, request
 from services.user import getUserWithProfilePictureById
 from controller.userController import getProfileById
 from database_utils.requests import *
-from database_utils.decoratorFunctions import token_required
+from decorators.authDecorator import token_required
 
 def getAllNotifs(user_id):
     notifs = makeRequest("SELECT id, content, sender_id, receiver_id, created_at, was_seen FROM notification WHERE receiver_id = :id ORDER BY created_at DESC", (str(user_id),))

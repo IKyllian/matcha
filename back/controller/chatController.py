@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import jsonify, request
 from database_utils.requests import *
-from database_utils.decoratorFunctions import token_required
+from decorators.authDecorator import token_required
 
 def easteregg():
     return "<p>Congrats! You found the easteregg!</p>"

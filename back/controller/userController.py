@@ -2,7 +2,7 @@ import base64
 from flask import jsonify, request
 from services.relations import *
 from services.user import *
-from database_utils.decoratorFunctions import token_required
+from decorators.authDecorator import token_required
 from database_utils.requests import *
 from database_utils.convert import getAgeFromTime
 from datetime import datetime, timedelta

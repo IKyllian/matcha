@@ -34,7 +34,8 @@ const FIELDS: FieldsType[] = [
         name: 'last_name',
         type: 'text',
         options: {
-            maxLength: 20
+            maxLength: 20,
+            required: true
         }
     },
     {
@@ -42,7 +43,9 @@ const FIELDS: FieldsType[] = [
         name: 'username',
         type: 'text',
         options: {
-            required: true
+            required: true,
+            minLength: 3,
+            maxLength: 20
         }
     },
     {

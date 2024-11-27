@@ -1,8 +1,7 @@
 from functools import wraps
-from flask import app, jsonify, make_response, request
+from flask import request
 from errors.httpErrors import TokenError
 from flask_jwt_extended import decode_token
-from flask_jwt_extended import get_jwt_identity
 from database_utils.requests import makeRequest
 
 # Authentication decorator

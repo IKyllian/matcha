@@ -1,6 +1,6 @@
 from flask import jsonify, request
 from database_utils.requests import *
-from database_utils.decoratorFunctions import token_required
+from decorators.authDecorator import token_required
 from errors.httpErrors import ForbiddenError
 
 @token_required
