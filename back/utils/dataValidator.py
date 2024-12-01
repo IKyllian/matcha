@@ -13,8 +13,18 @@ def validate_data(data, rules):
         if 'required' in rule and rule['required'] and value is None:
           raise ValidationError(f"{field} est requis.", field)
         if value is not None:
-          if 'type' in rule and not isinstance(value, rule['type']):
-            raise ValidationError(f"{field} doit être de type {rule['type'].__name__}.", field)
+          expected_type = rule["type"]
+          try:
+            if expected_type == int:
+              value = int(value)
+            elif expected_type == float:
+              value = float(value)
+            elif expected_type == str:
+              value = str(value)
+            else:
+              raise ValidationError(f"Type inconnu pour '{field}'.", field)
+          except ValueError:
+            raise ValidationError(f"Le champ '{field}' doit être de type {expected_type}.", field)
           if 'isalnum' in rule and rule['isalnum'] and not str(value).isalnum():
             raise ValidationError(f"{field} doit être alphanumérique.", field)
           if 'isalpha' in rule and rule['isalpha'] and not str(value).isalpha():

@@ -3,11 +3,11 @@ from flask import jsonify, request
 from services.relations import *
 from services.user import *
 from decorators.authDecorator import token_required
+from decorators.dataDecorator import validate_request
 from database_utils.requests import *
 from database_utils.convert import getAgeFromTime
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager, decode_token
 from errors.httpErrors import ForbiddenError
 import ipdata
 import os
@@ -41,17 +41,22 @@ def createTag(user_id):
     return jsonify(tag=tag[0])
 
 @token_required
-def getProfiles(user_id):
+@validate_request({
+    "min_age": {"type": int, "min": 18, "max": 100},
+    "max_age": {"type": int, "min": 18, "max": 100},
+    "max_pos": {"type": int, "min": 30, "max": 100000},
+    "min_fame": {"type": int, "min": 0, "max": 5},
+    "tags": {},
+})
+def getProfiles(user_id, validated_data):
+    fields = ["min_age", "max_age", "max_pos", "min_fame", "tags"]
+    min_age, max_age, max_pos, min_fame, tags = (validated_data[key] for key in fields)
+    
     user = getUserWithImagesById(user_id)
     user_latitude = str(user["latitude"])
     user_longitude = str(user["longitude"])
     distance = f"(6371 * acos(cos(radians({user_latitude})) * cos(radians(user.latitude)) * cos(radians(user.longitude) - radians({user_longitude})) + sin(radians({user_latitude})) * sin(radians(user.latitude)))) AS distance,"
 
-    min_age = request.args.get("min_age", None)
-    max_age = request.args.get("max_age", None)
-    max_pos = request.args.get("max_pos", None)
-    min_fame = request.args.get("min_fame", None)
-    tags = request.args.get("tags", None)
     if (type(tags) is str):
         tags = tags.split(',')
 
@@ -118,7 +123,10 @@ def getProfiles(user_id):
     return users
 
 @token_required
-def getProfileById(user_id, profile_id):
+@validate_request({
+    "profile_id": {"required": True, "type": int, "min": 0},
+})
+def getProfileById(user_id, validated_data, profile_id): # validated_data doit être garder ici même si pas utliser sinon erreur (peut être regarder plus tard pour check pourquoi ça met une erreur)
     user = getUserWithImagesById(profile_id)
     user["age"] = getAgeFromTime(user["birth_date"])
     del user["birth_date"]
