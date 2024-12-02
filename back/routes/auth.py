@@ -15,3 +15,6 @@ auth_bp.route("/auth", methods = ["GET"]) (getAuth)
 
 auth_bp.route("/activateAccount", methods = ["POST"]) (activateAccount)
 
+auth_bp.route("/sendPasswordReset", methods = ["POST"]) (sendResetPassword)
+
+auth_bp.route("/resetPassword", methods = ["PATCH"]) (resetPassword)

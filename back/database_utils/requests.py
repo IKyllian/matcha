@@ -72,15 +72,52 @@ SMTP_PORT = 587
 SMTP_USER = 'Matcha42LyonOfficial@gmail.com'  # Your email address
 SMTP_PASSWORD = 'rgrk rrwt ztiw inbp '  # Your email password (use app password if 2FA enabled)
 
-def send_email(user_email, url_identifier):
+def send_email_auth(user_email, url_identifier):
     recipient_email = user_email
-    print("user_email = ", user_email)
     subject = "Authentification Email"
-    print("email subject = ", subject)
     message_body = '''Bienvenue sur Matcha!
     Pour vous identifier, veuiller suivre le lien a cette adresse:
     ''' + os.getenv("FRONT_HOST") + "/activateAccount/" + url_identifier
     print("message_body = ", message_body)
+    
+    # Create email message
+    message = MIMEMultipart()
+    message['From'] = SMTP_USER
+    message['To'] = recipient_email
+    message['Subject'] = subject
+    message.attach(MIMEText(message_body, 'plain'))
+
+    try:
+        # Connect to the SMTP server and send the email
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()  # Encrypt connection
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.sendmail(SMTP_USER, recipient_email, message.as_string())
+        
+        print('Email sent successfully!')
+    except Exception as e:
+        return print(f'Error: {str(e)}')
+
+    return render_template_string('''
+        <form method="POST">
+            <label for="email">Recipient Email:</label>
+            <input type="email" name="email" required><br>
+            
+            <label for="subject">Subject:</label>
+            <input type="text" name="subject" required><br>
+            
+            <label for="message">Message:</label>
+            <textarea name="message" required></textarea><br>
+            
+            <button type="submit">Send Email</button>
+        </form>
+    ''')
+
+def send_email_password(user_email, url_identifier):
+    recipient_email = user_email
+    subject = "Authentification Email"
+    message_body = '''Pour reinitialiser votre mot de passe, veuiller suivre le lien a cette adresse:
+    ''' + os.getenv("FRONT_HOST") + "/resetPassword/" + url_identifier
     
     # Create email message
     message = MIMEMultipart()
