@@ -1,7 +1,8 @@
 from flask import jsonify, request
 from services.relations import *
 from database_utils.requests import *
-from database_utils.decoratorFunctions import token_required
+from decorators.authDecorator import token_required
+from decorators.dataDecorator import validate_request
 from errors.httpErrors import ForbiddenError
 
 @token_required
@@ -18,7 +19,10 @@ def blockUserById(user_id):
     return jsonify(ok=True)
 
 @token_required
-def getUserBlocks(user_id, blocked_id):
+@validate_request({
+    "blocked_id": {"required": True, "type": int, "min": 0},
+})
+def getUserBlocks(user_id, validated_data ,blocked_id):
     blocks = makeRequest("SELECT user.id, user.first_name, user.last_name, image.id, image.image_file AS profile_picture, image.mime_type, image.file_name FROM block LEFT JOIN user ON block.user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE block.blocked_user_id = ?", (str(blocked_id),))
     return jsonify(blocks=blocks)
 
@@ -28,8 +32,11 @@ def getBlocksOfUser(user_id):
     return jsonify(blocks=blocks)
 
 @token_required
-def reportUserById(user_id):
-    user_to_report_id = request.json.get("user_to_report_id", None)
+@validate_request({
+    "user_to_report_id": {"required": True, "type": int, "min": 0},
+})
+def reportUserById(user_id, validated_data):
+    user_to_report_id = validated_data['user_to_report_id']
     if (user_id == user_to_report_id):
         raise ForbiddenError("Vous ne pouvez pas signaler votre profil")
     report = getReports(user_id, user_to_report_id)

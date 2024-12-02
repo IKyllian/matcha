@@ -3,7 +3,8 @@ from flask import jsonify, request
 from services.user import getUserWithProfilePictureById
 from controller.userController import getProfileById
 from database_utils.requests import *
-from database_utils.decoratorFunctions import token_required
+from decorators.authDecorator import token_required
+from decorators.dataDecorator import validate_request
 
 def getAllNotifs(user_id):
     notifs = makeRequest("SELECT id, content, sender_id, receiver_id, created_at, was_seen FROM notification WHERE receiver_id = :id ORDER BY created_at DESC", (str(user_id),))
@@ -22,7 +23,10 @@ def getNotif(user_id):
     return jsonify(notifications=notifs)
 
 @token_required
-def deleteNotif(user_id, notif_id):
+@validate_request({
+    "notif_id": {"required": True, "type": int, "min": 0},
+})
+def deleteNotif(user_id, validated_data, notif_id):
     response = makeRequest("DELETE FROM notification WHERE id = ? AND receiver_id = ?", (str(notif_id), str(user_id)))
     return jsonify(ok=True)
 

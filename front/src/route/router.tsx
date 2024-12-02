@@ -9,6 +9,9 @@ import Login from "front/components/sign/login";
 import NotificationScreen from "front/components/notifications/notificationScreen";
 import ViewScreen from "front/components/views/viewScreen";
 import PublicRoute from "front/route/publicRoute";
+import ActivateAccount from "front/components/sign/activateAccount";
+import ResetPasswordForm from "front/components/sign/resetPasswordForm";
+import SendResetPasswordEmailForm from "front/components/sign/sendResetPasswordEmailForm";
 
 export const router = createBrowserRouter([
     {
@@ -76,4 +79,28 @@ export const router = createBrowserRouter([
             </PrivateRoute>
         )
     },
+    {
+        path: '/activateAccount/:url_identifier',
+        element: (
+            <PublicRoute>
+                <ActivateAccount />
+            </PublicRoute>
+        )
+    },
+    {
+        path: '/resetPassword',
+        element: (
+            <PublicRoute>
+                <SendResetPasswordEmailForm />
+            </PublicRoute>
+        )
+    },
+    {
+        path: '/resetPassword/:url_identifier',
+        element: (
+            <PublicRoute>
+                <ResetPasswordForm />
+            </PublicRoute>
+        )
+    }
 ])

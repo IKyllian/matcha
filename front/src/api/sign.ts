@@ -18,8 +18,8 @@ export const makeSignInRequest = async ({ data, addAlert }: SignProps): Promise<
     });
 };
 
-export const makeSignUpRequest = async ({ data, addAlert, ip }: SignProps): Promise<{ user: User; access_token: string } | null> => {
-    return apiRequest<{ user: User; access_token: string }>({
+export const makeSignUpRequest = async ({ data, addAlert, ip }: SignProps): Promise<{ ok: boolean } | null> => {
+    return apiRequest<{ ok: boolean }>({
         url: `${import.meta.env.VITE_API_URL}/signup`,
         options: {
             method: 'POST',

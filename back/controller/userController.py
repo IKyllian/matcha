@@ -2,16 +2,17 @@ import base64
 from flask import jsonify, request
 from services.relations import *
 from services.user import *
-from database_utils.decoratorFunctions import token_required
+from decorators.authDecorator import token_required
+from decorators.dataDecorator import validate_request
 from database_utils.requests import *
 from database_utils.convert import getAgeFromTime
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager, decode_token
 from errors.httpErrors import ForbiddenError
 import ipdata
 import os
 from errors.httpErrors import APIAuthError
+from utils.images import decodeImagesFromArray
 
 def getTimeFromAge(Age):
     return datetime.today() - relativedelta(years=int(Age))
@@ -25,11 +26,11 @@ def getTags(user_id):
     return jsonify(tags=getAllTags())
 
 @token_required
-def createTag(user_id):
-    tag_name = request.json.get("tag_name", None)
-    if (not tag_name.isalnum()):
-        raise ForbiddenError('Le nom de tag est invalide')
-    tag_name = str(tag_name).lower()
+@validate_request({
+    "tag_name": {"type": str, "min": 2, "max": 30, "isalnum": True},
+})
+def createTag(user_id, validated_data):
+    tag_name = validated_data['tag_name'].lower()
     allTags = getAllTags()
     if (any(t["tag_name"]==tag_name for t in allTags)):
         raise ForbiddenError('Le tag existe deja')
@@ -41,17 +42,22 @@ def createTag(user_id):
     return jsonify(tag=tag[0])
 
 @token_required
-def getProfiles(user_id):
+@validate_request({
+    "min_age": {"type": int, "min": 18, "max": 100},
+    "max_age": {"type": int, "min": 18, "max": 100},
+    "max_pos": {"type": int, "min": 30, "max": 100000},
+    "min_fame": {"type": int, "min": 0, "max": 5},
+    "tags": {},
+})
+def getProfiles(user_id, validated_data):
+    fields = ["min_age", "max_age", "max_pos", "min_fame", "tags"]
+    min_age, max_age, max_pos, min_fame, tags = (validated_data[key] for key in fields)
+    
     user = getUserWithImagesById(user_id)
     user_latitude = str(user["latitude"])
     user_longitude = str(user["longitude"])
     distance = f"(6371 * acos(cos(radians({user_latitude})) * cos(radians(user.latitude)) * cos(radians(user.longitude) - radians({user_longitude})) + sin(radians({user_latitude})) * sin(radians(user.latitude)))) AS distance,"
 
-    min_age = request.args.get("min_age", None)
-    max_age = request.args.get("max_age", None)
-    max_pos = request.args.get("max_pos", None)
-    min_fame = request.args.get("min_fame", None)
-    tags = request.args.get("tags", None)
     if (type(tags) is str):
         tags = tags.split(',')
 
@@ -100,25 +106,14 @@ def getProfiles(user_id):
     requestQuery += groupByClose
     
     users = makeRequest(requestQuery, queryParams)
-    for user in users:
-        if (user["image_file"]):
-            img = {
-                "id": user["image_id"],
-                "image_file": user["image_file"],
-                "is_profile_picture": user["is_profile_picture"],
-                "mime_type": user["mime_type"],
-                "file_name": user["file_name"]
-            }
-            decoded = decodeImages([img])
-            del user["image_id"]
-            del user["image_file"]
-            del user["is_profile_picture"]
-            user["images"] = decoded
-
+    users = decodeImagesFromArray(users)
     return users
 
 @token_required
-def getProfileById(user_id, profile_id):
+@validate_request({
+    "profile_id": {"required": True, "type": int, "min": 0},
+})
+def getProfileById(user_id, validated_data, profile_id): # validated_data doit être garder ici même si pas utliser sinon erreur (peut être regarder plus tard pour check pourquoi ça met une erreur)
     user = getUserWithImagesById(profile_id)
     user["age"] = getAgeFromTime(user["birth_date"])
     del user["birth_date"]
@@ -131,6 +126,7 @@ def getProfileById(user_id, profile_id):
 
 @token_required
 def getSettings(user_id):
+    print("user_id = ", user_id)
     user = getUserWithImagesById(user_id)
     user["tags"] = getUserTags(user_id)
     return jsonify(user=user, tags=getAllTags())
@@ -147,16 +143,20 @@ def checkImages(images):
     return True
 
 @token_required
-def setSettings(user_id):
-    username = request.form.get("username", None)
-    email = request.form.get("email", None)
-    first_name = request.form.get("first_name", None)
-    last_name = request.form.get("last_name", None)
-    gender = request.form.get("gender")
-    sexual_preference = request.form.get("sexual_preference", None)
-    bio = request.form.get("bio", None)
-    latitude = request.form.get("latitude", None)
-    longitude = request.form.get("longitude", None)
+@validate_request({
+    "username": {"required": True, "type": str, "min": 3, "max": 20},
+    "email": {"required": True, "type": str, "regex": r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'},
+    "first_name": {"required": True,"type": str, "min": 2, "max": 35},
+    "last_name": {"required": True, "type": str, "min": 2, "max": 35},
+    "gender": {"type": str, "choices": ["M", "F"]},
+    "sexual_preference": {"type": str, "choices": ["M", "F", "B"]},
+    "bio": {"type": str, "min": 2, "max": 1000},
+    "latitude": {"type": float},
+    "longitude": {"type": float},
+})
+def setSettings(user_id, validated_data):
+    fields = ["username", "email", "first_name", "last_name", "gender", "sexual_preference", "bio", "latitude", "longitude"]
+    username, email, first_name, last_name, gender, sexual_preference, bio, latitude, longitude = (validated_data[key] for key in fields)
     tags = request.form.getlist("tag_ids", None)
     images = []
     index = 0

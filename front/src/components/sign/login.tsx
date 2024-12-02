@@ -69,6 +69,7 @@ const Login = () => {
                             <label key={name} className={css(slotsStyles.label)}>
                                 {label}
                                 <input {...register(name)} className={css(slotsStyles.inputStyles)} type={type} name={name} required={required} />
+                                {name === 'password' && <span className={css(slotsStyles.forgotPassword)}><Link to="/resetPassword">Mot de passe oublier ?</Link></span>}
                             </label>
                         ))
                     }
