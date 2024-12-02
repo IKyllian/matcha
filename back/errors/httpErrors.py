@@ -21,3 +21,11 @@ class TokenError(APIError):
     """Custom Authentication Error Class."""
     code = 401
     description = "Token Error"
+
+class ServerError(APIError):
+  code = 500
+  description = "Server error"
+
+class BadRequestError(APIError):
+  code = 400
+  description = "Bad Request"

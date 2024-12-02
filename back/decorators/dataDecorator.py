@@ -1,6 +1,7 @@
 from functools import wraps
 from flask import request, jsonify
 from utils.dataValidator import validate_data, ValidationError
+from errors.httpErrors import ServerError, BadRequestError
 
 def validate_request(rules=None):
     def decorator(func):
@@ -21,8 +22,8 @@ def validate_request(rules=None):
                 kwargs['validated_data'] = validated_data
                 return func(*args, **kwargs)
             except ValidationError as e:
-                return jsonify({"error": e.args[0], "field": e.field}), 400
+                raise BadRequestError(e.args[0])
             except Exception as e:
-                return jsonify({"error": "Erreur serveur", "details": str(e)}), 500
+                raise ServerError("Serveur Error")
         return wrapper
     return decorator
