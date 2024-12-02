@@ -7,7 +7,6 @@ import Home from "front/components/home/home";
 import Settings from "front/components/settings/settings";
 import Login from "front/components/sign/login";
 import NotificationScreen from "front/components/notifications/notificationScreen";
-import ViewScreen from "front/components/views/viewScreen";
 import PublicRoute from "front/route/publicRoute";
 import ActivateAccount from "front/components/sign/activateAccount";
 import ResetPasswordForm from "front/components/sign/resetPasswordForm";
@@ -68,14 +67,6 @@ export const router = createBrowserRouter([
         element: (
             <PrivateRoute>
                 <NotificationScreen />
-            </PrivateRoute>
-        )
-    },
-    {
-        path: '/vues',
-        element: (
-            <PrivateRoute>
-                <ViewScreen />
             </PrivateRoute>
         )
     },
