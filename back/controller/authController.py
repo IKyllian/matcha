@@ -73,8 +73,11 @@ def getAuth():
     except :
         raise APIAuthError('Token invalide')
 
-def activateAccount():
-    urlIdentifier = request.json.get("url_identifier", None)
+@validate_request({
+    "url_identifier": {"required": True, "type": str},
+})
+def activateAccount(validated_data):
+    urlIdentifier = validated_data["url_identifier"]
     response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
     if (not response):
         raise NotFoundError("No matching account found with the provided urlIdentifier")
@@ -82,8 +85,11 @@ def activateAccount():
               
     return jsonify(ok=True, message="Account activated successfully")
 
-def sendResetPassword():
-    email = request.json.get("email", None)
+@validate_request({
+    "email": {"required": True, "type": str, "regex": r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'},
+})
+def sendResetPassword(validated_data):
+    email = validated_data["email"]
     response = makeRequest("SELECT id FROM user WHERE email = ?", (email,))
     user_id = response[0]["id"]
     dataToEncode = (str(user_id) + str(os.urandom(16)))
@@ -91,9 +97,12 @@ def sendResetPassword():
     makeRequest("UPDATE user SET url_identifier = ? WHERE id = ?", ((str(urlIdentifier)), (str(user_id))))
     send_email_password(email, urlIdentifier)
     return jsonify(ok=True, message="Account activated successfully")
-    
-def resetPassword():
-    urlIdentifier = request.json.get("url_identifier", None)
+
+@validate_request({
+    "url_identifier": {"required": True, "type": str},
+})
+def resetPassword(validated_data):
+    urlIdentifier = validated_data["url_identifier"]
     password = request.json.get("pass", None)
     encryptedPass = bcrypt.generate_password_hash(password).decode("utf8")
     response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
