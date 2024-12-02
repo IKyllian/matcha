@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-
+from database_utils.convert import getAgeFromTime
 class ValidationError(Exception):
     def __init__(self, message, field=None):
         super().__init__(message)
@@ -40,6 +40,9 @@ def validate_data(data, rules):
           if 'date_format' in rule:
             try:
               datetime.strptime(value, rule['date_format'])
+              age = getAgeFromTime(value)
+              if (age < 18 or age > 100):
+                raise ValidationError(f"L'age doit etre superieur ou egal a 18 ans et inferieur ou egal a 100 ans", field) 
             except ValueError:
               raise ValidationError(f"{field} doit être une date valide au format {rule['date_format']}.", field)
         validated_data[field] = value

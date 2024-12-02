@@ -145,7 +145,7 @@ def checkImages(images):
 @token_required
 @validate_request({
     "username": {"required": True, "type": str, "min": 3, "max": 20},
-    "email": {"required": True, "type": str}, # TODO: Fix => "regex": r"/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/"},
+    "email": {"required": True, "type": str, "regex": r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'},
     "first_name": {"required": True,"type": str, "min": 2, "max": 35},
     "last_name": {"required": True, "type": str, "min": 2, "max": 35},
     "gender": {"type": str, "choices": ["M", "F"]},

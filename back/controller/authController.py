@@ -11,8 +11,6 @@ import re
 import ipdata
 import os
 
-# regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
-
 @validate_request({
     "username": {"required": True, "type": str, "min": 3, "max": 20, "isalnum": True},
     "password": {"required": True, "type": str},
@@ -33,9 +31,9 @@ def signin(validated_data):
     "username": {"required": True, "type": str, "min": 3, "max": 20, "isalnum": True},
     "first_name": {"required": True, "type": str, "min": 2, "max": 35, "isalpha": True},
     "last_name": {"required": True, "type": str, "min": 2, "max": 35, "isalpha": True},
-    "email": {"required": True, "type": str}, # TODO: Fix => "regex": r"/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/"},
+    "email": {"required": True, "type": str, "regex": r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'},
     "password": {"required": True, "type": str, "min": 8},
-    "birth_date": {"required": True, "type": str, "date_format": "%Y-%m-%d"}, # TODO: Check pour la date et l'age
+    "birth_date": {"required": True, "type": str, "date_format": "%Y-%m-%d"}
 })
 def signup(validated_data):
     fields = ["username", "password", "email", "first_name", "last_name", "birth_date"]
