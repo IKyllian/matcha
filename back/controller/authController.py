@@ -31,8 +31,8 @@ def signin(validated_data):
 
 @validate_request({
     "username": {"required": True, "type": str, "min": 3, "max": 20, "isalnum": True},
-    "first_name": {"required": True, "type": str, "min": 3, "max": 20, "isalpha": True},
-    "last_name": {"required": True, "type": str, "min": 3, "max": 20, "isalpha": True},
+    "first_name": {"required": True, "type": str, "min": 2, "max": 35, "isalpha": True},
+    "last_name": {"required": True, "type": str, "min": 2, "max": 35, "isalpha": True},
     "email": {"required": True, "type": str}, # TODO: Fix => "regex": r"/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/"},
     "password": {"required": True, "type": str, "min": 8},
     "birth_date": {"required": True, "type": str, "date_format": "%Y-%m-%d"}, # TODO: Check pour la date et l'age

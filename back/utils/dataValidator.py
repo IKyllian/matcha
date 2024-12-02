@@ -15,11 +15,11 @@ def validate_data(data, rules):
         if value is not None:
           expected_type = rule["type"]
           try:
-            if expected_type == int:
+            if expected_type is int:
               value = int(value)
-            elif expected_type == float:
+            elif expected_type is float:
               value = float(value)
-            elif expected_type == str:
+            elif expected_type is str:
               value = str(value)
             else:
               raise ValidationError(f"Type inconnu pour '{field}'.", field)
