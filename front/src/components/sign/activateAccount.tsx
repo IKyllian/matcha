@@ -1,4 +1,5 @@
 import { makeActivateAccountRequest } from "front/api/auth"
+import { useStore } from "front/store/store"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
@@ -6,10 +7,11 @@ type ComponentStatus = 'loading' | 'loaded' | 'error'
 const ActivateAccount = () => {
     const { url_identifier } = useParams<{ url_identifier: string }>()
     const [status, setLoading] = useState<ComponentStatus>('loading')
+    const addAlert = useStore(store => store.addAlert)
 
     useEffect(() => {
         const makeRequest = async () => {
-            const { ok } = await makeActivateAccountRequest({ url_identifier })
+            const { ok } = await makeActivateAccountRequest({ url_identifier, addAlert })
             if (ok) {
                 setLoading('loaded')
             } else {

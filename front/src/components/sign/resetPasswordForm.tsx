@@ -53,7 +53,8 @@ const ResetPasswordForm = () => {
             data: {
                 pass: data.password,
                 url_identifier
-            }
+            },
+            addAlert
         })
 
         if (ok) {
@@ -72,7 +73,7 @@ const ResetPasswordForm = () => {
                                 FIELDS.map(({ name, type, label, options }) => (
                                     <label key={name} className={css(slotsStyles.label)}>
                                         {label}
-                                        <input className={css(slotsStyles.inputStyles)} type="text" {...register(name, options)} />
+                                        <input className={css(slotsStyles.inputStyles)} type={type} {...register(name, options)} />
                                         {errors?.[name]?.message && <span className={css(slotsStyles.inputError)}>{errors[name].message.toString()}</span>}
                                     </label>
                                 ))

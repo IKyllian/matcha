@@ -1,4 +1,4 @@
-import { FieldsInputType } from "front/typing/input"
+import { EMAIL_REGEX, FieldsInputType } from "front/typing/input"
 import { User } from "front/typing/user"
 import { useForm } from "react-hook-form"
 import { formStyle } from "./sign.style"
@@ -17,7 +17,7 @@ const FIELDS: FieldsInputType<FormValues>[] = [
         options: {
             required: true,
             pattern: {
-                value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                value: EMAIL_REGEX,
                 message: 'Mail invalide'
             }
         }
@@ -28,14 +28,13 @@ const SendResetPasswordEmailForm = () => {
         register,
         handleSubmit,
         formState: { errors },
-        getValues
     } = useForm<FormValues>()
     const addAlert = useStore(state => state.addAlert)
     const slotsStyles = formStyle.raw()
 
     const onSubmit = async (data: FormValues) => {
         const { ok } = await makeSendResetPasswordEmailRequest({
-            email: data.email
+            email: data.email, addAlert
         })
 
         if (ok) {
@@ -51,7 +50,7 @@ const SendResetPasswordEmailForm = () => {
                         FIELDS.map(({ name, type, label, options }) => (
                             <label key={name} className={css(slotsStyles.label)}>
                                 {label}
-                                <input className={css(slotsStyles.inputStyles)} type="text" {...register(name, options)} />
+                                <input className={css(slotsStyles.inputStyles)} type={type} {...register(name, options)} />
                                 {errors?.[name]?.message && <span className={css(slotsStyles.inputError)}>{errors[name].message.toString()}</span>}
                             </label>
                         ))

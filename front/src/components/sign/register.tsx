@@ -1,17 +1,17 @@
-import { RegisterOptions, useForm } from "react-hook-form"
-import { Link, useNavigate } from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { Link } from "react-router-dom"
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
 import { useStore } from "front/store/store"
 import { User } from "front/typing/user"
-import { useEffect } from "react"
 import { makeSignUpRequest } from "front/api/sign"
-import { COOKIE_JWT_TOKEN } from "front/constant/cookie"
-import { useCookies } from "react-cookie"
 import { makeIpAddressRequest } from "front/api/auth"
-import { FieldsInputType } from "front/typing/input"
+import { EMAIL_REGEX, FieldsInputType } from "front/typing/input"
+import { AlertTypeEnum } from "front/typing/alert"
+import { useState } from "react"
 
 type FormValues = Pick<User, 'first_name' | 'last_name' | 'username' | 'email' | 'password' | 'birth_date'>
+type FormStatusType = 'registered' | 'onProgress'
 
 const FIELDS: FieldsInputType<FormValues>[] = [
     {
@@ -49,7 +49,7 @@ const FIELDS: FieldsInputType<FormValues>[] = [
         options: {
             required: true,
             pattern: {
-                value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                value: EMAIL_REGEX,
                 message: 'Mail invalide'
             }
         }
@@ -78,28 +78,27 @@ const Register = () => {
         handleSubmit,
         formState: { errors }
     } = useForm<FormValues>()
-    const [cookies, setCookie, removeCookie] = useCookies();
-    const authStore = useStore((state) => state.authStore)
-    const logUser = useStore((state) => state.logUser)
     const addAlert = useStore((state) => state.addAlert)
-    const navigate = useNavigate()
     const slotsStyles = formStyle.raw()
     const onSubmit = async (data: FormValues) => {
         const { ip } = await makeIpAddressRequest()
-        const ret = await makeSignUpRequest({ data, addAlert, ip })
-        if (ret) {
-            const { user, access_token } = ret
-            logUser(user, access_token)
-            setCookie(COOKIE_JWT_TOKEN, access_token)
+        const { ok } = await makeSignUpRequest({ data, addAlert, ip })
+        if (ok) {
+            addAlert({ message: "Un mail a ete envoyer pour activer votre compte", type: AlertTypeEnum.SUCCESS })
+            setStatus('registered')
         }
     }
+    const [status, setStatus] = useState<FormStatusType>('onProgress')
 
-    useEffect(() => {
-        if (authStore.isLogged) {
-            navigate('/')
-        }
-    }, [authStore.isLogged])
-
+    if (status === 'registered') {
+        return (
+            <div className={css({ minHeight: '100vh', display: 'flex' })}>
+                <div className={css(slotsStyles.wrapper)}>
+                    <span className={css(slotsStyles.textConfirm)}>Un email a ete envoyer dans votre boite mail pour activer votre compte. Vous ne pourrez pas vous connecter a votre compte avant de l'activer</span>
+                </div>
+            </div>
+        )
+    }
     return (
         <div className={css({ minHeight: '100vh', display: 'flex' })}>
             <div className={css(slotsStyles.wrapper)}>
