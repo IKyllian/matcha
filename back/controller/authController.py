@@ -1,11 +1,12 @@
 from flask import request, jsonify
+import hashlib
 from controller.notifController import getAllNotifs
 from services.user import getUserWithProfilePictureById, getUserWithProfilePictureByUsername
 from decorators.dataDecorator import validate_request
 from database_utils.requests import *
 from flask_jwt_extended import create_access_token, decode_token
 from app import bcrypt
-from errors.httpErrors import APIAuthError
+from errors.httpErrors import APIAuthError, NotFoundError
 import re
 import ipdata
 import os
@@ -51,15 +52,15 @@ def signup(validated_data):
         if ('10.11.' in ipAddress or '127.0.'in ipAddress):
             ipAddress = os.getenv("PUBLIC_IP")
         data = ipdata.lookup(ipAddress)
-        #TODO Create a unique ID url_identifier -> Send it by email, put is_activated to false by default
-        makeRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, is_activated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date), str(2.5), str(data['latitude']), str(data['longitude']), str(1)))
-        user = getUserWithProfilePictureByUsername(username)
-        access_token = create_access_token(identity=user["id"])
-        print("YO2")
-        return jsonify(access_token=access_token, user=user)
+        user_id = makeInsertRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, is_activated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (str(username), bcrypt.generate_password_hash(password).decode("utf8"), str(email), str(first_name), str(last_name), str(birth_date), str(2.5), str(data['latitude']), str(data['longitude']), str(0)))
     except :
         raise APIAuthError('Location est invalide')
+    dataToEncode = (str(user_id) + str(os.urandom(16)))
+    urlIdentifier = hashlib.sha256(dataToEncode.encode()).hexdigest()
+    makeRequest("UPDATE user SET url_identifier = ? WHERE id = ?", ((str(urlIdentifier)), (str(user_id))))
+    send_email_auth(email, urlIdentifier)
+    return jsonify(ok=True)
 
 def getAuth():
     try :
@@ -71,3 +72,33 @@ def getAuth():
         return jsonify(user=user, notifications=notifications)
     except :
         raise APIAuthError('Token invalide')
+
+def activateAccount():
+    urlIdentifier = request.json.get("url_identifier", None)
+    response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
+    if (not response):
+        raise NotFoundError("No matching account found with the provided urlIdentifier")
+    makeRequest("UPDATE user SET is_activated = ?, url_identifier = NULL WHERE id = ?", (str(1), str(response[0]["id"])))
+              
+    return jsonify(ok=True, message="Account activated successfully")
+
+def sendResetPassword():
+    email = request.json.get("email", None)
+    response = makeRequest("SELECT id FROM user WHERE email = ?", (email,))
+    user_id = response[0]["id"]
+    dataToEncode = (str(user_id) + str(os.urandom(16)))
+    urlIdentifier = hashlib.sha256(dataToEncode.encode()).hexdigest()
+    makeRequest("UPDATE user SET url_identifier = ? WHERE id = ?", ((str(urlIdentifier)), (str(user_id))))
+    send_email_password(email, urlIdentifier)
+    return jsonify(ok=True, message="Account activated successfully")
+    
+def resetPassword():
+    urlIdentifier = request.json.get("url_identifier", None)
+    password = request.json.get("pass", None)
+    encryptedPass = bcrypt.generate_password_hash(password).decode("utf8")
+    response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
+    if (not response):
+        raise NotFoundError("No matching account found with the provided urlIdentifier")
+    makeRequest("UPDATE user SET pass = ?, url_identifier = NULL WHERE id = ?", (str(encryptedPass), str(response[0]["id"])))
+              
+    return jsonify(ok=True, message="Account activated successfully")
