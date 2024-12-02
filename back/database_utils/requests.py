@@ -69,8 +69,8 @@ def get_client_ip():
 
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
-SMTP_USER = 'Matcha42LyonOfficial@gmail.com'  # Your email address
-SMTP_PASSWORD = 'rgrk rrwt ztiw inbp '  # Your email password (use app password if 2FA enabled)
+SMTP_USER = os.getenv("SMTP_USER")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 
 def send_email_auth(user_email, url_identifier):
     recipient_email = user_email
@@ -78,7 +78,6 @@ def send_email_auth(user_email, url_identifier):
     message_body = '''Bienvenue sur Matcha!
     Pour vous identifier, veuiller suivre le lien a cette adresse:
     ''' + os.getenv("FRONT_HOST") + "/activateAccount/" + url_identifier
-    print("message_body = ", message_body)
     
     # Create email message
     message = MIMEMultipart()

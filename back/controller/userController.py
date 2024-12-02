@@ -162,7 +162,6 @@ def setSettings(user_id):
     index = 0
 
     if (not latitude or not longitude):
-        print('GET pos from ip adress')
         ipdata.api_key = os.getenv("IP_DATA_API_KEY")
         try :
             ipAddress = get_client_ip()

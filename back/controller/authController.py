@@ -6,7 +6,7 @@ from services.user import getUserWithProfilePictureById, getUserWithProfilePictu
 from database_utils.requests import *
 from flask_jwt_extended import create_access_token, decode_token
 from app import bcrypt
-from errors.httpErrors import APIAuthError
+from errors.httpErrors import APIAuthError, NotFoundError
 import re
 import ipdata
 import os
@@ -29,7 +29,6 @@ def signin():
         raise APIAuthError('Mot de passe invalide')
     
     response = makeRequest("SELECT pass FROM user WHERE username = ?", (str(username),))
-    print("response=" , response[0])
     if len(response) < 1 or not bcrypt.check_password_hash(response[0]["pass"], password):
         raise APIAuthError("Mauvais nom d'utilisateur ou mot de passe")
     user = getUserWithProfilePictureByUsername(username)
@@ -95,7 +94,7 @@ def activateAccount():
     urlIdentifier = request.json.get("url_identifier", None)
     response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
     if (not response):
-        return jsonify(ok=False, message="No matching account found with the provided urlIdentifier"), 404
+        raise NotFoundError("No matching account found with the provided urlIdentifier")
     makeRequest("UPDATE user SET is_activated = ?, url_identifier = NULL WHERE id = ?", (str(1), str(response[0]["id"])))
               
     return jsonify(ok=True, message="Account activated successfully")
@@ -116,7 +115,7 @@ def resetPassword():
     encryptedPass = bcrypt.generate_password_hash(password).decode("utf8")
     response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
     if (not response):
-        return jsonify(ok=False, message="No matching account found with the provided urlIdentifier"), 404
+        raise NotFoundError("No matching account found with the provided urlIdentifier")
     makeRequest("UPDATE user SET pass = ?, url_identifier = NULL WHERE id = ?", (str(encryptedPass), str(response[0]["id"])))
               
     return jsonify(ok=True, message="Account activated successfully")
