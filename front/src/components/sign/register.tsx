@@ -9,17 +9,11 @@ import { makeSignUpRequest } from "front/api/sign"
 import { COOKIE_JWT_TOKEN } from "front/constant/cookie"
 import { useCookies } from "react-cookie"
 import { makeIpAddressRequest } from "front/api/auth"
+import { FieldsInputType } from "front/typing/input"
 
 type FormValues = Pick<User, 'first_name' | 'last_name' | 'username' | 'email' | 'password' | 'birth_date'>
 
-type FieldsType = {
-    label: string
-    type: string
-    name: keyof FormValues
-    options?: RegisterOptions<FormValues>
-}
-
-const FIELDS: FieldsType[] = [
+const FIELDS: FieldsInputType<FormValues>[] = [
     {
         label: 'Prenom',
         name: 'first_name',
@@ -109,7 +103,7 @@ const Register = () => {
     return (
         <div className={css({ minHeight: '100vh', display: 'flex' })}>
             <div className={css(slotsStyles.wrapper)}>
-                <h2 className={css(slotsStyles.title)}> Incrvivez-vous </h2>
+                <h2 className={css(slotsStyles.title)}>Incrvivez-vous</h2>
                 <form className={css(slotsStyles.form)} onSubmit={handleSubmit(onSubmit)}>
                     {
                         FIELDS.map(({ name, type, label, options }) => (

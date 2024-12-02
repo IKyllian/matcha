@@ -1,6 +1,5 @@
 from flask import request, jsonify
 from controller.notifController import getAllNotifs
-from controller.userController import getAgeFromTime
 from services.user import getUserWithProfilePictureById, getUserWithProfilePictureByUsername
 from decorators.dataDecorator import validate_request
 from database_utils.requests import *
@@ -69,7 +68,6 @@ def getAuth():
         user_id = data["sub"]
         user = getUserWithProfilePictureById(user_id)
         notifications = getAllNotifs(user_id)
-        # notifications = []
         return jsonify(user=user, notifications=notifications)
     except :
         raise APIAuthError('Token invalide')
