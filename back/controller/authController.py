@@ -1,6 +1,6 @@
-import base64
+import hashlib
 from flask import request, jsonify
-from controller.notifController import getAllNotifs
+from controller.notifController import getAllNotifs, getNotif
 from controller.userController import getAgeFromTime
 from services.user import getUserWithProfilePictureById, getUserWithProfilePictureByUsername
 from database_utils.requests import *
@@ -11,7 +11,7 @@ import re
 import ipdata
 import os
 
-regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+regex = re.compile(r'([A-Za-z0-9._+-]+)@[A-Za-z0-9-]+(\.[A-Za-z|a-z]{2,})+')
 
 def isEmailValid(email):
     if re.fullmatch(regex, email):
@@ -34,7 +34,7 @@ def signin():
         raise APIAuthError("Mauvais nom d'utilisateur ou mot de passe")
     user = getUserWithProfilePictureByUsername(username)
     access_token = create_access_token(identity=user["id"])
-    notifications = getNotif()
+    notifications = getAllNotifs(user["id"])
     return jsonify(access_token=access_token, user=user, notifications=notifications)
 
 def signup():
@@ -69,15 +69,16 @@ def signup():
         if ('10.11.' in ipAddress or '127.0.'in ipAddress):
             ipAddress = os.getenv("PUBLIC_IP")
         data = ipdata.lookup(ipAddress)
-        #TODO Create a unique ID url_identifier -> Send it by email, put is_activated to false by default
-        makeRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, is_activated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date), str(2.5), str(data['latitude']), str(data['longitude']), str(1)))
-        user = getUserWithProfilePictureByUsername(username)
-        access_token = create_access_token(identity=user["id"])
-        print("YO2")
-        return jsonify(access_token=access_token, user=user)
+        user_id = makeInsertRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, is_activated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (str(username), bcrypt.generate_password_hash(password), str(email), str(first_name), str(last_name), str(birth_date), str(2.5), str(data['latitude']), str(data['longitude']), str(0)))
     except :
         raise APIAuthError('Location est invalide')
+    dataToEncode = (str(user_id) + str(os.urandom(16)))
+    urlIdentifier = hashlib.sha256(dataToEncode.encode()).hexdigest()
+    print("urlIdentifier =", urlIdentifier)
+    makeRequest("UPDATE user SET url_identifier = ? WHERE id = ?", ((str(urlIdentifier)), (str(user_id))))
+    send_email(email, urlIdentifier)
+    return jsonify(ok=True)
 
 def getAuth():
     try :
@@ -90,3 +91,13 @@ def getAuth():
         return jsonify(user=user, notifications=notifications)
     except :
         raise APIAuthError('Token invalide')
+
+def activateAccount():
+    urlIdentifier = request.json.get("url_identifier", None)
+    response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
+    if (not response):
+        return jsonify(ok=False, message="No matching account found with the provided urlIdentifier"), 404
+    makeRequest("UPDATE user SET is_activated = ? WHERE id = ?", (str(1), str(response[0]["id"])))
+              
+    return jsonify(ok=True, message="Account activated successfully")
+    
