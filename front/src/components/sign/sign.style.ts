@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css/sva.mjs";
 
 export const formStyle = sva({
-    slots: ['wrapper', 'title', 'form', 'label', 'inputStyles', 'button', 'textInfo', 'inputError'],
+    slots: ['wrapper', 'title', 'form', 'label', 'inputStyles', 'button', 'textInfo', 'inputError', 'forgotPassword'],
     base: {
         title: {
             textAlign: 'center',
@@ -74,6 +74,17 @@ export const formStyle = sva({
         inputError: {
             color: 'red',
             fontSize: '12px'
+        },
+        forgotPassword: {
+            textAlign: 'right',
+            fontSize: '12px',
+            marginTop: '5px',
+            '& > a': {
+                color: 'buttonPrimaryBackground',
+                '&:hover': {
+                    textDecoration: 'underline'
+                }
+            }
         }
     }
 })

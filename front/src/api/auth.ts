@@ -32,3 +32,13 @@ export const makeResetPasswordRequest = async ({ data }: { data: { url_identifie
         },
     })
 }
+
+export const makeSendResetPasswordEmailRequest = async ({ email }) => {
+    return apiRequest<{ ok: true }>({
+        url: `${import.meta.env.VITE_API_URL}/sendResetPassword`,
+        options: {
+            method: 'POST',
+            json: { email }
+        },
+    })
+}
