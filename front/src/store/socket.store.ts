@@ -37,10 +37,6 @@ export const socketSlice = (set): SocketStoreType => ({
             state.addMessage(message)
         });
 
-        console.info("RETURN DATA - ", {
-            ...state, socket
-        })
-
         return {
             ...state, socket
         }
