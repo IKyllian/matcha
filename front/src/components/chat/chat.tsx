@@ -3,9 +3,11 @@ import { css } from "styled-system/css";
 import { AiOutlineSend } from "react-icons/ai";
 import { useApi } from "front/hook/useApi";
 import { ChatType } from "front/typing/chat";
-import { USERS } from "front/typing/user";
 import { useStore } from "front/store/store";
 import { useForm } from "react-hook-form";
+import ProfilePicture from "front/components/utils/profilePicture"
+import { getMessageDateString } from "../utils/chat";
+import { Link } from "react-router-dom";
 
 type ChatProps = {
     chatId: number;
@@ -25,35 +27,37 @@ const Chat = ({ chatId }: ChatProps) => {
         register,
         handleSubmit,
         formState: { errors },
+        reset
     } = useForm<FormValues>()
     const { isLoading } = useApi<ChatType>({ endpoint: "chat", dependencies: [chatId], params: { id: chatId }, setter: setChat })
-    const userConnected = USERS[0]
-    const recipient = chat?.participants.find(participant => participant.id !== userConnected.id)
+    const recipient = chat?.chatter
 
     const onSubmit = (data: FormValues) => {
         if (user) {
             sendMessage({
-                chatId,
-                userId: user.id,
+                receiver_id: chatId,
+                sender_id: user.id,
                 message: data.message,
             })
+            reset()
         }
-
     }
 
     if (isLoading) {
         return <p>Chargement...</p>
     }
-    if (!chat || !recipient) {
-        return <p>Aucun message pour le moment.</p>
+
+    if (!chat) {
+        return <p>Not found</p>
     }
+
     return (
         <div className={css(slotsStyles.chatContainer)}>
             <div className={css(slotsStyles.chatWrapper)}>
-                <div className={css(slotsStyles.chatHeader)}>
-                    <img src={recipient.img} className={css(slotsStyles.img)} />
+                <Link to={`/profile/${recipient.id}`} className={css(slotsStyles.chatHeader)}>
+                    <ProfilePicture className={slotsStyles.img} width="40px" height="40px" userImages={recipient.images} />
                     <p> {recipient.first_name} {recipient.last_name} </p>
-                </div>
+                </Link>
                 <div className={css(slotsStyles.messagesContainer)}>
                     {
                         chat.messages.map((message) => {
@@ -62,11 +66,11 @@ const Chat = ({ chatId }: ChatProps) => {
                                     key={message.id}
                                     className={css(
                                         slotsStyles.messageItem,
-                                        message.senderId === recipient.id ? slotsStyles.recipient : slotsStyles.sender
+                                        message.sender_id === recipient.id ? slotsStyles.recipient : slotsStyles.sender
                                     )}
                                 >
                                     <p>{message.message}</p>
-                                    <span>{new Date(message.createdAt).toLocaleTimeString()}</span>
+                                    <span className={css(slotsStyles.dateMessage)}>{getMessageDateString(message.created_at)}</span>
                                 </div>
                             )
                         })

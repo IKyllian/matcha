@@ -36,7 +36,6 @@ const Login = () => {
     const {
         register,
         handleSubmit,
-        formState: { errors },
     } = useForm<FormValues>()
     const [cookies, setCookie, removeCookie] = useCookies();
     const authStore = useStore((state) => state.authStore)
@@ -44,11 +43,14 @@ const Login = () => {
     const logUser = useStore((state) => state.logUser)
     const navigate = useNavigate()
     const slotsStyles = formStyle.raw()
+    const initSocket = useStore((state) => state.initSocket)
+
     const onSubmit = async (data: FormValues) => {
         const ret = await makeSignInRequest({ data, addAlert })
         if (ret) {
             const { user, access_token } = ret
             logUser(user, access_token)
+            initSocket({ token: access_token })
             setCookie(COOKIE_JWT_TOKEN, access_token)
         }
     }
@@ -62,7 +64,7 @@ const Login = () => {
     return (
         <div className={css({ minHeight: '100vh', display: 'flex' })}>
             <div className={css(slotsStyles.wrapper)}>
-                <h2 className={css(slotsStyles.title)}> Connectez-vous </h2>
+                <h2 className={css(slotsStyles.title)}>Connectez-vous</h2>
                 <form className={css(slotsStyles.form)} onSubmit={handleSubmit(onSubmit)}>
                     {
                         FIELDS.map(({ name, type, required, label }) => (

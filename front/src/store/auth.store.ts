@@ -19,6 +19,7 @@ export type AuthStoreType = {
     logUser: (user: Partial<User>, token: string) => void,
     setUser: (user: Partial<User>) => void,
     setAuthStatus: (status: AuthStatusType) => void,
+    initializeSocket: () => void,
     logoutUser: () => void,
 }
 
@@ -27,5 +28,6 @@ export const authSlice = (set: any): AuthStoreType => ({
     logUser: (user: Partial<User>, token: string) => set((state) => ({ ...state, authStore: { ...state.authStore, user: user, authStatus: 'CHECKED', isLogged: true, token } })),
     setUser: (user: Partial<User>) => set((state) => ({ ...state, authStore: { ...state.authStore, user: user } })),
     setAuthStatus: (status: AuthStatusType) => set((state) => ({ ...state, authStore: { ...state.authStore, authStatus: status } })),
+    initializeSocket: () => set((state) => ({ ...state, authStore: { ...state.authStore, socketInitialized: true } })),
     logoutUser: () => set((state) => ({ ...state, authStore: { ...state.authStore, user: undefined, authStatus: 'CHECKED', isLogged: false, token: undefined } })),
 })
