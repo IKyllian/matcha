@@ -11,6 +11,7 @@ import PublicRoute from "front/route/publicRoute";
 import ActivateAccount from "front/components/sign/activateAccount";
 import ResetPasswordForm from "front/components/sign/resetPasswordForm";
 import SendResetPasswordEmailForm from "front/components/sign/sendResetPasswordEmailForm";
+import Screen404 from "front/components/utils/404";
 
 export const router = createBrowserRouter([
     {
@@ -92,6 +93,12 @@ export const router = createBrowserRouter([
             <PublicRoute>
                 <ResetPasswordForm />
             </PublicRoute>
+        )
+    },
+    {
+        path: '*',
+        element: (
+            <Screen404 />
         )
     }
 ])

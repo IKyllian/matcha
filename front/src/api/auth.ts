@@ -15,7 +15,7 @@ export const makeIpAddressRequest = async () => {
 }
 
 export const makeActivateAccountRequest = async ({ url_identifier, addAlert }: { url_identifier: string, addAlert: AlertStoreType['addAlert'] }) => {
-    return apiRequest<{ ok: true }>({
+    return apiRequest<{ ok?: true }>({
         url: `${import.meta.env.VITE_API_URL}/activateAccount`,
         options: {
             method: 'POST',
