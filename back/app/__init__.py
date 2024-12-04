@@ -9,7 +9,7 @@ from errors.httpErrors import APIError
 from dotenv import load_dotenv
 import os
 
-socketio = SocketIO(cors_allowed_origins = "*")
+socketio = SocketIO(cors_allowed_origins = "*")#, logger=True, engineio_logger=True)
 bcrypt = Bcrypt()
 jwt = JWTManager()
 

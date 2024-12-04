@@ -15,7 +15,7 @@ def getUserWithImagesById(user_id):
     return user
 
 def getUserWithProfilePictureById(user_id):
-    result = makeRequest("SELECT user.id, username, gender, sexual_preference, birth_date FROM user WHERE user.id = ?", (str(user_id),))
+    result = makeRequest("SELECT user.id, username, first_name, last_name, gender, sexual_preference, birth_date FROM user WHERE user.id = ?", (str(user_id),))
     user = result[0]
     user["age"] = getAgeFromTime(user["birth_date"])
     del user["birth_date"]
@@ -25,8 +25,10 @@ def getUserWithProfilePictureById(user_id):
     return user
 
 def getUserWithProfilePictureByUsername(username):
-    result = makeRequest("SELECT user.id, username, first_name, last_name FROM user WHERE username = ?", (str(username),))
+    result = makeRequest("SELECT user.id, username, first_name, last_name, gender, sexual_preference, birth_date FROM user WHERE username = ?", (str(username),))
     user = result[0]
+    user["age"] = getAgeFromTime(user["birth_date"])
+    del user["birth_date"]
     images = makeRequest("SELECT id, image_file, is_profile_picture, mime_type, file_name FROM image WHERE image.user_id = ? AND image.is_profile_picture = 1", (str(user["id"]),))
     user["images"] = decodeImages(images)
     return user

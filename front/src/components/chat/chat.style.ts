@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css";
 
 export const chatStyle = sva({
-    slots: ['chatContainer', 'chatWrapper', 'chatHeader', 'img', 'messagesContainer', 'messageItem', 'recipient', 'sender', 'chatFormContainer', 'sendButtonContainer'],
+    slots: ['chatContainer', 'chatWrapper', 'chatHeader', 'img', 'messagesContainer', 'messageItem', 'recipient', 'sender', 'chatFormContainer', 'sendButtonContainer', 'dateMessage'],
     base: {
         chatContainer: {
             borderLeft: 'none',
@@ -24,7 +24,7 @@ export const chatStyle = sva({
             gap: '8px',
             padding: '8px',
         },
-        img : {
+        img: {
             width: '40px',
             height: '40px',
             borderRadius: '50%',
@@ -82,6 +82,9 @@ export const chatStyle = sva({
             backgroundColor: 'buttonPrimaryBackground',
             border: '2px solid black',
             borderRadius: '50%',
+        },
+        dateMessage: {
+            fontSize: '13px'
         }
     }
 })

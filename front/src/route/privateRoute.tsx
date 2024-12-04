@@ -19,7 +19,7 @@ const PrivateRoute = ({ children }) => {
     if (authStore.authStatus === 'CHECKED' && !authStore.isLogged) {
         return <Navigate to="/login" />
     }
-    
+
     return (
         <div>
             <Header />

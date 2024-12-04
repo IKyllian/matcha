@@ -1,36 +1,51 @@
-import { io } from "socket.io-client";
-import { MessageType } from "front/typing/chat";
+// import { io, Socket } from "socket.io-client";
+// import { MessageType } from "front/typing/chat";
 
-// const socket = io(import.meta.env.VITE_API_URL);
+// let socket: Socket | undefined = undefined;
+// export type MiddlewareType = {
+//   sendMessage: (params: { receiver_id: number, sender_id: number, message: string }) => void;
+//   initSocket: () => void;
+// }
 
-export type MiddlewareType = {
-  sendMessage: (params: { chatId: number, userId: number, message: string }) => void;
-}
+// export const socketMiddleware = (config) => (set, get, api) => {
+//   const initialState = config(set, get, api);
 
-export const socketMiddleware = (config) => (set, get, api) => {
-  const initialState = config(set, get, api);
-  console.info('SOCKET MIDDLEWARE = ', initialState)
-  // if (!initialState.authStore.isAuthenticated) {
-  // console.info('INIT socket')
-  // socket.on('new_chat_message', (message: MessageType) => {
-  //   // set({ messages: [...get().messages, message] });
-  //   console.info('new_chat_message = ', message)
-  //   initialState.addMessage(message)
-  // });
+//   if (initialState.authStore.isLogged && !initialState.authStore.socketInitialized) {
+//     console.info("Create instance")
+//     socket = io(import.meta.env.VITE_API_URL);
 
-  // socket.on('new_notification', (notification) => {
-  //   // set({ notifications: [...get().notifications, notification] });
-  // });
+//     socket.on('connect', () => {
+//       console.info("CONNECTED")
+//       initialState.initializeSocket()
+//     });
 
-  // socket.on('sidebar_update', (data) => {
-  //   // set({ sidebarData: data });
-  // });
-  // initialState.setAuth(true)
-  // set({ authStore: {...get()?.authStore, isAuthenticated: true} });
-  // }
+//     socket.on('disconnect', () => {
+//       console.info("DISCONECTED")
+//     });
 
-  return {
-    ...config(set, get, api),
-    // sendMessage: (params: { chatId: number, userId: number, message: string }) => socket.emit('send_message', params),
-  };
-};
+//     socket.on('error', (message: string) => {
+//       console.info('Socket Error message = ', message)
+//     })
+
+//     socket.on('receiveMessage', (message: MessageType) => {
+//       console.info("message = ", message)
+//       initialState.addMessage(message)
+//     });
+
+//     socket.on('new_notification', (notification) => {
+
+//     });
+
+//     socket.on('sidebar_update', (data) => {
+
+//     });
+//   }
+
+//   return {
+//     ...config(set, get, api),
+//     // sendMessage: (params: { receiver_id: number, sender_id: number, message: string }) => {
+//     //   console.info("SEND MESSAGE", socket)
+//     //   socket?.emit('sendMessage', params)
+//     // }
+//   };
+// };

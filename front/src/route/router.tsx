@@ -7,11 +7,11 @@ import Home from "front/components/home/home";
 import Settings from "front/components/settings/settings";
 import Login from "front/components/sign/login";
 import NotificationScreen from "front/components/notifications/notificationScreen";
-import ViewScreen from "front/components/views/viewScreen";
 import PublicRoute from "front/route/publicRoute";
 import ActivateAccount from "front/components/sign/activateAccount";
 import ResetPasswordForm from "front/components/sign/resetPasswordForm";
 import SendResetPasswordEmailForm from "front/components/sign/sendResetPasswordEmailForm";
+import Screen404 from "front/components/utils/404";
 
 export const router = createBrowserRouter([
     {
@@ -72,14 +72,6 @@ export const router = createBrowserRouter([
         )
     },
     {
-        path: '/vues',
-        element: (
-            <PrivateRoute>
-                <ViewScreen />
-            </PrivateRoute>
-        )
-    },
-    {
         path: '/activateAccount/:url_identifier',
         element: (
             <PublicRoute>
@@ -101,6 +93,12 @@ export const router = createBrowserRouter([
             <PublicRoute>
                 <ResetPasswordForm />
             </PublicRoute>
+        )
+    },
+    {
+        path: '*',
+        element: (
+            <Screen404 />
         )
     }
 ])

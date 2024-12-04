@@ -84,7 +84,7 @@ const Register = () => {
         const { ip } = await makeIpAddressRequest()
         const { ok } = await makeSignUpRequest({ data, addAlert, ip })
         if (ok) {
-            addAlert({ message: "Un mail a ete envoyer pour activer votre compte", type: AlertTypeEnum.SUCCESS })
+            addAlert({ message: "Un mail a ete envoyer", type: AlertTypeEnum.SUCCESS })
             setStatus('registered')
         }
     }

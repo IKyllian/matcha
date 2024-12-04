@@ -9,6 +9,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     const logUser = useStore((state) => state.logUser)
     const setNotifications = useStore((state) => state.setNotifications)
     const setAuthStatus = useStore((state) => state.setAuthStatus)
+    const initSocket = useStore((state) => state.initSocket)
 
     useEffect(() => {
         const authRequest = async () => {
@@ -19,6 +20,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
                     const { user, notifications } = await makeAuthRequest(cookie)
                     if (user) {
                         logUser(user, cookie)
+                        initSocket({ token: cookie })
                         if (notifications) {
                             setNotifications(notifications)
                         }

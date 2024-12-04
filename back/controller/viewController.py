@@ -26,7 +26,8 @@ def viewUserById(user_id, validated_data):
 
 @token_required
 def getUserViews(user_id):
-    views = makeRequest("SELECT user.id, user.first_name, user.last_name, image.id, image.image_file AS profile_picture, image.mime_type, image.file_name FROM view LEFT JOIN user ON view.user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE view.viewed_user_id = ?", (str(user_id),))
+    views = makeRequest("SELECT user.id, user.first_name, user.last_name, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM view LEFT JOIN user ON view.user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE view.viewed_user_id = ?", (str(user_id),))
+    views = decodeImagesFromArray(views)
     return jsonify(views=views)
 
 @token_required

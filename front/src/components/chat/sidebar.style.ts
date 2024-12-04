@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css";
 
 export const sidebarStyle = sva({
-    slots: ['sidebarContainer', 'sidebarItemContainer', 'img', 'messageContentWrapper', 'unreadNumber', 'itemRightSide'],
+    slots: ['sidebarContainer', 'sidebarItemContainer', 'img', 'messageContentWrapper', 'unreadNumber', 'itemRightSide', 'sentDate', 'messageSender', 'lastMessage'],
     base: {
         sidebarContainer: {
             height: 'calc(100vh - 70px)',
@@ -55,6 +55,16 @@ export const sidebarStyle = sva({
             justifyContent: 'center',
             alignItems: 'center',
             gap: '4px',
+        },
+        sentDate: {
+            fontSize: '12px',
+            fontWeight: 'light',
+        },
+        messageSender: {
+            fontWeight: 'bold',
+        },
+        lastMessage: {
+            fontWeight: 'light',
         }
     }
 })

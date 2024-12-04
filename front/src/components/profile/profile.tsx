@@ -15,14 +15,25 @@ import ProfileMatches from "./profileMatches"
 import ProfilePicture from "front/components/utils/profilePicture"
 import { CardsImagesList } from "front/components/card/cardsList"
 import StarRating from './StarRating'
+import ProfileViewScreen from "./profileView"
+import ProfileBlocks from "./profileBlocks"
 
-const NAV_CONTENT_LOGGED_USER = [
+type NAV_CONTENT_TYPE =
+    'Likes' |
+    'Matches' |
+    'Vues' |
+    'Blocks' |
+    'Photos'
+
+const NAV_CONTENT_LOGGED_USER: NAV_CONTENT_TYPE[] = [
     'Likes',
     'Matches',
+    'Vues',
+    'Blocks',
     'Photos'
 ]
 
-const NAV_CONTENT_NOT_LOGGED_USER = [
+const NAV_CONTENT_NOT_LOGGED_USER: NAV_CONTENT_TYPE[] = [
     'Photos',
 ]
 
@@ -96,6 +107,10 @@ const Profile = () => {
                 return <ProfileMatches />
             case 'Photos':
                 return <CardsImagesList list={profile.user.images} />
+            case 'Vues':
+                return <ProfileViewScreen />
+            case 'Blocks':
+                return <ProfileBlocks />
         }
     }
 
