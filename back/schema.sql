@@ -37,7 +37,9 @@ CREATE TABLE user (
     latitude            REAL                            NOT NULL,
     longitude           REAL                            NOT NULL,
     is_activated        BOOLEAN                         NOT NULL,
-    url_identifier      TEXT                            NULL
+    url_identifier      TEXT                            NULL,
+    is_connected        BOOLEAN                         NOT NULL,
+    last_connection     TEXT                            NULL
 );
 
 CREATE TABLE image (

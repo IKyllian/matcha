@@ -105,6 +105,8 @@ def getProfiles(user_id, validated_data):
     groupByClose = ' GROUP BY user.id '
     requestQuery += groupByClose
     
+    print("requestQuery = ", requestQuery)
+    print("queryParams = ", queryParams)
     users = makeRequest(requestQuery, queryParams)
     users = decodeImagesFromArray(users)
     return users

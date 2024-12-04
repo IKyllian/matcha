@@ -1,4 +1,6 @@
 from flask import jsonify, request
+from services.user import getUserWithProfilePictureById
+from controller.socketController import sendNotificationEvent
 from database_utils.requests import *
 from decorators.authDecorator import token_required
 from errors.httpErrors import ForbiddenError
@@ -22,6 +24,9 @@ def viewUserById(user_id, validated_data):
             return jsonify(ko=True)
         makeRequest("INSERT INTO view (user_id, viewed_user_id) VALUES (?, ?)",
                            (str(user_id), str(user_to_view_id)))
+        user = getUserWithProfilePictureById(user_id)
+        username = user["username"]
+        sendNotificationEvent(username + " a visité votre profile", user, user_to_view_id)
     return jsonify(ok=True)
 
 @token_required
