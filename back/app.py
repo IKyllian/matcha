@@ -1,5 +1,6 @@
 from app import createApp
 from app import socketio
+from controller.socketController import *
 import os
 
 app = createApp()
