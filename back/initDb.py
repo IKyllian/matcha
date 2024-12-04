@@ -47,6 +47,7 @@ users = [
         'longitude' : '6.849999904632568',
         'fame_rating' : '2.5',
         'image_name' : 'blank.png',
+        'last_connection' : '1950-04-10 14:05:31',
         'tag_ids' : [1, 6, 10]
     },
     {
@@ -62,6 +63,7 @@ users = [
         'longitude' : '4.849999904632568',
         'fame_rating' : '2.5',
         'image_name' : 'google.png',
+        'last_connection' : '2024-12-03 14:05:31',
         'tag_ids' : [5, 8, 9]
     },
     {
@@ -77,6 +79,7 @@ users = [
         'longitude' : '4.849999904632568',
         'fame_rating' : '2.5',
         'image_name' : 'google.png',
+        'last_connection' : '2024-05-10 14:05:31',
         'tag_ids' : [4, 8, 6, 10, 3]
     },
     {
@@ -92,6 +95,7 @@ users = [
         'longitude' : '4.849999904632568',
         'fame_rating' : '2.5',
         'image_name' : 'pizza.png',
+        'last_connection' : '2024-11-18 14:05:31',
         'tag_ids' : [4, 8]
     },
     {
@@ -107,6 +111,7 @@ users = [
         'longitude' : '4.849999904632568',
         'fame_rating' : '2.5',
         'image_name' : 'naruto.png',
+        'last_connection' : '2024-04-10 14:05:31',
         'tag_ids' : [2, 6, 7, 9, 3]
     },
     {
@@ -122,6 +127,7 @@ users = [
         'longitude' : '4.849999904632568',
         'fame_rating' : '2.5',
         'image_name' : 'panda.jpeg',
+        'last_connection' : '2024-04-10 14:05:31',
         'tag_ids' : [1, 6, 2, 10]
     },
     {
@@ -137,6 +143,7 @@ users = [
         'longitude' : '4.849999904632568',
         'fame_rating' : '2.5',
         'image_name' : 'jynx.jpeg',
+        'last_connection' : '2024-04-10 14:05:31',
         'tag_ids' : [1, 5, 3, 4, 8]
     },
     {
@@ -152,6 +159,7 @@ users = [
         'longitude' : '4.849999904632568',
         'fame_rating' : '2.5',
         'image_name' : 'vi.png',
+        'last_connection' : '1950-04-10 14:05:31',
         'tag_ids' : [1, 5, 6]
     }
 ]
@@ -160,8 +168,8 @@ users = [
 
 user_id = 1
 for user in users:
-    cur.execute("INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude, is_activated, fame_rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (user['name'], user['pass'],user['email'], user['first_name'], user['last_name'], user['gender'], user['sexual_preference'], user['birth_date'], user['latitude'], user['longitude'], "1", user['fame_rating']))
+    cur.execute("INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude, is_activated, fame_rating, is_connected, last_connection) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (user['name'], user['pass'],user['email'], user['first_name'], user['last_name'], user['gender'], user['sexual_preference'], user['birth_date'], user['latitude'], user['longitude'], "1", user['fame_rating'], "0", user["last_connection"]))
     image_name = './pictures/' + user['image_name']
     with open(image_name, "rb") as file:
         file_content = file.read()

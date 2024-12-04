@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import request
 from app import socketio
 from controller.chatController import createMessage
@@ -19,6 +20,9 @@ def handle_identify(token, user_id):
     if not user_id in user_socket_map:
         user_socket_map[user_id] = request.sid
     print(f"User {user_id} identified with socket ID {request.sid}")
+    dateNow = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print("dateNow=", dateNow)
+    makeRequest("UPDATE user SET is_connected = 1, last_connection = ? WHERE id = ?", ((str(dateNow)), (str(user_id))))
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -28,6 +32,9 @@ def handle_disconnect():
         if socket_id == request.sid:
             del user_socket_map[user_id]
             break
+    dateNow = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    makeRequest("UPDATE user SET is_connected = 0, last_connection = ? WHERE id = ?", ((str(dateNow)), (str(user_id))))
+    
 
 @socketio.on('sendMessage')
 @socket_auth
