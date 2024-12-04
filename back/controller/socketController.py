@@ -3,8 +3,7 @@ from app import socketio
 from controller.chatController import createMessage
 from database_utils.requests import makeRequest, makeInsertRequest
 from errors.httpErrors import APIAuthError
-from flask_jwt_extended import create_access_token, decode_token
-from flask_socketio import send, emit
+from flask_socketio import emit
 from decorators.authDecorator import socket_auth
 
 user_socket_map = {}

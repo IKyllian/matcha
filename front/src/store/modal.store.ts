@@ -1,3 +1,5 @@
+import { StoreSetType } from "front/typing/store"
+
 export type ModalType = 'report'
 
 const defaultModals: {
@@ -18,7 +20,7 @@ export type ModalStoreType = {
   closeModal: (modalKey: ModalType) => void
 }
 
-export const modalSlice = (set): ModalStoreType => ({
+export const modalSlice = (set: StoreSetType): ModalStoreType => ({
   modalState: defaultModals,
   openModal: ({ modalKey, userToReportId }: { modalKey: ModalType, userToReportId: number }) => set((state) => ({ ...state, modalState: { ...state.modalState, modals: { ...state.modalState, [modalKey]: true }, userToReportId } })),
   closeModal: (modalKey: ModalType) => set((state) => ({ ...state, modalState: { ...state.modalState, modals: { ...state.modalState, [modalKey]: false }, userToReportId: false } }))

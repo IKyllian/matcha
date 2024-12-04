@@ -1,7 +1,7 @@
 import { useApi } from "front/hook/useApi"
 import { User } from "front/typing/user"
 import { useState } from "react"
-import { CardsList } from "../card/cardsList"
+import { CardsList } from "front/components/card/cardsList"
 
 const ProfileBlocks = () => {
     const [viewedList, setViewList] = useState<Partial<User[]>>([])

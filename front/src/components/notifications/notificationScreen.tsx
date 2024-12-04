@@ -13,6 +13,8 @@ const NotificationScreen = () => {
   const slotsStyles = notificationsScreenStyle.raw()
   const { token } = useStore(state => state.authStore)
   const unseeNitifications = useStore(state => state.unseeNitifications)
+  const deleteNotificationById = useStore(state => state.deleteNotificationById)
+  const deleteAllNotification = useStore(state => state.deleteAllNotification)
   const navigate = useNavigate()
   const [notifications, setNotifications] = useState<NotificationType[]>()
   const {
@@ -45,6 +47,7 @@ const NotificationScreen = () => {
     })
     if (ret) {
       setNotifications(prev => [...prev.filter(n => n.id !== notifId)])
+      deleteNotificationById(notifId)
     }
   }
 
@@ -52,6 +55,7 @@ const NotificationScreen = () => {
     const ret = await makeDeleteAllNotificationRequest({ token })
     if (ret) {
       setNotifications([])
+      deleteAllNotification()
     }
   }
 

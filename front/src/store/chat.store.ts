@@ -1,4 +1,5 @@
 import { ChatType, MessageType } from "front/typing/chat"
+import { StoreSetType } from "front/typing/store"
 
 export type ChatStoreType = {
     chat: ChatType | undefined,
@@ -6,7 +7,7 @@ export type ChatStoreType = {
     addMessage: (message: MessageType) => void,
 }
 
-export const chatSlice = (set): ChatStoreType => ({
+export const chatSlice = (set: StoreSetType): ChatStoreType => ({
     chat: undefined,
     setChat: (chat: ChatType) => set((state) => ({ ...state, chat })),
     addMessage: (message: MessageType) => set(state => ({

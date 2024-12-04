@@ -6,7 +6,7 @@ import { User } from 'front/typing/user';
 import { Link } from 'react-router-dom';
 import IconButton from 'front/components/buttons/iconButton';
 import { BUTTONS_ICON } from 'front/typing/button';
-import ProfilePicture from '../utils/profilePicture';
+import ProfilePicture from 'front/components/utils/profilePicture';
 
 export type CardType = 'image' | 'image-content'
 

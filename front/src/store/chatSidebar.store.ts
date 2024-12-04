@@ -1,4 +1,5 @@
 import { ChatSidebarType } from "front/typing/chat"
+import { StoreSetType } from "front/typing/store"
 import { create } from "zustand"
 
 export type ChatSidebatStoreType = {
@@ -6,7 +7,7 @@ export type ChatSidebatStoreType = {
     setChatSidebar: (chatSidebar: ChatSidebarType[]) => void,
 }
 
-export const chatSidebarSlice = (set): ChatSidebatStoreType => ({
+export const chatSidebarSlice = (set: StoreSetType): ChatSidebatStoreType => ({
     chatSidebar: undefined,
     setChatSidebar: (chatSidebar: ChatSidebarType[]) => set((state) => ({ ...state, chatSidebar }))
 })

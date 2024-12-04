@@ -6,7 +6,7 @@ import useCloseRef from "front/hook/useCloseRef";
 import { makeDeleteNotificationRequest, makeViewNotificationRequest } from "front/api/notification";
 import { useStore } from "front/store/store";
 import { useEffect } from "react";
-import ProfilePicture from "../utils/profilePicture";
+import ProfilePicture from "front/components/utils/profilePicture";
 
 type NotificationsModalProps = {
   onClose: () => void

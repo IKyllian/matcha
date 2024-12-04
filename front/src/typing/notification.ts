@@ -1,4 +1,4 @@
-import { User, USERS } from "./user"
+import { User } from "./user"
 
 export enum NotificationTypeEnum {
   NEW_MESSAGE,

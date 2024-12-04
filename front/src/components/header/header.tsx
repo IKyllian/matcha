@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { COOKIE_JWT_TOKEN } from "front/constant/cookie";
 import { useStore } from "front/store/store";
-import ProfilePicture from "../utils/profilePicture";
+import ProfilePicture from "front/components/utils/profilePicture";
 
 const Header = () => {
     const [openNotif, setOpenNotif] = useState(false)

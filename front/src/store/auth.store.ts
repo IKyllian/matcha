@@ -1,3 +1,4 @@
+import { StoreSetType } from "front/typing/store";
 import { User } from "front/typing/user";
 
 type AuthStatusType = 'CHECKING' | 'CHECKED'
@@ -23,7 +24,7 @@ export type AuthStoreType = {
     logoutUser: () => void,
 }
 
-export const authSlice = (set: any): AuthStoreType => ({
+export const authSlice = (set: StoreSetType): AuthStoreType => ({
     authStore: defaultAuthStore,
     logUser: (user: Partial<User>, token: string) => set((state) => ({ ...state, authStore: { ...state.authStore, user: user, authStatus: 'CHECKED', isLogged: true, token } })),
     setUser: (user: Partial<User>) => set((state) => ({ ...state, authStore: { ...state.authStore, user: user } })),
