@@ -38,14 +38,13 @@ def handle_send_message(data):
     message = data.get('message')
 
     messageCreated = createMessage(sender_id, receiver_id, message)
-    print(messageCreated)
     emit('receiveMessage', {'sender_id': sender_id, 'receiver_id': receiver_id, 'created_at': messageCreated[0]["created_at"], 'id': messageCreated[0]["id"], 'message': message}, room=request.sid)
     print(f"Message from {sender_id} to {receiver_id}: {message}")
 
     # Ensure the receiver is identified and connected
     if receiver_id in user_socket_map:
         receiver_socket_id = user_socket_map[receiver_id]
-        emit('receiveMessage', {'sender_id': sender_id, 'receiver_id': receiver_id, 'message': message}, room=receiver_socket_id)
+        emit('receiveMessage', {'sender_id': sender_id, 'receiver_id': receiver_id,'created_at': messageCreated[0]["created_at"], 'id': messageCreated[0]["id"], 'message': message}, room=receiver_socket_id)
     else:
         print(f"User {receiver_id} not connected, so not notified")
     
