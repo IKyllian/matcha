@@ -168,8 +168,8 @@ users = [
 
 user_id = 1
 for user in users:
-    cur.execute("INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude, is_activated, fame_rating, is_connected, last_connection) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (user['name'], user['pass'],user['email'], user['first_name'], user['last_name'], user['gender'], user['sexual_preference'], user['birth_date'], user['latitude'], user['longitude'], "1", user['fame_rating'], "0", user["last_connection"]))
+    cur.execute("INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude, is_activated, fame_rating) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (user['name'], user['pass'],user['email'], user['first_name'], user['last_name'], user['gender'], user['sexual_preference'], user['birth_date'], user['latitude'], user['longitude'], "1", user['fame_rating']))
     image_name = './pictures/' + user['image_name']
     with open(image_name, "rb") as file:
         file_content = file.read()

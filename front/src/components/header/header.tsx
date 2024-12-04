@@ -15,6 +15,7 @@ const Header = () => {
     const { user } = useStore((state) => state.authStore)
     const notifications = useStore((state) => state.notifications)
     const logoutUser = useStore((state) => state.logoutUser)
+    const socketDisconnect = useStore((state) => state.socketDisconnect)
     const [cookies, setCookie, removeCookie] = useCookies();
     const slotsStyles = headerStyle.raw()
     const notSeenNotifNumber = notifications.filter(n => !n.was_seen)?.length || 0
@@ -25,6 +26,7 @@ const Header = () => {
 
     const onLogout = () => {
         removeCookie(COOKIE_JWT_TOKEN)
+        socketDisconnect()
         logoutUser()
     }
 

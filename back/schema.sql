@@ -36,9 +36,9 @@ CREATE TABLE user (
     fame_rating         REAL                            NULL,
     latitude            REAL                            NOT NULL,
     longitude           REAL                            NOT NULL,
-    is_activated        BOOLEAN                         NOT NULL,
+    is_activated        BOOLEAN                         NOT NULL DEFAULT 0,
     url_identifier      TEXT                            NULL,
-    is_connected        BOOLEAN                         NOT NULL,
+    is_connected        BOOLEAN                         NOT NULL DEFAULT 0,
     last_connection     TEXT                            NULL
 );
 

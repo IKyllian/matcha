@@ -7,6 +7,7 @@ export type SocketStoreType = {
     socket: Socket | undefined,
     initSocket: ({ token }: { token: string }) => void,
     sendMessage: (params: { receiver_id: number, sender_id: number, message: string }) => void;
+    socketDisconnect: () => void
 }
 
 export const socketSlice = (set: StoreSetType): SocketStoreType => ({
@@ -19,7 +20,6 @@ export const socketSlice = (set: StoreSetType): SocketStoreType => ({
     }),
     initSocket: ({ token }: { token: string }) => set(state => {
         const socket = io(import.meta.env.VITE_API_URL)
-
         socket.on('connect', () => {
             console.info("SOCKET CONNECTED")
             socket.emit("identify", { token })
@@ -46,6 +46,16 @@ export const socketSlice = (set: StoreSetType): SocketStoreType => ({
 
         return {
             ...state, socket
+        }
+    }),
+
+    socketDisconnect: () => set(state => {
+        if (state.socket && state.authStore.token) {
+            state.socket.emit('logout', { token: state.authStore.token })
+        }
+        return {
+            ...state,
+            socket: undefined
         }
     })
 })
