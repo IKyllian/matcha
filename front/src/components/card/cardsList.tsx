@@ -30,10 +30,10 @@ export const CardsImagesList = ({ list }: CardsImagesList) => {
     return (
         <div className={css(slotsStyles.cardsContainer)}>
             {
-                list.map(image => {
+                list.map((image, i) => {
                     const imageSrc = image.image_file
                     return (
-                        <div key={imageSrc} className={css(slotsStyles.cardWrapper, {
+                        <div key={i} className={css(slotsStyles.cardWrapper, {
                             height: 'auto'
                         })}>
                             <img src={imageSrc} className={css({

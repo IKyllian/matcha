@@ -14,7 +14,7 @@ const defaultNotifications: NotificationType[] = []
 
 export const notificationsSlice = (set: StoreSetType): NotificationStoreType => ({
   notifications: defaultNotifications,
-  addNotification: (notification: NotificationType) => set((state) => ({ ...state, notifications: [...state.notifications, notification] })),
+  addNotification: (notification: NotificationType) => set((state) => ({ ...state, notifications: [notification, ...state.notifications] })),
   deleteNotificationById: (notifId: number) => set((state) => ({ ...state, notifications: [...state.notifications.filter(n => n.id !== notifId)] })),
   unseeNitifications: () => set((state) => ({ ...state, notifications: [...state.notifications.map(n => n.was_seen ? n : { ...n, was_seen: true })] })),
   deleteAllNotification: () => set((state) => ({ ...state, notifications: [] })),

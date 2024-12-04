@@ -7,7 +7,7 @@ export const notificationsScreenStyle = sva({
       display: 'flex',
       flexDirection: 'column',
       width: '700px',
-      margin: '0 auto',
+      margin: '0 auto 24px auto',
     },
     title: {
       textAlign: 'center',

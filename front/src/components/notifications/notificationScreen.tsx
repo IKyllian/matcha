@@ -32,10 +32,10 @@ const NotificationScreen = () => {
         unseeNitifications()
       }
     }
-    if (notifications.find(n => !n.was_seen)) {
+    if (!isLoading && notifications && notifications.find(n => !n.was_seen)) {
       makeRequest()
     }
-  })
+  }, [isLoading, notifications])
 
   const onNotifclick = (senderId: number) => {
     navigate(`/profile/${senderId}`)
@@ -67,14 +67,14 @@ const NotificationScreen = () => {
     <div className={css(slotsStyles.screenContainer)}>
       <h1 className={css(slotsStyles.title)}> Notifications </h1>
       {
-        notifications.length > 0 ? (
+        notifications?.length > 0 ? (
           <>
             <div className={css(slotsStyles.buttonContainer)}>
               <button className={css(slotsStyles.button)} onClick={onAllDelete}> Clear all </button>
             </div>
             <div className={css(slotsStyles.notificationContainer)}>
               {
-                notifications.map((notification, index) => (
+                notifications?.map((notification, index) => (
                   <div key={index} className={css(slotsStyles.notificationItem)}>
                     <ProfilePicture onClick={() => onNotifclick(notification.sender.id)} userImages={notification.sender.images} className={slotsStyles.imgSender} width="52px" height="52px" />
                     <span>{notification.content}</span>
