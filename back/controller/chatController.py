@@ -1,6 +1,5 @@
 from datetime import datetime
-from flask import jsonify, request
-from controller.socketController import sendNotificationEvent
+from flask import jsonify
 from services.user import getUserWithProfilePictureById
 from database_utils.requests import *
 from decorators.authDecorator import token_required
@@ -56,8 +55,4 @@ def createMessage(user_id, chatter_id, message):
     response = makeInsertRequest("INSERT INTO message(sender_id, receiver_id, created_at, message) VALUES (?, ?, ?, ?)",
                 ((user_id), (chatter_id), (created_at), (message)))
     messageSent = makeRequest("SELECT * FROM message WHERE id = :id", (str(response),))
-    user = getUserWithProfilePictureById(user_id)
-    username = user["username"]
-    sendNotificationEvent("Vous avez recu un message de " + username , user, chatter_id)
-
     return messageSent

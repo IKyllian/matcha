@@ -1,7 +1,5 @@
-from datetime import datetime
-from flask import jsonify, request
+from flask import jsonify
 from services.user import getUserWithProfilePictureById
-from controller.userController import getProfileById
 from database_utils.requests import *
 from decorators.authDecorator import token_required
 from decorators.dataDecorator import validate_request
@@ -27,15 +25,15 @@ def getNotif(user_id):
     "notif_id": {"required": True, "type": int, "min": 0},
 })
 def deleteNotif(user_id, validated_data, notif_id):
-    response = makeRequest("DELETE FROM notification WHERE id = ? AND receiver_id = ?", (str(notif_id), str(user_id)))
+    makeRequest("DELETE FROM notification WHERE id = ? AND receiver_id = ?", (str(notif_id), str(user_id)))
     return jsonify(ok=True)
 
 @token_required
 def deleteAllNotifs(user_id):
-    response = makeRequest("DELETE FROM notification WHERE receiver_id = ?", (str(user_id),))
+    makeRequest("DELETE FROM notification WHERE receiver_id = ?", (str(user_id),))
     return jsonify(ok=True)
 
 @token_required
 def seeNotifs(user_id):
-    response = makeRequest("UPDATE notification SET was_seen = 1 WHERE receiver_id = :id", (str(user_id),))
+    makeRequest("UPDATE notification SET was_seen = 1 WHERE receiver_id = :id", (str(user_id),))
     return jsonify(ok=True)

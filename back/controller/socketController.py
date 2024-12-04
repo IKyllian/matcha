@@ -3,10 +3,9 @@ from flask import request
 from app import socketio
 from controller.chatController import createMessage
 from database_utils.requests import makeRequest, makeInsertRequest
-from errors.httpErrors import APIAuthError
-from flask_jwt_extended import create_access_token, decode_token
-from flask_socketio import send, emit
+from flask_socketio import emit
 from decorators.authDecorator import socket_auth
+from services.user import getUserWithProfilePictureById
 
 user_socket_map = {}
 
@@ -44,6 +43,10 @@ def handle_send_message(data, user_id):
     message = data.get('message')
 
     messageCreated = createMessage(sender_id, receiver_id, message)
+    sender = getUserWithProfilePictureById(user_id)
+    username = sender["username"]
+    sendNotificationEvent("Vous avez recu un message de " + username , sender, receiver_id)
+    
     emit('receiveMessage', {'sender_id': sender_id, 'receiver_id': receiver_id, 'created_at': messageCreated[0]["created_at"], 'id': messageCreated[0]["id"], 'message': message}, room=request.sid)
     print(f"Message from {sender_id} to {receiver_id}: {message}")
 

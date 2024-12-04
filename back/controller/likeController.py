@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import jsonify
 from controller.socketController import sendNotificationEvent
 from services.user import getUserWithImagesById, getUserWithProfilePictureById
 from database_utils.requests import *
