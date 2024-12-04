@@ -5,6 +5,7 @@ from database_utils.requests import makeRequest, makeInsertRequest
 from errors.httpErrors import APIAuthError
 from flask_jwt_extended import create_access_token, decode_token
 from flask_socketio import send, emit
+from decorators.authDecorator import socket_auth
 
 user_socket_map = {}
 
@@ -13,13 +14,10 @@ def handleConnect():
     print('Received event Connect:', request.sid)
 
 @socketio.on('identify')
-def handle_identify(token):
-    try :
-        data = decode_token(token)
-        user_id = data["sub"]
-    except :
-        raise APIAuthError('Token invalide')
-    user_socket_map[user_id] = request.sid
+@socket_auth
+def handle_identify(token, user_id):
+    if not user_id in user_socket_map:
+        user_socket_map[user_id] = request.sid
     print(f"User {user_id} identified with socket ID {request.sid}")
 
 @socketio.on('disconnect')
@@ -32,7 +30,8 @@ def handle_disconnect():
             break
 
 @socketio.on('sendMessage')
-def handle_send_message(data):
+@socket_auth
+def handle_send_message(data, user_id):
     sender_id = data.get('sender_id')
     receiver_id = data.get('receiver_id')
     message = data.get('message')

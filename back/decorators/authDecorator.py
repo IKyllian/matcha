@@ -27,3 +27,26 @@ def token_required(f):
         kwargs['user_id'] = user_id
         return f(*args, **kwargs)
     return decorator
+
+def socket_auth(f):
+    @wraps(f)
+    def socket_auth_decorator(*args, **kwargs):
+        eventArgs = args[0]
+        if not eventArgs:
+            raise TokenError("Erreur avec les arguments")
+        if not 'token' in eventArgs:
+            raise TokenError("Vous n'avez pas de token")
+        token = eventArgs['token']
+        try:
+            data = decode_token(token)
+            user_id = data["sub"]
+            response = makeRequest("SELECT username, is_activated FROM user WHERE id = ?", (str(user_id),))
+            if len(response) < 1:
+                raise TokenError("Votre token n'est pas associé à un utilisateur")
+            if response[0]["is_activated"] != 1:
+                raise TokenError("Votre compte n'est pas actif, veuillez valider votre email")
+        except:
+            raise TokenError("Vous n'avez pas de token valide")
+        kwargs['user_id'] = user_id
+        return f(*args, **kwargs)
+    return socket_auth_decorator
