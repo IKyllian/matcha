@@ -52,6 +52,23 @@ def getUserLikes(user_id, validated_data, liked_id):
     return jsonify(likes=likes)
 
 @token_required
+def getMatchesOfUser(user_id):
+    matches = []
+    matched_users_id = makeRequest('''
+        SELECT l1.liked_user_id AS matched_user
+        FROM like l1
+        JOIN like l2
+        ON l1.user_id = l2.liked_user_id
+        AND l1.liked_user_id = l2.user_id
+        WHERE l1.user_id = :user_id;
+    ''', {"user_id": user_id})
+    for user in matched_users_id:
+        foundUser = getUserWithImagesById(user['matched_user'])
+        if foundUser:
+            matches.append(foundUser)
+    return jsonify(matches=matches)
+
+@token_required
 def getLikesOfUser(user_id):
     likes = makeRequest("SELECT user.id, user.first_name, user.last_name, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM like LEFT JOIN user ON like.liked_user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE like.user_id = ?", (str(user_id),))
     likes = decodeImagesFromArray(likes)

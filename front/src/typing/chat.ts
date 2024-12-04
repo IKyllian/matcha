@@ -4,7 +4,7 @@ export type ChatSidebarType = {
     id: number;
     user: Partial<User>;
     liked_user: Partial<User>;
-    lastMessage: string;
+    last_message: string;
     last_send_at: string;
     unreadNumber?: number;
 }

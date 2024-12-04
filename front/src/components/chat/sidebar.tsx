@@ -5,6 +5,7 @@ import { useApi } from "front/hook/useApi"
 import { useNavigate } from "react-router-dom"
 import { useStore } from "front/store/store"
 import ProfilePicture from "front/components/utils/profilePicture"
+import { getLightMessageDateString } from "../utils/chat"
 
 type SidebarProps = {
 }
@@ -23,21 +24,21 @@ const Sidebar = ({ }: SidebarProps) => {
     }
     return (
         <div className={css(slotsStyles.sidebarContainer)}>
-            {!isLoading && chatSidebar.length === 0 && (
+            {!isLoading && chatSidebar?.length === 0 && (
                 <span>Pas de conversation pour le moment</span>
             )}
             {
-                !isLoading && chatSidebar.length > 0 && (
+                !isLoading && chatSidebar?.length > 0 && (
                     chatSidebar.map((chat) => (
                         <div key={chat.liked_user.id} className={css(slotsStyles.sidebarItemContainer)} onClick={() => handleClick(chat.liked_user.id)}>
                             <ProfilePicture className={slotsStyles.img} width="40px" height="40px" userImages={chat.liked_user.images} />
                             <div className={css(slotsStyles.messageContentWrapper)}>
-                                <p> {chat.liked_user.username} </p>
-                                {chat.lastMessage && <p>{chat.lastMessage}</p>}
+                                <p className={css(slotsStyles.messageSender)}>{chat.liked_user.username}</p>
+                                {chat.last_message && <p className={css(slotsStyles.lastMessage)}>{chat.last_message}</p>}
                             </div>
                             <div className={css(slotsStyles.itemRightSide)}>
-                                {chat.unreadNumber && <div className={css(slotsStyles.unreadNumber)}> {chat.unreadNumber} </div>}
-                                {chat.last_send_at && <p>{chat.last_send_at}</p>}
+                                {chat.unreadNumber && <div className={css(slotsStyles.unreadNumber)}>{chat.unreadNumber}</div>}
+                                {chat.last_send_at && <p className={css(slotsStyles.sentDate)}>{getLightMessageDateString(chat.last_send_at)}</p>}
                             </div>
                         </div>
                     ))
