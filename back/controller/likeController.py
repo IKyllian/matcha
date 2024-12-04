@@ -1,5 +1,6 @@
 from flask import jsonify, request
-from services.user import getUserWithImagesById
+from controller.socketController import sendNotificationEvent
+from services.user import getUserWithImagesById, getUserWithProfilePictureById
 from database_utils.requests import *
 from decorators.authDecorator import token_required
 from decorators.dataDecorator import validate_request
@@ -31,13 +32,23 @@ def likeUserById(user_id, validated_data):
     if (not isAccountValid(getUserWithImagesById(user_id))):
         raise ForbiddenError("Completer votre profil pour interagir")
     
+    user = getUserWithProfilePictureById(user_id)
+    username = user["username"]
     like = makeRequest("SELECT id FROM like WHERE like.user_id = ? AND like.liked_user_id = ?", (str(user_id), str(user_to_like_id),))
+    match = makeRequest("SELECT id FROM like WHERE like.user_id = ? AND like.liked_user_id = ?", (str(user_to_like_id), str(user_id),))
     if (len(like) > 0):
         makeRequest("DELETE FROM like WHERE like.user_id = ? AND like.liked_user_id = ?", (str(user_id), str(user_to_like_id),))
+        sendNotificationEvent(username + " a unlike votre profile", user, user_to_like_id)
     else :
+        #Case where you like the person
         makeRequest("INSERT INTO like (user_id, liked_user_id) VALUES (?, ?)",
                            (str(user_id), str(user_to_like_id)))
-        
+        #Check if they also like you to customize notification message
+        if (len(match) > 0):
+            sendNotificationEvent("Vous avez match avec " + username , user, user_to_like_id)
+        else :
+            sendNotificationEvent(username + " a like votre profile", user, user_to_like_id)
+    
     updateFame(user_id)
     updateFame(user_to_like_id)
     return jsonify(ok=True)
