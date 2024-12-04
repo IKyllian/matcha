@@ -64,14 +64,19 @@ def handleConnect():
 def sendNotificationEvent(message, sender, receiver_id):
     sender_id = sender["id"]
     created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    isBlocked = makeRequest("SELECT EXISTS (SELECT 1 FROM block WHERE user_id = ? AND blocked_user_id = ?)", (str(receiver_id), str(sender_id)))
-    if (isBlocked):
+    isBlocked = makeRequest("SELECT 1 FROM block WHERE user_id = ? AND blocked_user_id = ?", (str(receiver_id), str(sender_id)))
+    print(isBlocked)
+    if (len(isBlocked) >=1):
         return
-    notifCreated = makeInsertRequest("INSERT INTO notification (content, sender_id, receiver_id, created_at, was_seen) VALUES (?, ?, ?, ?, ?)",
+    
+    notifId = makeInsertRequest("INSERT INTO notification (content, sender_id, receiver_id, created_at, was_seen) VALUES (?, ?, ?, ?, ?)",
                         (str(message), str(sender_id), str(receiver_id), str(created_at), "0"))
+    notif = makeRequest("SELECT * FROM notification WHERE id = ?", (notifId,))
+    print("Notif Created :", notif)
     if not receiver_id in user_socket_map:
         return
     else:
         receiver_socket_id = user_socket_map[receiver_id]
-        emit('sendNotification', {'sender_id': sender_id, 'receiver_id': receiver_id,'created_at': notifCreated[0]["created_at"], 'id': notifCreated[0]["id"], 'message': message, 'sender': sender}, room=receiver_socket_id)
+        socketio.emit('sendNotification', {'sender_id': sender_id, 'receiver_id': receiver_id,'created_at': created_at, 'id': notif[0]["id"], 'content': message, 'sender': sender}, room=receiver_socket_id)
+
 
