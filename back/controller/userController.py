@@ -154,6 +154,7 @@ def getProfileById(user_id, validated_data, profile_id): # validated_data doit Ã
     del user["birth_date"]
     user["tags"] = getUserTags(profile_id)
     if (user_id == profile_id):
+        user["is_connected"] = True
         return jsonify(user=user)
     like = getLikes(user_id, profile_id)
     block = getBlocks(user_id, profile_id)
