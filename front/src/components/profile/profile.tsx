@@ -1,6 +1,5 @@
 import { css } from "styled-system/css"
 import { profileStyle } from "./profile.style"
-import { User } from "front/typing/user"
 import Tabs from "front/components/tabs/tabs"
 import ChipsList from "front/components/chips/chips"
 import { useStore } from "front/store/store"
@@ -18,6 +17,7 @@ import StarRating from './StarRating'
 import ProfileViewScreen from "./profileView"
 import ProfileBlocks from "./profileBlocks"
 import { getMessageDateString } from "front/utils/chat"
+import { ProfileStateType } from "front/store/profile.store"
 
 type NAV_CONTENT_TYPE =
     'Likes' |
@@ -38,20 +38,16 @@ const NAV_CONTENT_NOT_LOGGED_USER: NAV_CONTENT_TYPE[] = [
     'Photos',
 ]
 
-type ProfileStateType = {
-    user: User
-    like: boolean
-    block: boolean
-}
-
 const Profile = () => {
     const { user: loggedUser, token } = useStore((state) => state.authStore)
     const addAlert = useStore((state) => state.addAlert)
     const openModal = useStore((state) => state.openModal)
-    const socket = useStore((state) => state.socket)
+    const setProfile = useStore((state) => state.setProfile)
+    console.info("setProfile = ", setProfile)
+    const updateProfileBooleanByKey = useStore((state) => state.updateProfileBooleanByKey)
+    const profile = useStore((state) => state.profile)
     const { userId } = useParams<{ userId?: string }>()
     const isLoggedUser = !userId || userId && loggedUser.id === +userId
-    const [profile, setProfile] = useState<ProfileStateType | undefined>()
     const [navIndex, setNavIndex] = useState(0)
     const handleClick = (index: number) => setNavIndex(index)
     const navigate = useNavigate()
@@ -72,20 +68,7 @@ const Profile = () => {
         if (!isLoggedUser) {
             request()
         }
-        socket.on('connectionUpdate', ({ user_id, is_connected }: { user_id: number, is_connected: boolean }) => {
-            if (profile) {
-                setProfile(prev => ({
-                    ...prev,
-                    user: {
-                        ...prev.user,
-                        is_connected
-                    }
-                }))
-            }
-
-            return (() => socket.off('connectionUpdate'))
-        })
-    }, [])
+    }, [userId])
 
     if (!profile && isLoading) {
         return <span> Is loading ...</span>
@@ -97,14 +80,14 @@ const Profile = () => {
     const onLikeClick = async () => {
         const ret = await makeLikeRequest({ token, id: profile.user.id, addAlert })
         if (ret) {
-            setProfile(prev => ({ ...prev, like: !profile.like }))
+            updateProfileBooleanByKey({ key: 'like' })
         }
     }
 
     const onBlockclick = async () => {
         const ret = await makeBlockRequest({ token, id: profile.user.id, addAlert })
         if (ret) {
-            setProfile(prev => ({ ...prev, block: !profile.block }))
+            updateProfileBooleanByKey({ key: 'block' })
         }
     }
 
