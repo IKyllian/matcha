@@ -20,6 +20,8 @@ export type User = {
     images?: Image[]
     latitude: number
     longitude: number
+    last_connection?: string
+    is_connected: boolean
 }
 
 export const USERS: User[] = [
@@ -42,6 +44,7 @@ export const USERS: User[] = [
             Image,
             Image,
         ],
+        is_connected: false,
         bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tristique, nisl quis lobortis fermentum, elit tellus varius nisl, sed ullamcorper ex lacus ut ex. Nulla eleifend bibendum tellus interdum sagittis. Suspendisse ac lacus sit amet mauris dapibus fringilla. Proin ut semper elit. Nam vel nisi lacus. Sed scelerisque maximus dui nec vulputate'
     },
     {
@@ -63,6 +66,7 @@ export const USERS: User[] = [
             Image,
             Image,
         ],
+        is_connected: false,
         bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tristique, nisl quis lobortis fermentum, elit tellus varius nisl, sed ullamcorper ex lacus ut ex. Nulla eleifend bibendum tellus interdum sagittis. Suspendisse ac lacus sit amet mauris dapibus fringilla. Proin ut semper elit. Nam vel nisi lacus. Sed scelerisque maximus dui nec vulputate'
     },
     {
@@ -84,6 +88,7 @@ export const USERS: User[] = [
             Image,
             Image,
         ],
+        is_connected: false,
         bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tristique, nisl quis lobortis fermentum, elit tellus varius nisl, sed ullamcorper ex lacus ut ex. Nulla eleifend bibendum tellus interdum sagittis. Suspendisse ac lacus sit amet mauris dapibus fringilla. Proin ut semper elit. Nam vel nisi lacus. Sed scelerisque maximus dui nec vulputate'
     }
 ]
@@ -101,22 +106,6 @@ export type Image = {
     file_name: string
     is_profile_picture: boolean
     user_id: number
-}
-
-export type User2 = {
-    id: number;
-    username: string
-    pass: string
-    email: string
-    first_name: string
-    last_name: string
-    age?: number;
-    gender?: 'M' | 'F'
-    sexual_preference?: 'M' | 'F' | 'B'
-    bio?: string
-    profile_picture?: string
-    images?: Image[]
-    tags?: Tags[]
 }
 
 export type FormValuesSettings = {
