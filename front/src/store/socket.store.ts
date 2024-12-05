@@ -53,6 +53,8 @@ export const socketSlice = (set: StoreSetType): SocketStoreType => ({
     socketDisconnect: () => set(state => {
         if (state.socket && state.authStore.token) {
             state.socket.emit('logout', { token: state.authStore.token })
+            state.socket.off("receiveMessage")
+            state.socket.off("sendNotification")
         }
         return {
             ...state,
