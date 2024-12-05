@@ -19,17 +19,32 @@ def getChatList(user_id):
         JOIN like l2
         ON l1.user_id = l2.liked_user_id
         AND l1.liked_user_id = l2.user_id
-        LEFT JOIN message m
-            ON (l1.user_id = m.receiver_id AND l1.liked_user_id = m.sender_id)
-            OR (l1.user_id = m.sender_id AND l1.liked_user_id = m.receiver_id)
-            AND m.created_at = (
-                SELECT MAX(m2.created_at)
-                FROM message m2
-                WHERE
-                    (m2.sender_id = l1.user_id AND m2.receiver_id = l1.liked_user_id)
-                    OR
-                    (m2.sender_id = l1.liked_user_id AND m2.receiver_id = l1.user_id)
+        LEFT JOIN (
+        SELECT
+            sender_id,
+            receiver_id,
+            message,
+            created_at
+            FROM message
+            WHERE (sender_id, receiver_id, created_at) IN (
+                SELECT 
+                    sender_id,
+                    receiver_id,
+                    MAX(created_at) AS max_created_at
+                FROM message
+                GROUP BY
+                    CASE
+                        WHEN sender_id < receiver_id THEN sender_id
+                        ELSE receiver_id
+                    END,
+                    CASE
+                        WHEN sender_id < receiver_id THEN receiver_id
+                        ELSE sender_id
+                    END
             )
+        ) m
+        ON (l1.user_id = m.receiver_id AND l1.liked_user_id = m.sender_id)
+        OR (l1.user_id = m.sender_id AND l1.liked_user_id = m.receiver_id)
         WHERE l1.user_id = :user_id
         ORDER BY
             m.created_at DESC;
