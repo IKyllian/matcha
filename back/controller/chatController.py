@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import jsonify, request
+from flask import jsonify
 from services.user import getUserWithProfilePictureById
 from database_utils.requests import *
 from decorators.authDecorator import token_required
