@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import request
 from app import socketio
+from errors.httpErrors import ForbiddenError
 from controller.chatController import createMessage
 from database_utils.requests import makeRequest, makeInsertRequest
 from flask_socketio import emit
@@ -55,6 +56,8 @@ def handle_send_message(data, user_id):
     receiver_id = data.get('receiver_id')
     message = data.get('message')
 
+    if (len(message) > 500):
+        raise ForbiddenError("Votr message ne doit pas contenir plus que 500 charactere")
     messageCreated = createMessage(sender_id, receiver_id, message)
     sender = getUserWithProfilePictureById(user_id)
     username = sender["username"]
