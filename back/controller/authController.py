@@ -22,7 +22,9 @@ def signin(validated_data):
     if len(response) < 1 or not bcrypt.check_password_hash(response[0]["pass"], password):
         raise APIAuthError("Mauvais nom d'utilisateur ou mot de passe")
     user = getUserWithProfilePictureByUsername(username)
-    user["is_activated"] = '1'
+    user["is_connected"] = '1'
+    if (user["is_activated"] == '0'):
+        raise APIAuthError('Compte invalide')
     access_token = create_access_token(identity=user["id"])
     notifications = getAllNotifs(user["id"])
     return jsonify(access_token=access_token, user=user, notifications=notifications)
@@ -68,7 +70,9 @@ def getAuth():
         data = decode_token(token)
         user_id = data["sub"]
         user = getUserWithProfilePictureById(user_id)
-        user["is_activated"] = '1'
+        user["is_connected"] = '1'
+        if (user["is_activated"] == '0'):
+            raise APIAuthError('Compte invalide')
         notifications = getAllNotifs(user_id)
         return jsonify(user=user, notifications=notifications)
     except :
@@ -80,7 +84,7 @@ def getAuth():
 def activateAccount(validated_data):
     urlIdentifier = validated_data["url_identifier"]
     response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
-    if (not response):
+    if (not response or len(response) < 1):
         raise NotFoundError("No matching account found with the provided urlIdentifier")
     makeRequest("UPDATE user SET is_activated = ?, url_identifier = NULL WHERE id = ?", (str(1), str(response[0]["id"])))
               
@@ -92,6 +96,8 @@ def activateAccount(validated_data):
 def sendResetPassword(validated_data):
     email = validated_data["email"]
     response = makeRequest("SELECT id FROM user WHERE email = ?", (email,))
+    if (len(response) < 1):
+        return jsonify(ok=False, message="Email not found")
     user_id = response[0]["id"]
     urlIdentifier = encode_url_identifier(user_id)
     makeRequest("UPDATE user SET url_identifier = ? WHERE id = ?", ((str(urlIdentifier)), (str(user_id))))

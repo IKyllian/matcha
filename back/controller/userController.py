@@ -49,10 +49,11 @@ def createTag(user_id, validated_data):
     "min_fame": {"type": int, "min": 0, "max": 5},
     "tags": {},
     "sort": {"type": int, "min": 0, "max": 3},
+    "filter_liked" : {"type": bool}
 })
 def getProfiles(user_id, validated_data):
-    fields = ["min_age", "max_age", "max_pos", "min_fame", "tags", "sort"]
-    min_age, max_age, max_pos, min_fame, tags, sort = (validated_data[key] for key in fields)
+    fields = ["min_age", "max_age", "max_pos", "min_fame", "tags", "sort", "filter_liked"]
+    min_age, max_age, max_pos, min_fame, tags, sort, filter_liked = (validated_data[key] for key in fields)
     
     user = getUserWithImagesById(user_id)
     user_latitude = str(user["latitude"])
@@ -68,8 +69,9 @@ def getProfiles(user_id, validated_data):
     if (min_age and max_age and int(min_age) > int(max_age)):
         raise ForbiddenError("Parametre invalide : min_age doit etre plus petit que max_age")
     queryParams = {}
-    requestQuery = f"SELECT {str(distance)} user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, is_activated, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
+    requestQuery = f"SELECT {str(distance)} user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, is_activated, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name, like.id AS like FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
     requestQuery += f" LEFT JOIN block ON user.id = block.blocked_user_id AND block.user_id = {str(user_id)} "
+    requestQuery += f" LEFT JOIN like ON user.id = like.liked_user_id AND like.user_id = {str(user_id)} "
     #Check needAnd to know if you need to add " AND " to requestQuery
     whereConditions = []
     whereConditions.append(f"user.id != {str(user_id)}")
@@ -89,6 +91,8 @@ def getProfiles(user_id, validated_data):
     if (min_fame):
         whereConditions.append(f"user.fame_rating >= :min_fame")
         queryParams.update({'min_fame': min_fame})
+    if (filter_liked):
+        whereConditions.append(f"(like.id) IS NULL")
     
     if (tags and len(tags) > 0):
         tagJoin = ""

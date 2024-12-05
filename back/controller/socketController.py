@@ -22,9 +22,7 @@ def handle_identify(token, user_id):
     dateNow = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print("dateNow=", dateNow)
     makeRequest("UPDATE user SET is_connected = 1, last_connection = ? WHERE id = ?", ((str(dateNow)), (str(user_id))))
-    print("Before identify emit")
-    emit('connectionUpdate', {'user_id': user_id, 'is_connected': True}, broadcast=True)
-    # socketio.emit('connectionUpdate', {'user_id': user_id, 'is_connected': True})
+    emit('connectionUpdate', {'user_id': user_id, 'is_connected': True}, broadcast = True)
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -49,9 +47,7 @@ def handle_disconnect(data, user_id):
     dateNow = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print("user_id = ", user_id)
     makeRequest("UPDATE user SET is_connected = 0, last_connection = ? WHERE id = ?", ((str(dateNow)), (str(user_id))))
-    print("Before logout emit")
-    emit('connectionUpdate', {'user_id': user_id, 'is_connected': False}, broadcast=True)
-    # socketio.emit('connectionUpdate', {'user_id': user_id, 'is_connected': False})
+    emit('connectionUpdate', {'user_id': user_id, 'is_connected': False}, broadcast = True)
 
 @socketio.on('sendMessage')
 @socket_auth
