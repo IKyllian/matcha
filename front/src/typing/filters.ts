@@ -4,5 +4,5 @@ export type UrlParamsType = {
     max_pos?: number,
     min_fame?: number,
     tags?: number[],
-    filter_liked?: boolean
+    display_liked?: boolean
 }

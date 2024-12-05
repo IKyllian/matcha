@@ -16,16 +16,22 @@ const defaultValues: HomeListType = {
     suggestionList: []
 }
 
+export type OnLikeProps = {
+    listKey: keyof HomeListType,
+    profile_id: number
+}
+
 export type HomeStoreType = {
     homeState: HomeListType,
-    setList: ({ listKey, list }: { listKey: keyof HomeListType, list: ListStateType[] }) => void,
-    updateProfileListLike: ({ listKey, profile_id }: { listKey: keyof HomeListType, profile_id: number }) => void
+    // setList: ({ listKey, list }: { listKey: keyof HomeListType, list: ListStateType[] }) => void,
+    setFilterList: (list: ListStateType[]) => void,
+    updateProfileListLike: ({ listKey, profile_id }: OnLikeProps) => void
 }
 
 export const homeSlice = (set: StoreSetType): HomeStoreType => ({
     homeState: defaultValues,
-    setList: ({ listKey, list }: { listKey: keyof HomeListType, list: ListStateType[] }) => set((state) => ({ ...state, homeState: { ...state.homeState, [listKey]: list } })),
-    updateProfileListLike: ({ listKey, profile_id }: { listKey: keyof HomeListType, profile_id: number }) => set((state) => {
+    setFilterList: (list: ListStateType[]) => set((state) => ({ ...state, homeState: { ...state.homeState, filtersList: list } })),
+    updateProfileListLike: ({ listKey, profile_id }: OnLikeProps) => set((state) => {
         const userFound = state.homeState[listKey].find(l => l.user.id === profile_id)
         if (userFound) {
             const newList = state.homeState[listKey].map(l => l.user.id === profile_id ? { ...l, like: !l.like } : l)
@@ -33,9 +39,9 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
                 ...state,
                 homeState: {
                     ...state.homeState,
-                    [listKey]: {
+                    [listKey]: [
                         ...newList
-                    }
+                    ]
                 }
             }
         }

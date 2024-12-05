@@ -15,7 +15,7 @@ type FormValues = {
   max_age?: number;
   max_pos?: number;
   min_fame?: number;
-  filter_liked?: boolean
+  display_liked?: boolean
 }
 
 type FilterSidebarProps = {
@@ -93,7 +93,7 @@ const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
         </label>
         <label>
           Afficher utilisateurs like
-          <input type='checkbox' className={css(slotsStyles.inputCheckbox)} {...register('filter_liked')} />
+          <input type='checkbox' className={css(slotsStyles.inputCheckbox)} {...register('display_liked')} />
         </label>
         <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
       </form>

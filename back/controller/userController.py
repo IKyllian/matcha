@@ -49,11 +49,11 @@ def createTag(user_id, validated_data):
     "min_fame": {"type": int, "min": 0, "max": 5},
     "tags": {},
     "sort": {"type": int, "min": 0, "max": 3},
-    "filter_liked" : {"type": bool}
+    "display_liked" : {"type": bool}
 })
 def getProfiles(user_id, validated_data):
-    fields = ["min_age", "max_age", "max_pos", "min_fame", "tags", "sort", "filter_liked"]
-    min_age, max_age, max_pos, min_fame, tags, sort, filter_liked = (validated_data[key] for key in fields)
+    fields = ["min_age", "max_age", "max_pos", "min_fame", "tags", "sort", "display_liked"]
+    min_age, max_age, max_pos, min_fame, tags, sort, display_liked = (validated_data[key] for key in fields)
     
     user = getUserWithImagesById(user_id)
     user_latitude = str(user["latitude"])
@@ -91,7 +91,7 @@ def getProfiles(user_id, validated_data):
     if (min_fame):
         whereConditions.append(f"user.fame_rating >= :min_fame")
         queryParams.update({'min_fame': min_fame})
-    if (filter_liked):
+    if (not display_liked):
         whereConditions.append(f"(like.id) IS NULL")
     
     if (tags and len(tags) > 0):
@@ -124,7 +124,10 @@ def getProfiles(user_id, validated_data):
     users = decodeImagesFromArray(users)
     users = filteredForSexualOrientation(user, users)
     users = filteredForInteraction(users)
-    return users
+    list = []
+    for user in users:
+        list.append({"like": True if user['like'] else False, "user": user})
+    return jsonify(list=list)
 
 def filteredForSexualOrientation(currentUser, users):
     filtered_users = [

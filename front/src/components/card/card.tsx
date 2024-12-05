@@ -1,6 +1,5 @@
 import { cardStyle } from './card.style'
 import { css, Styles } from 'styled-system/css';
-import { useState } from 'react';
 import { FaLocationDot } from "react-icons/fa6";
 import { User } from 'front/typing/user';
 import { Link } from 'react-router-dom';
@@ -14,10 +13,12 @@ type CardProps = {
     user: User
     cardType: CardType
     className?: Styles
+    isLike?: boolean,
+    onLikeClick?: (profile_id: number) => void
+    showLike?: boolean
 }
-const Card = ({ user, cardType, className }: CardProps) => {
+const Card = ({ user, cardType, className, isLike, onLikeClick }: CardProps) => {
     const { location, last_name, first_name } = user
-    const [isLike, setIsLike] = useState(false)
     const slotsStyles = cardStyle.raw()
     return (
         <div className={css(slotsStyles.cardWrapper, className, {
@@ -31,7 +32,7 @@ const Card = ({ user, cardType, className }: CardProps) => {
                             <Link to={`/profile/${user.id}`} className={css(slotsStyles.cardPrimaryText)}> {first_name} {last_name} </Link>
                             <p className={css(slotsStyles.cardSecondaryText)}> <FaLocationDot /> {location} </p>
                         </div>
-                        <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => setIsLike(prev => !prev)} />
+                        <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => onLikeClick(user.id)} />
                     </div>
                 )
             }
