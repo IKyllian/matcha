@@ -5,6 +5,7 @@ export type ChatStoreType = {
     chat: ChatType | undefined,
     setChat: (chat: ChatType) => void,
     addMessage: (message: MessageType) => void,
+    resetChat: () => void
 }
 
 export const chatSlice = (set: StoreSetType): ChatStoreType => ({
@@ -16,5 +17,6 @@ export const chatSlice = (set: StoreSetType): ChatStoreType => ({
             ...state.chat,
             messages: [...state.chat.messages, message]
         }
-    }))
+    })),
+    resetChat: () => set((state) => ({ ...state, chat: undefined }))
 })

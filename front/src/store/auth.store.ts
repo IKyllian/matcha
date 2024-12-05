@@ -30,5 +30,5 @@ export const authSlice = (set: StoreSetType): AuthStoreType => ({
     setUser: (user: Partial<User>) => set((state) => ({ ...state, authStore: { ...state.authStore, user: user } })),
     setAuthStatus: (status: AuthStatusType) => set((state) => ({ ...state, authStore: { ...state.authStore, authStatus: status } })),
     initializeSocket: () => set((state) => ({ ...state, authStore: { ...state.authStore, socketInitialized: true } })),
-    logoutUser: () => set((state) => ({ ...state, authStore: { ...state.authStore, user: undefined, authStatus: 'CHECKED', isLogged: false, token: undefined } })),
+    logoutUser: () => set((state) => ({ ...state, authStore: { ...state.authStore, user: undefined, authStatus: 'CHECKED', isLogged: false, token: undefined, socketInitialized: false } })),
 })

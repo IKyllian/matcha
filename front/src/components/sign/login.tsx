@@ -41,6 +41,7 @@ const Login = () => {
     const authStore = useStore((state) => state.authStore)
     const addAlert = useStore((state) => state.addAlert)
     const logUser = useStore((state) => state.logUser)
+    const setNotifications = useStore((state) => state.setNotifications)
     const navigate = useNavigate()
     const slotsStyles = formStyle.raw()
     const initSocket = useStore((state) => state.initSocket)
@@ -48,8 +49,9 @@ const Login = () => {
     const onSubmit = async (data: FormValues) => {
         const ret = await makeSignInRequest({ data, addAlert })
         if (ret) {
-            const { user, access_token } = ret
+            const { user, access_token, notifications } = ret
             logUser(user, access_token)
+            setNotifications(notifications)
             initSocket({ token: access_token })
             setCookie(COOKIE_JWT_TOKEN, access_token)
         }

@@ -5,9 +5,11 @@ import { create } from "zustand"
 export type ChatSidebatStoreType = {
     chatSidebar: ChatSidebarType[] | undefined,
     setChatSidebar: (chatSidebar: ChatSidebarType[]) => void,
+    resetChatSidebar: () => void
 }
 
 export const chatSidebarSlice = (set: StoreSetType): ChatSidebatStoreType => ({
     chatSidebar: undefined,
-    setChatSidebar: (chatSidebar: ChatSidebarType[]) => set((state) => ({ ...state, chatSidebar }))
+    setChatSidebar: (chatSidebar: ChatSidebarType[]) => set((state) => ({ ...state, chatSidebar })),
+    resetChatSidebar: () => set((state) => ({ ...state, chatSidebar: undefined }))
 })
