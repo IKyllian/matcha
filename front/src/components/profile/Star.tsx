@@ -1,8 +1,7 @@
-import React, { SyntheticEvent, useEffect, useState, MouseEvent } from "react";
+import React, { useEffect, useState } from "react";
 import { uniqueId } from "lodash";
 
 interface StarProps {
-  index: number;
   size: number;
   filledColor: string;
   emptyColor: string;
@@ -10,14 +9,12 @@ interface StarProps {
   outerRadius: number;
   strokeLinejoin: "miter" | "round";
   strokeLinecap: "butt" | "round";
-  className?: string;
   isReadOnly: boolean;
   offset: number;
 }
 
 const NUM_POINT = 5;
 const Star: React.FC<StarProps> = ({
-  index,
   size,
   filledColor,
   emptyColor,
@@ -25,12 +22,10 @@ const Star: React.FC<StarProps> = ({
   outerRadius,
   strokeLinejoin,
   strokeLinecap,
-  className = "",
   isReadOnly,
   offset,
 }) => {
   const [id, setId] = useState<string>("");
-  const [isHover, setIsHover] = useState(false);
   useEffect(() => {
     setId(uniqueId());
   }, []);
@@ -51,12 +46,6 @@ const Star: React.FC<StarProps> = ({
         cursor: "default",
       };
     }
-
-    if (isHover) {
-      return {
-        transform: "scale(1.15)",
-      };
-    }
   };
   return (
     <svg
@@ -65,7 +54,6 @@ const Star: React.FC<StarProps> = ({
         cursor: "pointer",
         ...getStarStyle(),
       }}
-      className={className}
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}

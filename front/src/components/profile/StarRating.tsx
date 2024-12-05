@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Star from "./Star";
 import { profileStyle } from "./profile.style";
 import { css } from "styled-system/css";
@@ -13,11 +13,9 @@ interface StarRatingProps {
   hoverColor?: string;
   emptyColor?: string;
   roundedCorner?: boolean;
-  handleOnClick?: (rating: number) => void;
   isReadOnly?: boolean;
   initialRating?: number;
   containerClassName?: string;
-  starClassName?: string;
 }
 
 const DEFAULT_ACTIVE_COLOR = "#ffd055";
@@ -27,17 +25,14 @@ const starUnitMap = {
   float: 10,
 };
 const StarRating: React.FC<StarRatingProps> = ({
-  size = 30,
+  size = 20,
   count = 5,
   innerRadius = 25,
   outerRadius = 50,
   activeColor = DEFAULT_ACTIVE_COLOR,
   roundedCorner = true,
-  handleOnClick,
   isReadOnly = false,
   initialRating = 0,
-  starClassName,
-  containerClassName,
   emptyColor = "#ddd",
   unit = "full",
 }) => {
@@ -69,7 +64,6 @@ const StarRating: React.FC<StarRatingProps> = ({
         return (
           <Star
             key={i}
-            index={i}
             size={size}
             innerRadius={innerRadius}
             outerRadius={outerRadius}
@@ -77,7 +71,6 @@ const StarRating: React.FC<StarRatingProps> = ({
             emptyColor={emptyColor}
             strokeLinejoin={roundedCorner ? "round" : "miter"}
             strokeLinecap={roundedCorner ? "round" : "butt"}
-            className={starClassName}
             isReadOnly={isReadOnly}
             offset={getSelectedOffsetPercent(i)}
           />

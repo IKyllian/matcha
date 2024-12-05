@@ -1,4 +1,5 @@
 import { AlertType, AlertTypeEnum } from "front/typing/alert"
+import { StoreSetType } from "front/typing/store"
 
 export type AlertStoreType = {
     alerts: AlertType[]
@@ -24,7 +25,7 @@ const defaultAlerts: AlertType[] = [
     },
 ]
 
-export const alertSlice = (set): AlertStoreType => ({
+export const alertSlice = (set: StoreSetType): AlertStoreType => ({
     alerts: [],
     addAlert: ({ message, type }: { message: string, type: AlertTypeEnum }) => set((state) => {
         const newAlert = { message, type, id: Date.now() };

@@ -17,6 +17,7 @@ import { CardsImagesList } from "front/components/card/cardsList"
 import StarRating from './StarRating'
 import ProfileViewScreen from "./profileView"
 import ProfileBlocks from "./profileBlocks"
+import { getMessageDateString } from "front/utils/chat"
 
 type NAV_CONTENT_TYPE =
     'Likes' |
@@ -47,6 +48,7 @@ const Profile = () => {
     const { user: loggedUser, token } = useStore((state) => state.authStore)
     const addAlert = useStore((state) => state.addAlert)
     const openModal = useStore((state) => state.openModal)
+    const socket = useStore((state) => state.socket)
     const { userId } = useParams<{ userId?: string }>()
     const isLoggedUser = !userId || userId && loggedUser.id === +userId
     const [profile, setProfile] = useState<ProfileStateType | undefined>()
@@ -60,7 +62,6 @@ const Profile = () => {
         dependencies: [userId],
     })
 
-
     const slotsStyles = profileStyle.raw()
     const tabsContent = isLoggedUser ? NAV_CONTENT_LOGGED_USER : NAV_CONTENT_NOT_LOGGED_USER
 
@@ -71,8 +72,20 @@ const Profile = () => {
         if (!isLoggedUser) {
             request()
         }
-    }, [])
+        socket.on('connectionUpdate', ({ user_id, is_connected }: { user_id: number, is_connected: boolean }) => {
+            if (profile) {
+                setProfile(prev => ({
+                    ...prev,
+                    user: {
+                        ...prev.user,
+                        is_connected
+                    }
+                }))
+            }
 
+            return (() => socket.off('connectionUpdate'))
+        })
+    }, [])
 
     if (!profile && isLoading) {
         return <span> Is loading ...</span>
@@ -119,33 +132,40 @@ const Profile = () => {
             <div className={css(slotsStyles.profilInfosContainer)}>
                 <ProfilePicture className={slotsStyles.profileImg} userImages={profile.user.images} width="300px" height="300px" />
                 <div className={css(slotsStyles.profilContent)}>
-                    <div className={css(slotsStyles.flexContainer)}>
-                        <div className={css(slotsStyles.userInfoContainer)}>
-                            <p><span className={css(slotsStyles.profileName)}>{profile.user.first_name} {profile.user.last_name}</span> {profile.user.age} ans</p>
-                            <StarRating containerClassName='starClass' isReadOnly initialRating={profile.user.fame_rating} unit="float" />
+                    <div className={css(slotsStyles.profileWrapper)}>
+                        <div className={css(slotsStyles.flexContainer)}>
+                            <div className={css(slotsStyles.userInfoContainer)}>
+                                <span className={css(slotsStyles.profileName)}>
+                                    {profile.user.first_name} {profile.user.last_name}
+                                </span>
+                                <span>{profile.user.age} ans</span>
+                                <div className={css(slotsStyles.profileStatus)} data-isonline={+profile.user.is_connected}></div>
+                                <StarRating isReadOnly initialRating={profile.user.fame_rating} unit="float" />
+                            </div>
+                            <div>
+                                {
+                                    isLoggedUser &&
+                                    <IconButton buttonIcon={BUTTONS_ICON["SETTINGS"]} onClick={() => navigate('/settings')} />
+                                }
+                                {
+                                    !isLoggedUser && (
+                                        <div className={css(slotsStyles.profilButtonContainer)}>
+                                            <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={profile.like} onClick={onLikeClick} />
+                                            <IconButton buttonIcon={BUTTONS_ICON["BLOCKED"]} status={profile.block} onClick={onBlockclick} />
+                                            <IconButton buttonIcon={BUTTONS_ICON["REPORT"]} onClick={onReportClick} />
+                                        </div>
+                                    )
+                                }
+                            </div>
                         </div>
-                        <div>
-                            {
-                                isLoggedUser &&
-                                <IconButton buttonIcon={BUTTONS_ICON["SETTINGS"]} onClick={() => navigate('/settings')} />
-                            }
-                            {
-                                !isLoggedUser && (
-                                    <div className={css(slotsStyles.profilButtonContainer)}>
-                                        <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={profile.like} onClick={onLikeClick} />
-                                        <IconButton buttonIcon={BUTTONS_ICON["BLOCKED"]} status={profile.block} onClick={onBlockclick} />
-                                        <IconButton buttonIcon={BUTTONS_ICON["REPORT"]} onClick={onReportClick} />
-                                    </div>
-                                )
-                            }
-                        </div>
+                        <p> {profile.user.location} </p>
+                        <p> {profile.user.bio} </p>
+                        {
+                            profile.user.tags &&
+                            <ChipsList chipsList={profile.user.tags} />
+                        }
                     </div>
-                    <p> {profile.user.location} </p>
-                    <p> {profile.user.bio} </p>
-                    {
-                        profile.user.tags &&
-                        <ChipsList chipsList={profile.user.tags} />
-                    }
+                    {profile.user.last_connection && !profile.user.is_connected && <p className={css(slotsStyles.lastConnectionText)}>Derniere connexion: {getMessageDateString(profile.user.last_connection)}</p>}
                 </div>
             </div>
             <Tabs tabsContent={tabsContent} navIndex={navIndex} handleClick={handleClick} />

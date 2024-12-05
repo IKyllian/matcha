@@ -8,13 +8,20 @@ import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { COOKIE_JWT_TOKEN } from "front/constant/cookie";
 import { useStore } from "front/store/store";
-import ProfilePicture from "../utils/profilePicture";
+import ProfilePicture from "front/components/utils/profilePicture";
 
 const Header = () => {
     const [openNotif, setOpenNotif] = useState(false)
+
     const { user } = useStore((state) => state.authStore)
     const notifications = useStore((state) => state.notifications)
     const logoutUser = useStore((state) => state.logoutUser)
+    const resetChat = useStore((state) => state.resetChat)
+    const resetChatSidebar = useStore((state) => state.resetChatSidebar)
+    const deleteAllNotification = useStore((state) => state.deleteAllNotification)
+    const closeModal = useStore((state) => state.closeModal)
+    const socketDisconnect = useStore((state) => state.socketDisconnect)
+
     const [cookies, setCookie, removeCookie] = useCookies();
     const slotsStyles = headerStyle.raw()
     const notSeenNotifNumber = notifications.filter(n => !n.was_seen)?.length || 0
@@ -25,6 +32,11 @@ const Header = () => {
 
     const onLogout = () => {
         removeCookie(COOKIE_JWT_TOKEN)
+        resetChat()
+        resetChatSidebar()
+        deleteAllNotification()
+        closeModal('report')
+        socketDisconnect()
         logoutUser()
     }
 

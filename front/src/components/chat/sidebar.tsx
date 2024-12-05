@@ -5,7 +5,7 @@ import { useApi } from "front/hook/useApi"
 import { useNavigate } from "react-router-dom"
 import { useStore } from "front/store/store"
 import ProfilePicture from "front/components/utils/profilePicture"
-import { getLightMessageDateString } from "../utils/chat"
+import { getLightMessageDateString } from "front/utils/chat"
 
 type SidebarProps = {
 }

@@ -3,9 +3,12 @@ import './index.css'
 import { RouterProvider } from 'react-router-dom'
 import { router } from 'front/route/router'
 import AuthProvider from 'front/components/auth/authProvider'
+import { CookiesProvider } from 'react-cookie'
 
 createRoot(document.getElementById('root')!).render(
-  <AuthProvider>
-    <RouterProvider router={router} />
-  </AuthProvider>
+  <CookiesProvider defaultSetOptions={{ path: '/' }}>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  </CookiesProvider>
 )

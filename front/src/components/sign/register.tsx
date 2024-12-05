@@ -102,7 +102,7 @@ const Register = () => {
     return (
         <div className={css({ minHeight: '100vh', display: 'flex' })}>
             <div className={css(slotsStyles.wrapper)}>
-                <h2 className={css(slotsStyles.title)}>Incrvivez-vous</h2>
+                <h2 className={css(slotsStyles.title)}>Inscrivez-vous</h2>
                 <form className={css(slotsStyles.form)} onSubmit={handleSubmit(onSubmit)}>
                     {
                         FIELDS.map(({ name, type, label, options }) => (

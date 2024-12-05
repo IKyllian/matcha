@@ -86,11 +86,6 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   }
 
   const onSubmit = async (values: Partial<User>) => {
-    const data = {
-      ...values,
-      images: [...profilesImages.map(o => ({ file: o.file, is_profile_picture: o.is_profile_picture }))]
-    }
-
     const formData = new FormData()
 
     for (const [key, value] of Object.entries(values)) {
@@ -326,7 +321,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
           <div className={css(slotsStyles.picturesContainer)}>
             {
               profilesImages.map(({ preview, is_profile_picture, file_name }, index) => preview && !is_profile_picture ? (
-                <div key={preview} className={css(slotsStyles.picturesItemContainer)}>
+                <div key={index} className={css(slotsStyles.picturesItemContainer)}>
                   <div className={css(slotsStyles.picturesItem)}>
                     <img src={preview} alt='' />
                   </div>

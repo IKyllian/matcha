@@ -6,7 +6,7 @@ import { ChatType } from "front/typing/chat";
 import { useStore } from "front/store/store";
 import { useForm } from "react-hook-form";
 import ProfilePicture from "front/components/utils/profilePicture"
-import { getMessageDateString } from "../utils/chat";
+import { getMessageDateString } from "front/utils/chat";
 import { Link } from "react-router-dom";
 
 type ChatProps = {

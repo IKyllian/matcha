@@ -1,14 +1,22 @@
 import { User } from "front/typing/user";
 import { apiRequest } from "./api";
 import { AlertStoreType } from "front/store/alert.store";
+import { NotificationType } from "front/typing/notification";
 
 type SignProps = {
     data: Pick<User, 'username' | 'password'>
     addAlert: AlertStoreType['addAlert']
     ip?: string
 }
-export const makeSignInRequest = async ({ data, addAlert }: SignProps): Promise<{ user: User; access_token: string } | null> => {
-    return apiRequest<{ user: User; access_token: string }>({
+
+type SignInResponseType = {
+    user: User
+    access_token: string
+    notifications: NotificationType[]
+}
+
+export const makeSignInRequest = async ({ data, addAlert }: SignProps): Promise<SignInResponseType | null> => {
+    return apiRequest<SignInResponseType>({
         url: `${import.meta.env.VITE_API_URL}/signin`,
         options: {
             method: 'POST',

@@ -6,7 +6,6 @@ export const homeStyle = sva({
     homeContainer: {
       position: 'relative',
       padding: '0 45px',
-      marginTop: '80px'
     },
     listContainer: {
       display: 'flex',
@@ -30,7 +29,7 @@ export const homeStyle = sva({
       alignItems: 'center',
       _active: {
         boxShadow: 'none',
-    }
+      }
     },
     filterIcon: {
       fontSize: '24px',
