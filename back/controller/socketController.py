@@ -22,6 +22,7 @@ def handle_identify(token, user_id):
     dateNow = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print("dateNow=", dateNow)
     makeRequest("UPDATE user SET is_connected = 1, last_connection = ? WHERE id = ?", ((str(dateNow)), (str(user_id))))
+    emit('connectionUpdate', {'user_id': user_id, 'is_connected': True})
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -33,7 +34,7 @@ def handle_disconnect():
             break
     dateNow = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     makeRequest("UPDATE user SET is_connected = 0, last_connection = ? WHERE id = ?", ((str(dateNow)), (str(user_id))))
-    
+    emit('connectionUpdate', {'user_id': user_id, 'is_connected': False})
 
 @socketio.on('sendMessage')
 @socket_auth

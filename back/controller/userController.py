@@ -48,10 +48,11 @@ def createTag(user_id, validated_data):
     "max_pos": {"type": int, "min": 30, "max": 100000},
     "min_fame": {"type": int, "min": 0, "max": 5},
     "tags": {},
+    "sort": {"type": int, "min": 0, "max": 3},
 })
 def getProfiles(user_id, validated_data):
-    fields = ["min_age", "max_age", "max_pos", "min_fame", "tags"]
-    min_age, max_age, max_pos, min_fame, tags = (validated_data[key] for key in fields)
+    fields = ["min_age", "max_age", "max_pos", "min_fame", "tags", "sort"]
+    min_age, max_age, max_pos, min_fame, tags, sort = (validated_data[key] for key in fields)
     
     user = getUserWithImagesById(user_id)
     user_latitude = str(user["latitude"])
@@ -67,7 +68,7 @@ def getProfiles(user_id, validated_data):
     if (min_age and max_age and int(min_age) > int(max_age)):
         raise ForbiddenError("Parametre invalide : min_age doit etre plus petit que max_age")
     queryParams = {}
-    requestQuery = f"SELECT {str(distance)} user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
+    requestQuery = f"SELECT {str(distance)} user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, is_activated, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
     requestQuery += f" LEFT JOIN block ON user.id = block.blocked_user_id AND block.user_id = {str(user_id)} "
     #Check needAnd to know if you need to add " AND " to requestQuery
     whereConditions = []
@@ -84,10 +85,10 @@ def getProfiles(user_id, validated_data):
         queryParams.update({'max_birth_date': str(max_birth_date)})
     if (max_pos):
         whereConditions.append(f"distance <= :max_pos")
-        queryParams.update({'max_pos': str(max_pos)})
+        queryParams.update({'max_pos': max_pos})
     if (min_fame):
-        whereConditions.append(f"user.fame_rating <= :min_fame")
-        queryParams.update({'min_fame': str(min_fame)})
+        whereConditions.append(f"user.fame_rating >= :min_fame")
+        queryParams.update({'min_fame': min_fame})
     
     if (tags and len(tags) > 0):
         tagJoin = ""
@@ -104,12 +105,44 @@ def getProfiles(user_id, validated_data):
 
     groupByClose = ' GROUP BY user.id '
     requestQuery += groupByClose
+    if (sort == 0):
+        requestQuery += ' ORDER BY distance ASC'
+    if (sort == 1):
+        requestQuery += ' ORDER BY distance DESC'
+    if (sort == 2):
+        requestQuery += ' ORDER BY user.birth_date ASC'
+    if (sort == 3):
+        requestQuery += ' ORDER BY user.birth_date DESC'
     
     print("requestQuery = ", requestQuery)
     print("queryParams = ", queryParams)
     users = makeRequest(requestQuery, queryParams)
     users = decodeImagesFromArray(users)
+    users = filteredForSexualOrientation(user, users)
+    users = filteredForInteraction(users)
     return users
+
+def filteredForSexualOrientation(currentUser, users):
+    filtered_users = [
+        user for user in users
+        if not (
+            (user["gender"] == 'M' and currentUser["sexual_preference"] == 'F') or
+            (user["gender"] == 'F' and currentUser["sexual_preference"] == 'M') or
+            (user["sexual_preference"] == 'M' and currentUser["gender"] == 'F') or
+            (user["sexual_preference"] == 'F' and currentUser["gender"] == 'M')
+        )
+    ]
+    return filtered_users
+
+def filteredForInteraction(users):
+    filtered_users = [
+        user for user in users
+        if user["gender"] in ['M', 'F']
+        and user["sexual_preference"] in ['M', 'F', 'B']
+        and user["is_activated"] == 1
+        and "images" in user and checkImagesWithProfilePicture(user["images"])
+    ]
+    return filtered_users
 
 @token_required
 @validate_request({
@@ -132,6 +165,17 @@ def getSettings(user_id):
     user = getUserWithImagesById(user_id)
     user["tags"] = getUserTags(user_id)
     return jsonify(user=user, tags=getAllTags())
+
+def checkImagesWithProfilePicture(images):
+    if (len(images) > 5):
+        return False
+    profilePicCount = 0
+    for image in images:
+        if (image["is_profile_picture"] == True):
+            profilePicCount += 1
+    if profilePicCount > 1 or profilePicCount < 1:
+        return False
+    return True
 
 def checkImages(images):
     if (len(images) > 5):
