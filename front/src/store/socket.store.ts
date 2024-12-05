@@ -37,6 +37,7 @@ export const socketSlice = (set: StoreSetType): SocketStoreType => ({
         socket.on('receiveMessage', (message: MessageType) => {
             console.info("message = ", message)
             state.addMessage(message)
+            state.updateLastMessage(message)
         })
 
         socket.on('sendNotification', (notification: NotificationType) => {
