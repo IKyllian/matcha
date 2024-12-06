@@ -43,7 +43,6 @@ const Profile = () => {
     const addAlert = useStore((state) => state.addAlert)
     const openModal = useStore((state) => state.openModal)
     const setProfile = useStore((state) => state.setProfile)
-    console.info("setProfile = ", setProfile)
     const updateProfileBooleanByKey = useStore((state) => state.updateProfileBooleanByKey)
     const profile = useStore((state) => state.profile)
     const { userId } = useParams<{ userId?: string }>()
