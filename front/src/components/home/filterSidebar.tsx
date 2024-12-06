@@ -4,7 +4,7 @@ import { useState } from "react"
 import useCloseRef from "front/hook/useCloseRef"
 import { IoMdClose } from "react-icons/io";
 import MultiRangeInput from "front/components/input/multiRange"
-import { UrlParamsType } from "front/typing/filters"
+import { DEFAULT_FILTERS, UrlParamsType } from "front/typing/filters"
 import { Tags } from "front/typing/user"
 import { useForm } from "react-hook-form"
 import { useApi } from "front/hook/useApi";
@@ -15,16 +15,17 @@ type FormValues = {
   max_age?: number;
   max_pos?: number;
   min_fame?: number;
-  displayLikedUser?: boolean
+  display_liked?: boolean
 }
 
 type FilterSidebarProps = {
   onClose: () => void
   onSubmit: (filters: UrlParamsType) => void
   filters: UrlParamsType
+  onFiltersReset: () => void
 }
 
-const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
+const FilterSidebar = ({ onClose, onSubmit, filters, onFiltersReset }: FilterSidebarProps) => {
   const slotsStyles = filterSidebarStyle.raw()
   const ref = useCloseRef({ onClose })
 
@@ -33,7 +34,8 @@ const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
     handleSubmit,
     formState: { errors },
     watch,
-    setValue
+    setValue,
+    reset
   } = useForm<FormValues>({
     defaultValues: filters
   })
@@ -64,6 +66,11 @@ const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
     })
   }
 
+  const onFormReset = () => {
+    onFiltersReset()
+    reset(DEFAULT_FILTERS)
+  }
+
   if (isLoading) {
     return <div> loading...</div>
   }
@@ -72,7 +79,7 @@ const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
     <div className={css(slotsStyles.sidebarContainer)} ref={ref}>
       <IoMdClose className={css(slotsStyles.closeButton)} onClick={onClose} />
       <span className={css(slotsStyles.title)}> Filtrage des profils </span>
-      <form className={css(slotsStyles.filtersContainer)} onSubmit={handleSubmit(submit)} >
+      <form className={css(slotsStyles.filtersContainer)} onSubmit={handleSubmit(submit)} onReset={onFormReset} >
         <label>
           Age
           <MultiRangeInput setValue={setValue} min={18} max={100} defaultMin={filters.min_age} defaultMax={filters.max_age} />
@@ -93,9 +100,10 @@ const FilterSidebar = ({ onClose, onSubmit, filters }: FilterSidebarProps) => {
         </label>
         <label>
           Afficher utilisateurs like
-          <input type='checkbox' className={css(slotsStyles.inputCheckbox)} {...register('displayLikedUser')} />
+          <input type='checkbox' className={css(slotsStyles.inputCheckbox)} {...register('display_liked')} />
         </label>
-        <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
+        <button type='reset' className={css(slotsStyles.button)}>Reset</button>
+        <button type="submit" className={css(slotsStyles.button)}>Sauvegarder</button>
       </form>
     </div>
   )

@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import request
 from app import socketio
+from errors.httpErrors import ForbiddenError
 from controller.chatController import createMessage
 from database_utils.requests import makeRequest, makeInsertRequest
 from flask_socketio import emit
@@ -22,7 +23,7 @@ def handle_identify(token, user_id):
     dateNow = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print("dateNow=", dateNow)
     makeRequest("UPDATE user SET is_connected = 1, last_connection = ? WHERE id = ?", ((str(dateNow)), (str(user_id))))
-    emit('connectionUpdate', {'user_id': user_id, 'is_connected': True})
+    emit('connectionUpdate', {'user_id': user_id, 'is_connected': True}, broadcast = True)
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -45,8 +46,9 @@ def handle_disconnect(data, user_id):
             del user_socket_map[user_id]
             break
     dateNow = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print("user_id = ", user_id)
     makeRequest("UPDATE user SET is_connected = 0, last_connection = ? WHERE id = ?", ((str(dateNow)), (str(user_id))))
-    emit('connectionUpdate', {'user_id': user_id, 'is_connected': False})
+    emit('connectionUpdate', {'user_id': user_id, 'is_connected': False}, broadcast = True)
 
 @socketio.on('sendMessage')
 @socket_auth
@@ -55,6 +57,8 @@ def handle_send_message(data, user_id):
     receiver_id = data.get('receiver_id')
     message = data.get('message')
 
+    if (len(message) > 500):
+        raise ForbiddenError("Votr message ne doit pas contenir plus que 500 charactere")
     messageCreated = createMessage(sender_id, receiver_id, message)
     sender = getUserWithProfilePictureById(user_id)
     username = sender["username"]

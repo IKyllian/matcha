@@ -1,4 +1,5 @@
 import base64
+import random
 from flask import jsonify, request
 from services.relations import *
 from services.user import *
@@ -12,7 +13,7 @@ from errors.httpErrors import ForbiddenError
 import ipdata
 import os
 from errors.httpErrors import APIAuthError
-from utils.images import decodeImagesFromArray
+from utils.images import decodeImagesFromArray, isImageFile
 
 def getTimeFromAge(Age):
     return datetime.today() - relativedelta(years=int(Age))
@@ -49,10 +50,11 @@ def createTag(user_id, validated_data):
     "min_fame": {"type": int, "min": 0, "max": 5},
     "tags": {},
     "sort": {"type": int, "min": 0, "max": 3},
+    "display_liked" : {"type": bool}
 })
 def getProfiles(user_id, validated_data):
-    fields = ["min_age", "max_age", "max_pos", "min_fame", "tags", "sort"]
-    min_age, max_age, max_pos, min_fame, tags, sort = (validated_data[key] for key in fields)
+    fields = ["min_age", "max_age", "max_pos", "min_fame", "tags", "sort", "display_liked"]
+    min_age, max_age, max_pos, min_fame, tags, sort, display_liked = (validated_data[key] for key in fields)
     
     user = getUserWithImagesById(user_id)
     user_latitude = str(user["latitude"])
@@ -68,9 +70,10 @@ def getProfiles(user_id, validated_data):
     if (min_age and max_age and int(min_age) > int(max_age)):
         raise ForbiddenError("Parametre invalide : min_age doit etre plus petit que max_age")
     queryParams = {}
-    requestQuery = f"SELECT {str(distance)} user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, is_activated, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
+    requestQuery = f"SELECT {str(distance)} user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, is_activated, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name, like.id AS like FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
     requestQuery += f" LEFT JOIN block ON user.id = block.blocked_user_id AND block.user_id = {str(user_id)} "
-    #Check needAnd to know if you need to add " AND " to requestQuery
+    requestQuery += f" LEFT JOIN like ON user.id = like.liked_user_id AND like.user_id = {str(user_id)} "
+
     whereConditions = []
     whereConditions.append(f"user.id != {str(user_id)}")
 
@@ -89,6 +92,8 @@ def getProfiles(user_id, validated_data):
     if (min_fame):
         whereConditions.append(f"user.fame_rating >= :min_fame")
         queryParams.update({'min_fame': min_fame})
+    if (not display_liked):
+        whereConditions.append(f"(like.id) IS NULL")
     
     if (tags and len(tags) > 0):
         tagJoin = ""
@@ -120,6 +125,92 @@ def getProfiles(user_id, validated_data):
     users = decodeImagesFromArray(users)
     users = filteredForSexualOrientation(user, users)
     users = filteredForInteraction(users)
+    list = []
+    for user in users:
+        user["age"] = getAgeFromTime(user["birth_date"])
+        del user["birth_date"]
+        list.append({"like": True if user['like'] else False, "user": user})
+    return jsonify(list=list)
+
+@token_required
+def getSuggested(user_id):
+    
+    user = getUserWithImagesById(user_id)
+    user_latitude = str(user["latitude"])
+    user_longitude = str(user["longitude"])
+    distance = f"(6371 * acos(cos(radians({user_latitude})) * cos(radians(user.latitude)) * cos(radians(user.longitude) - radians({user_longitude})) + sin(radians({user_latitude})) * sin(radians(user.latitude)))) AS distance,"
+
+    user_age = getAgeFromTime(user["birth_date"])
+    min_age = user_age - 10
+    if (min_age < 18):
+        min_age = 18
+    max_age = user_age + 10 
+    if (max_age > 100):
+        max_age = 100
+
+    min_fame = user["fame_rating"] - 1.0
+    if (min_fame < 1.0):
+        min_fame = 1.0
+    
+    user["tags"] = getUserTags(user_id)
+    tags = []
+    for uTag in user["tags"]:
+        tags.append(uTag["tag_name"])
+
+    max_pos = 400
+
+    queryParams = {}
+    requestQuery = f"SELECT {str(distance)} user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, is_activated, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name, like.id AS like FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
+    requestQuery += f" LEFT JOIN block ON user.id = block.blocked_user_id AND block.user_id = {str(user_id)} "
+    requestQuery += f" LEFT JOIN like ON user.id = like.liked_user_id AND like.user_id = {str(user_id)} "
+    whereConditions = []
+    whereConditions.append(f"user.id != {str(user_id)}")
+
+    whereConditions.append("block.blocked_user_id IS NULL ")
+    min_birth_date = calculate_date_from_age(int(min_age))
+    whereConditions.append(f"user.birth_date <= :min_birth_date")
+    queryParams.update({'min_birth_date': str(min_birth_date)})
+
+    max_birth_date = calculate_date_from_age(int(max_age))
+    whereConditions.append(f"user.birth_date >= :max_birth_date")
+    queryParams.update({'max_birth_date': str(max_birth_date)})
+    
+    whereConditions.append(f"distance <= :max_pos")
+    queryParams.update({'max_pos': max_pos})
+    
+    whereConditions.append(f"user.fame_rating >= :min_fame")
+    queryParams.update({'min_fame': min_fame})
+    
+    whereConditions.append(f"(like.id) IS NULL")
+    
+    if tags and len(tags) > 0:
+        tagConditions = []
+        for i, tag in enumerate(tags, start=1):
+            # Add the condition for this tag to the list
+            tagConditions.append(f"ut.tag_id = :tag_{i}")
+            queryParams[f"tag_{i}"] = tag
+
+        requestQuery += " LEFT JOIN user_tag ut ON user.id = ut.user_id"
+        
+        # Combine the tag conditions with OR
+        tagConditionStr = " OR ".join(tagConditions)
+        whereConditions.append(f"({tagConditionStr})")
+
+    if (len(whereConditions) > 0):
+        requestQuery += ' WHERE '
+        requestQuery += " AND ".join(whereConditions)
+
+    groupByClose = ' GROUP BY user.id '
+    requestQuery += groupByClose
+    
+    print("requestQuery = ", requestQuery)
+    print("queryParams = ", queryParams)
+    users = makeRequest(requestQuery, queryParams)
+    users = decodeImagesFromArray(users)
+    users = filteredForSexualOrientation(user, users)
+    users = filteredForInteraction(users)
+    #Instead of sorting, we randomize the list of users we get
+    random.shuffle(users)
     return users
 
 def filteredForSexualOrientation(currentUser, users):
@@ -140,7 +231,7 @@ def filteredForInteraction(users):
         if user["gender"] in ['M', 'F']
         and user["sexual_preference"] in ['M', 'F', 'B']
         and user["is_activated"] == 1
-        and "images" in user and checkImagesWithProfilePicture(user["images"])
+        and "images" in user and checkImages(user["images"], True)
     ]
     return filtered_users
 
@@ -167,18 +258,7 @@ def getSettings(user_id):
     user["tags"] = getUserTags(user_id)
     return jsonify(user=user, tags=getAllTags())
 
-def checkImagesWithProfilePicture(images):
-    if (len(images) > 5):
-        return False
-    profilePicCount = 0
-    for image in images:
-        if (image["is_profile_picture"] == True):
-            profilePicCount += 1
-    if profilePicCount > 1 or profilePicCount < 1:
-        return False
-    return True
-
-def checkImages(images):
+def checkImages(images, requiredProfilePicture = False):
     if (len(images) > 5):
         return False
     profilePicCount = 0
@@ -186,6 +266,8 @@ def checkImages(images):
         if (image["is_profile_picture"] == True):
             profilePicCount += 1
     if profilePicCount > 1:
+        return False
+    if (requiredProfilePicture and profilePicCount < 1):
         return False
     return True
 
@@ -203,7 +285,8 @@ def checkImages(images):
 })
 def setSettings(user_id, validated_data):
     fields = ["username", "email", "first_name", "last_name", "gender", "sexual_preference", "bio", "latitude", "longitude"]
-    username, email, first_name, last_name, gender, sexual_preference, bio, latitude, longitude = (validated_data[key] for key in fields)
+    latitude = validated_data['latitude']
+    longitude = validated_data['longitude']
     tags = request.form.getlist("tag_ids", None)
     images = []
     index = 0
@@ -220,11 +303,22 @@ def setSettings(user_id, validated_data):
         except :
             raise APIAuthError('Location est invalide')
 
+    fieldsToUpdate = []
+    fieldValues = {"user_id": user_id}
+    for field in fields:
+        value = validated_data[field]
+        fieldsToUpdate.append(f"{field} = :{field}")
+        fieldValues.update({field: value})
+
     while f"images[{index}][file]" in request.files:
         image_file = request.files.get(f"images[{index}][file]")
         mime_type = image_file.content_type if image_file.content_type else "text/plain"
         file_name = image_file.filename if image_file.filename else ""
         is_profile_picture = request.form.get(f"images[{index}][is_profile_picture]") == 'true'
+        
+        if not isImageFile(image_file):
+            raise ForbiddenError(f"Le fichier '{file_name}' n'est pas une image valide.")
+        
         images.append({
         'file': image_file,
         'is_profile_picture': is_profile_picture,
@@ -235,10 +329,9 @@ def setSettings(user_id, validated_data):
     
     if (not checkImages(images)):
         raise ForbiddenError("Images invalides envoyees")
-        
+
     #First we insert all the data we got from settings
-    makeRequest("UPDATE user SET username = ?, email = ?, first_name = ?, last_name = ?, gender = ?, sexual_preference = ?, bio = ?, latitude = ?, longitude = ? WHERE id = ?",
-                (str(username), str(email), str(first_name), str(last_name), str(gender), str(sexual_preference), str(bio), str(latitude), str(longitude), str(user_id)))
+    makeRequest(f"UPDATE user SET {', '.join(fieldsToUpdate)} WHERE id = :user_id", fieldValues)
     #We delete every tag before inserting the ones we received
     makeRequest("DELETE FROM user_tag WHERE user_id = ?", (str(user_id),))
     for tag in tags:

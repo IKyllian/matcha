@@ -4,8 +4,6 @@ export const homeSuggestionStyle = sva({
   slots: ['cardSuggestion', 'suggestionContainer', 'suggestionWrapper', 'arrowIcon'],
   base: {
     cardSuggestion: {
-      // width: '500px',
-      // height: '500px'
     },
     suggestionContainer: {
       height: '100vh',

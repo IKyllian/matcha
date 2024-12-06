@@ -21,6 +21,8 @@ def validate_data(data, rules):
               value = float(value)
             elif expected_type is str:
               value = str(value)
+            elif expected_type is bool:
+              value = bool(value)
             else:
               raise ValidationError(f"Type inconnu pour '{field}'.", field)
           except ValueError:

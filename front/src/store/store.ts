@@ -6,8 +6,19 @@ import { notificationsSlice, NotificationStoreType } from "front/store/notificat
 import { alertSlice, AlertStoreType } from "front/store/alert.store"
 import { modalSlice, ModalStoreType } from "front/store/modal.store"
 import { socketSlice, SocketStoreType } from "./socket.store"
+import { profileSlice, ProfileStoreType } from "./profile.store"
+import { homeSlice, HomeStoreType } from "./homeList"
 
-export type StoreType = AuthStoreType & ChatStoreType & ChatSidebatStoreType & AlertStoreType & ModalStoreType & NotificationStoreType & SocketStoreType
+export type StoreType =
+    AuthStoreType &
+    ChatStoreType &
+    ChatSidebatStoreType &
+    AlertStoreType &
+    ModalStoreType &
+    NotificationStoreType &
+    SocketStoreType &
+    ProfileStoreType &
+    HomeStoreType
 
 export const useStore = create<StoreType>(
     (set) => ({
@@ -17,6 +28,8 @@ export const useStore = create<StoreType>(
         ...notificationsSlice(set),
         ...alertSlice(set),
         ...modalSlice(set),
-        ...socketSlice(set)
+        ...socketSlice(set),
+        ...profileSlice(set),
+        ...homeSlice(set)
     })
 )

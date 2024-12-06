@@ -7,31 +7,45 @@ import FilterSidebar from "front/components/home/filterSidebar";
 import Tabs from "front/components/tabs/tabs";
 import HomeList from "./homeList";
 import HomeSuggestion from "./homeSuggestion";
-import { UrlParamsType } from "front/typing/filters";
-import { User } from "front/typing/user";
+import { DEFAULT_FILTERS, getKeyBySortValue, SORT_ENUM, UrlParamsType } from "front/typing/filters";
 import { useApi } from "front/hook/useApi";
 import { useStore } from "front/store/store";
+import { ListStateType } from "front/store/homeList";
+import { makeLikeRequest } from "front/api/profile";
+import Sort from "./sort";
+import { sortListByKey } from "front/utils/filters";
 
 type HomeTabs = 'Liste' | 'Suggestion'
+const TABS_CONTENT: HomeTabs[] = ["Liste", "Suggestion"]
 
 const Home = () => {
   const slotsStyles = homeStyle.raw()
-  const user = useStore(state => state.authStore.user)
-  const [filters, setFilters] = useState<UrlParamsType>({ min_age: 18, max_age: 100, min_fame: 0, max_pos: 1000, displayLikedUser: true })
-  const [filteredList, setFilteredList] = useState<Partial<User[]>>([])
+  const [filters, setFilters] = useState<UrlParamsType>(DEFAULT_FILTERS)
+  const [sort, setSort] = useState<SORT_ENUM>(SORT_ENUM.DISTANCE_ASC)
   const [showSidebar, setShowSidebar] = useState(false)
   const [navIndex, setNavIndex] = useState(0)
+
+  const setFilterList = useStore(state => state.setFilterList)
+  const token = useStore(state => state.authStore.token)
+  const addAlert = useStore(state => state.addAlert)
+  const { filtersList } = useStore(state => state.homeState)
+  const updateProfileListLike = useStore(state => state.updateProfileListLike)
+
   const handleClick = (index: number) => setNavIndex(index)
   const onSidebarClose = () => {
     setShowSidebar(prev => !prev)
   }
-  const tabsContent: HomeTabs[] = ["Liste", "Suggestion"]
 
-  const { isLoading } = useApi<Partial<User[]>>({
+  const onFiltersReset = () => {
+    setFilters(DEFAULT_FILTERS)
+  }
+
+  const { isLoading } = useApi<ListStateType[]>({
     endpoint: 'profile',
-    urlParams: filters,
-    setter: setFilteredList,
+    urlParams: { ...filters, sort },
+    setter: setFilterList,
     dependencies: [filters],
+    key: 'list'
   })
 
   const onFiltersChange = useCallback((filters: UrlParamsType) => {
@@ -39,21 +53,40 @@ const Home = () => {
     setFilters({ ...filters })
   }, [])
 
+  const onSortChange = (value: number) => {
+    setSort(value)
+    setFilterList(sortListByKey({ list: filtersList, order: value % 2, key: getKeyBySortValue(value) }))
+  }
+
+  const onLikeClick = async (profile_id: number) => {
+    const ret = await makeLikeRequest({ token, id: profile_id, addAlert })
+    if (ret) {
+      updateProfileListLike({ listKey: 'filtersList', profile_id })
+    }
+  }
+
+  if (isLoading) {
+    return <p>loading...</p>
+  }
+
   return (
     <div className={css(slotsStyles.homeContainer)}>
       {
-        showSidebar && tabsContent[navIndex] === "Liste" && <FilterSidebar filters={filters} onSubmit={onFiltersChange} onClose={onSidebarClose} />
+        showSidebar && TABS_CONTENT[navIndex] === "Liste" && <FilterSidebar filters={filters} onFiltersReset={onFiltersReset} onSubmit={onFiltersChange} onClose={onSidebarClose} />
       }
       {
-        tabsContent[navIndex] === "Liste" &&
+        TABS_CONTENT[navIndex] === "Liste" &&
         <div className={css(slotsStyles.filterIconContainer)} onClick={onSidebarClose}>
           <MdOutlineFilterAlt className={css(slotsStyles.filterIcon)} />
         </div>
       }
       <div>
-        <Tabs tabsContent={tabsContent} navIndex={navIndex} handleClick={handleClick} />
-        {tabsContent[navIndex] === "Liste" && <HomeList list={filteredList} />}
-        {tabsContent[navIndex] === "Suggestion" && <HomeSuggestion />}
+        <Tabs tabsContent={TABS_CONTENT} navIndex={navIndex} handleClick={handleClick} />
+        {
+          TABS_CONTENT[navIndex] === "Liste" && <Sort onChange={onSortChange} />
+        }
+        {TABS_CONTENT[navIndex] === "Liste" && filtersList && <HomeList list={filtersList} onLikeClick={onLikeClick} />}
+        {TABS_CONTENT[navIndex] === "Suggestion" && <HomeSuggestion />}
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 from database_utils.requests import decodeImages
+from PIL import Image
 
 def decodeImagesFromArray(array):
     for item in array:
@@ -16,3 +17,14 @@ def decodeImagesFromArray(array):
             del item["is_profile_picture"]
             item["images"] = decoded
     return array
+
+def isImageFile(file):
+    try:
+        # Try to open the image file using Pillow
+        image = Image.open(file)
+        image.load()  # Verify that it is a valid image
+        file.seek(0)
+        return True
+    except (IOError, SyntaxError):
+        # If an error occurs, it's not a valid image
+        return False

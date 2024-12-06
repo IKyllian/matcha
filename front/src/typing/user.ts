@@ -1,19 +1,20 @@
 import Image from 'front/assets/images/panda2.webp'
 
 export type User = {
-    id: number;
-    img?: any;
-    password: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    username: string;
-    location: string;
-    bio: string;
-    age: number;
-    fame_rating: number;
-    tags: Tags[];
-    pictures: any[];
+    id: number
+    img?: any
+    password: string
+    email: string
+    first_name: string
+    last_name: string
+    username: string
+    location: string
+    bio: string
+    age: number
+    distance?: number
+    fame_rating: number
+    tags: Tags[]
+    pictures: any[]
     gender?: 'M' | 'F'
     birth_date?: any
     sexual_preference?: 'M' | 'F' | 'B'

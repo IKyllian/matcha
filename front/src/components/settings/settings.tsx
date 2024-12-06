@@ -11,6 +11,7 @@ import { ImageSettingsType, Tags, User } from "front/typing/user"
 import { useApi } from "front/hook/useApi"
 import { AlertTypeEnum } from "front/typing/alert"
 import { makeIpAddressRequest } from "front/api/auth"
+import { useNavigate } from "react-router-dom"
 
 type InputRadioProps = {
   value: string
@@ -364,9 +365,14 @@ const ScreenSettings = () => {
     endpoint: 'profile/settings',
     setter: setProfileSettings,
   })
-  console.info("isLoading = ", isLoading)
+  const navigate = useNavigate()
+
   if (isLoading) {
     return <div>loading...</div>
+  }
+
+  if (!profileSettings) {
+    navigate("/404")
   }
   return <Settings profileSettings={profileSettings} />
 }
