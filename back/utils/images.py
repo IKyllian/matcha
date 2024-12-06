@@ -22,7 +22,8 @@ def isImageFile(file):
     try:
         # Try to open the image file using Pillow
         image = Image.open(file)
-        image.verify()  # Verify that it is a valid image
+        image.load()  # Verify that it is a valid image
+        file.seek(0)
         return True
     except (IOError, SyntaxError):
         # If an error occurs, it's not a valid image
