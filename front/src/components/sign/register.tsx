@@ -95,6 +95,7 @@ const Register = () => {
             <div className={css({ minHeight: '100vh', display: 'flex' })}>
                 <div className={css(slotsStyles.wrapper)}>
                     <span className={css(slotsStyles.textConfirm)}>Un email a ete envoyer dans votre boite mail pour activer votre compte. Vous ne pourrez pas vous connecter a votre compte avant de l'activer</span>
+                    <Link to='/login' className={css(slotsStyles.loginButton)}>Se connecter</Link>
                 </div>
             </div>
         )

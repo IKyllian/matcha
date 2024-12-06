@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css/sva.mjs";
 
 export const formStyle = sva({
-    slots: ['wrapper', 'title', 'form', 'label', 'inputStyles', 'button', 'textInfo', 'inputError', 'forgotPassword', 'textConfirm'],
+    slots: ['wrapper', 'title', 'form', 'label', 'inputStyles', 'button', 'textInfo', 'inputError', 'forgotPassword', 'textConfirm', 'loginButton'],
     base: {
         title: {
             textAlign: 'center',
@@ -21,7 +21,8 @@ export const formStyle = sva({
             margin: 'auto',
             display: 'flex',
             flexDir: 'column',
-            gap: '44px'
+            gap: '44px',
+            alignItems: 'center'
         },
         form: {
             display: 'flex',
@@ -58,6 +59,17 @@ export const formStyle = sva({
             fontSize: '20px',
             marginTop: '12px',
             fontFamily: 'body',
+            _active: {
+                boxShadow: 'none',
+            }
+        },
+        loginButton: {
+            width: 'fit-content',
+            padding: '8px',
+            fontWeight: 'bold',
+            border: '2px solid black',
+            boxShadow: '2.5px 2.5px 0 black',
+            backgroundColor: 'buttonPrimaryBackground',
             _active: {
                 boxShadow: 'none',
             }

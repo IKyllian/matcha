@@ -30,7 +30,7 @@ def likeUserById(user_id, validated_data):
     if (not isAccountValid(getUserWithImagesById(user_to_like_id))):
         raise ForbiddenError("Le profil n'est pas complet et ne peut pas interagir")
     if (not isAccountValid(getUserWithImagesById(user_id))):
-        raise ForbiddenError("Completer votre profil pour interagir")
+        raise ForbiddenError("Completez votre profil pour interagir")
     
     user = getUserWithProfilePictureById(user_id)
     username = user["username"]

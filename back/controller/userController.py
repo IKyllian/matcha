@@ -212,7 +212,8 @@ def checkImages(images):
 })
 def setSettings(user_id, validated_data):
     fields = ["username", "email", "first_name", "last_name", "gender", "sexual_preference", "bio", "latitude", "longitude"]
-    username, email, first_name, last_name, gender, sexual_preference, bio, latitude, longitude = (validated_data[key] for key in fields)
+    latitude = validated_data['latitude']
+    longitude = validated_data['longitude']
     tags = request.form.getlist("tag_ids", None)
     images = []
     index = 0
@@ -229,6 +230,13 @@ def setSettings(user_id, validated_data):
         except :
             raise APIAuthError('Location est invalide')
 
+    fieldsToUpdate = []
+    fieldValues = {"user_id": user_id}
+    for field in fields:
+        value = validated_data[field]
+        fieldsToUpdate.append(f"{field} = :{field}")
+        fieldValues.update({field: value})
+
     while f"images[{index}][file]" in request.files:
         image_file = request.files.get(f"images[{index}][file]")
         mime_type = image_file.content_type if image_file.content_type else "text/plain"
@@ -244,10 +252,9 @@ def setSettings(user_id, validated_data):
     
     if (not checkImages(images)):
         raise ForbiddenError("Images invalides envoyees")
-        
+
     #First we insert all the data we got from settings
-    makeRequest("UPDATE user SET username = ?, email = ?, first_name = ?, last_name = ?, gender = ?, sexual_preference = ?, bio = ?, latitude = ?, longitude = ? WHERE id = ?",
-                (str(username), str(email), str(first_name), str(last_name), str(gender), str(sexual_preference), str(bio), str(latitude), str(longitude), str(user_id)))
+    makeRequest(f"UPDATE user SET {', '.join(fieldsToUpdate)} WHERE id = :user_id", fieldValues)
     #We delete every tag before inserting the ones we received
     makeRequest("DELETE FROM user_tag WHERE user_id = ?", (str(user_id),))
     for tag in tags:
