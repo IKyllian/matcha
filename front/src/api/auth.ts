@@ -4,9 +4,14 @@ import ky from "ky";
 import { apiRequest } from "./api";
 import { AlertStoreType } from "front/store/alert.store";
 
-export const makeAuthRequest = async (token: string) => {
-    const response = await ky.get<{ user: User, notifications: NotificationType[] }>(`${import.meta.env.VITE_API_URL}/auth?jwt_token=${token}`).json();
-    return response
+export const makeAuthRequest = async (token: string, addAlert: AlertStoreType['addAlert']) => {
+    return apiRequest<{ user: User, notifications: NotificationType[] }>({
+        url: `${import.meta.env.VITE_API_URL}/auth?jwt_token=${token}`,
+        options: {
+            method: 'GET',
+        },
+        addAlert
+    });
 }
 
 export const makeIpAddressRequest = async () => {
