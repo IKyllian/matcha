@@ -1,4 +1,5 @@
 import base64
+import random
 from flask import jsonify, request
 from services.relations import *
 from services.user import *
@@ -72,7 +73,7 @@ def getProfiles(user_id, validated_data):
     requestQuery = f"SELECT {str(distance)} user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, is_activated, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name, like.id AS like FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
     requestQuery += f" LEFT JOIN block ON user.id = block.blocked_user_id AND block.user_id = {str(user_id)} "
     requestQuery += f" LEFT JOIN like ON user.id = like.liked_user_id AND like.user_id = {str(user_id)} "
-    #Check needAnd to know if you need to add " AND " to requestQuery
+
     whereConditions = []
     whereConditions.append(f"user.id != {str(user_id)}")
 
@@ -124,6 +125,87 @@ def getProfiles(user_id, validated_data):
     users = decodeImagesFromArray(users)
     users = filteredForSexualOrientation(user, users)
     users = filteredForInteraction(users)
+    return users
+
+@token_required
+def getSuggested(user_id):
+    
+    user = getUserWithImagesById(user_id)
+    user_latitude = str(user["latitude"])
+    user_longitude = str(user["longitude"])
+    distance = f"(6371 * acos(cos(radians({user_latitude})) * cos(radians(user.latitude)) * cos(radians(user.longitude) - radians({user_longitude})) + sin(radians({user_latitude})) * sin(radians(user.latitude)))) AS distance,"
+
+    user_age = getAgeFromTime(user["birth_date"])
+    min_age = user_age - 10
+    if (min_age < 18):
+        min_age = 18
+    max_age = user_age + 10 
+    if (max_age > 100):
+        max_age = 100
+
+    min_fame = user["fame_rating"] - 1.0
+    if (min_fame < 1.0):
+        min_fame = 1.0
+    
+    user["tags"] = getUserTags(user_id)
+    tags = []
+    for uTag in user["tags"]:
+        tags.append(uTag["tag_name"])
+
+    max_pos = 400
+
+    queryParams = {}
+    requestQuery = f"SELECT {str(distance)} user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, is_activated, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name, like.id AS like FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
+    requestQuery += f" LEFT JOIN block ON user.id = block.blocked_user_id AND block.user_id = {str(user_id)} "
+    requestQuery += f" LEFT JOIN like ON user.id = like.liked_user_id AND like.user_id = {str(user_id)} "
+    whereConditions = []
+    whereConditions.append(f"user.id != {str(user_id)}")
+
+    whereConditions.append("block.blocked_user_id IS NULL ")
+    min_birth_date = calculate_date_from_age(int(min_age))
+    whereConditions.append(f"user.birth_date <= :min_birth_date")
+    queryParams.update({'min_birth_date': str(min_birth_date)})
+
+    max_birth_date = calculate_date_from_age(int(max_age))
+    whereConditions.append(f"user.birth_date >= :max_birth_date")
+    queryParams.update({'max_birth_date': str(max_birth_date)})
+    
+    whereConditions.append(f"distance <= :max_pos")
+    queryParams.update({'max_pos': max_pos})
+    
+    whereConditions.append(f"user.fame_rating >= :min_fame")
+    queryParams.update({'min_fame': min_fame})
+    
+    whereConditions.append(f"(like.id) IS NULL")
+    
+    if tags and len(tags) > 0:
+        tagConditions = []
+        for i, tag in enumerate(tags, start=1):
+            # Add the condition for this tag to the list
+            tagConditions.append(f"ut.tag_id = :tag_{i}")
+            queryParams[f"tag_{i}"] = tag
+
+        requestQuery += " LEFT JOIN user_tag ut ON user.id = ut.user_id"
+        
+        # Combine the tag conditions with OR
+        tagConditionStr = " OR ".join(tagConditions)
+        whereConditions.append(f"({tagConditionStr})")
+
+    if (len(whereConditions) > 0):
+        requestQuery += ' WHERE '
+        requestQuery += " AND ".join(whereConditions)
+
+    groupByClose = ' GROUP BY user.id '
+    requestQuery += groupByClose
+    
+    print("requestQuery = ", requestQuery)
+    print("queryParams = ", queryParams)
+    users = makeRequest(requestQuery, queryParams)
+    users = decodeImagesFromArray(users)
+    users = filteredForSexualOrientation(user, users)
+    users = filteredForInteraction(users)
+    #Instead of sorting, we randomize the list of users we get
+    random.shuffle(users)
     return users
 
 def filteredForSexualOrientation(currentUser, users):

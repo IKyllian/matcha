@@ -7,6 +7,8 @@ user_bp = Blueprint("user", __name__)
 
 user_bp.route("/profile", methods = ["GET"]) (getProfiles)
 
+user_bp.route("/suggestion", methods = ["GET"]) (getSuggested)
+
 user_bp.route("/getTags", methods = ["GET"]) (getTags)
 
 user_bp.route("/createTag", methods = ["POST"]) (createTag)
