@@ -12,7 +12,7 @@ from errors.httpErrors import ForbiddenError
 import ipdata
 import os
 from errors.httpErrors import APIAuthError
-from utils.images import decodeImagesFromArray
+from utils.images import decodeImagesFromArray, isImageFile
 
 def getTimeFromAge(Age):
     return datetime.today() - relativedelta(years=int(Age))
@@ -144,7 +144,7 @@ def filteredForInteraction(users):
         if user["gender"] in ['M', 'F']
         and user["sexual_preference"] in ['M', 'F', 'B']
         and user["is_activated"] == 1
-        and "images" in user and checkImagesWithProfilePicture(user["images"])
+        and "images" in user and checkImages(user["images"], True)
     ]
     return filtered_users
 
@@ -171,18 +171,7 @@ def getSettings(user_id):
     user["tags"] = getUserTags(user_id)
     return jsonify(user=user, tags=getAllTags())
 
-def checkImagesWithProfilePicture(images):
-    if (len(images) > 5):
-        return False
-    profilePicCount = 0
-    for image in images:
-        if (image["is_profile_picture"] == True):
-            profilePicCount += 1
-    if profilePicCount > 1 or profilePicCount < 1:
-        return False
-    return True
-
-def checkImages(images):
+def checkImages(images, requiredProfilePicture = False):
     if (len(images) > 5):
         return False
     profilePicCount = 0
@@ -190,6 +179,8 @@ def checkImages(images):
         if (image["is_profile_picture"] == True):
             profilePicCount += 1
     if profilePicCount > 1:
+        return False
+    if (requiredProfilePicture and profilePicCount < 1):
         return False
     return True
 
@@ -229,6 +220,10 @@ def setSettings(user_id, validated_data):
         mime_type = image_file.content_type if image_file.content_type else "text/plain"
         file_name = image_file.filename if image_file.filename else ""
         is_profile_picture = request.form.get(f"images[{index}][is_profile_picture]") == 'true'
+        
+        if not isImageFile(image_file):
+            raise ForbiddenError(f"Le fichier '{file_name}' n'est pas une image valide.")
+        
         images.append({
         'file': image_file,
         'is_profile_picture': is_profile_picture,
