@@ -28,7 +28,7 @@ const HomeSuggestion = () => {
   }
 
   const onNext = () => {
-    setIndex(prev => prev < LIST.length - 1 ? prev + 1 : prev)
+    setIndex(prev => prev < suggestionList?.length - 1 ? prev + 1 : prev)
   }
 
   const { isLoading } = useApi<ListStateType[]>({

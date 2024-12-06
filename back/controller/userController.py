@@ -209,9 +209,15 @@ def getSuggested(user_id):
     users = decodeImagesFromArray(users)
     users = filteredForSexualOrientation(user, users)
     users = filteredForInteraction(users)
+
+    list = []
+    for user in users:
+        user["age"] = getAgeFromTime(user["birth_date"])
+        del user["birth_date"]
+        list.append({"like": True if user['like'] else False, "user": user})
     #Instead of sorting, we randomize the list of users we get
-    random.shuffle(users)
-    return users
+    random.shuffle(list)
+    return jsonify(list=list)
 
 def filteredForSexualOrientation(currentUser, users):
     filtered_users = [
