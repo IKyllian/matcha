@@ -17,7 +17,7 @@ type CardProps = {
     onLikeClick?: (profile_id: number) => void
     showLike?: boolean
 }
-const Card = ({ user, cardType, className, isLike, onLikeClick }: CardProps) => {
+const Card = ({ user, cardType, className, isLike, onLikeClick, showLike = false }: CardProps) => {
     const { location, last_name, first_name } = user
     const slotsStyles = cardStyle.raw()
     return (
@@ -32,7 +32,7 @@ const Card = ({ user, cardType, className, isLike, onLikeClick }: CardProps) => 
                             <Link to={`/profile/${user.id}`} className={css(slotsStyles.cardPrimaryText)}> {first_name} {last_name} </Link>
                             <p className={css(slotsStyles.cardSecondaryText)}> <FaLocationDot /> {location} </p>
                         </div>
-                        <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => onLikeClick(user.id)} />
+                        {showLike && <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => onLikeClick(user.id)} />}
                     </div>
                 )
             }

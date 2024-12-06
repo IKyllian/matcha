@@ -15,7 +15,7 @@ const HomeList = ({ list, onLikeClick }: HomeListProps) => {
     <div className={css(slotsStyles.listContainer)}>
       {
         list.map(l => (
-          <Card key={l.user.id} user={l.user} isLike={l.like} onLikeClick={onLikeClick} cardType='image-content' />
+          <Card key={l.user.id} user={l.user} isLike={l.like} onLikeClick={onLikeClick} cardType='image-content' showLike />
         ))
       }
     </div>
