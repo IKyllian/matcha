@@ -55,7 +55,7 @@ const Card = ({ user, cardType, className, isLike, onLikeClick, showLike = false
                                 gap: '8px',
                                 alignItems: ' center',
                             })}>
-                                {user.distance && <p className={css(slotsStyles.cardSecondaryText)}> <FaLocationDot /> {Math.round(user.distance)}km </p>}
+                                {user.distance >= 0 && <p className={css(slotsStyles.cardSecondaryText)}> <FaLocationDot /> {Math.round(user.distance)}km </p>}
                                 {user.fame_rating && <StarRating isReadOnly initialRating={user.fame_rating} unit="float" size={15} />}
                             </div>
                             {/* {user.fame_rating && <StarRating isReadOnly initialRating={user.fame_rating} unit="float" size={15} />}
