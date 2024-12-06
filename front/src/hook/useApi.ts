@@ -17,7 +17,7 @@ const buildUrlParams = (urlParams: UrlParamsType): string => {
     let stringParams: string = "?"
     const entries = Object.entries(urlParams)
     for (const [index, [key, value]] of Object.entries(entries)) {
-        if (value) {
+        if (value || (typeof (value) === 'number' && value >= 0)) {
             if (Array.isArray(value)) {
                 if (value.length > 0) {
                     if (+index !== 0) {

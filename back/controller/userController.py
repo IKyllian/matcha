@@ -126,6 +126,8 @@ def getProfiles(user_id, validated_data):
     users = filteredForInteraction(users)
     list = []
     for user in users:
+        user["age"] = getAgeFromTime(user["birth_date"])
+        del user["birth_date"]
         list.append({"like": True if user['like'] else False, "user": user})
     return jsonify(list=list)
 
