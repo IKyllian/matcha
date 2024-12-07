@@ -1,7 +1,7 @@
 import Card from "front/components/card/card"
 import { homeStyle } from "./home.style"
 import { css } from "styled-system/css"
-import { ListStateType, OnLikeProps } from "front/store/homeList"
+import { ListStateType } from "front/store/homeList"
 
 type HomeListProps = {
   list: ListStateType[]
