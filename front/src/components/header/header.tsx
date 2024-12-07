@@ -51,9 +51,9 @@ const Header = () => {
                     <IoMdNotifications onClick={() => setOpenNotif(true)} className={css(slotsStyles.notificationIcon)} />
                     {openNotif && <NotificationsModal onClose={onCloseNotification} />}
                 </div>
-                <div className={css(slotsStyles.headerAvatar)}>
+                <Link to='/profile' className={css(slotsStyles.headerAvatar)}>
                     <ProfilePicture userImages={user.images} />
-                </div>
+                </Link>
                 <div className={css(slotsStyles.divider)}> </div>
                 <div className={css(slotsStyles.logoutWrapper)} onClick={onLogout}>
                     <MdLogout className={css(slotsStyles.logoutIcon)} />

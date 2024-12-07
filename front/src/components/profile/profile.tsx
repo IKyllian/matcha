@@ -67,6 +67,7 @@ const Profile = () => {
         if (!isLoggedUser) {
             request()
         }
+        setNavIndex(0)
     }, [userId])
 
     if (!profile && isLoading) {
