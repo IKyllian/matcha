@@ -63,6 +63,7 @@ export const settingsStyle = sva({
         },
         rowInputs: {
             display: 'flex',
+            flexWrap: 'wrap',
             gap: '8px',
             '& > label': {
                 display: 'flex',

@@ -4,8 +4,9 @@ export const sortStyle = sva({
     slots: ['sortWrapper'],
     base: {
         sortWrapper: {
-            // display: 'flex',
-            // justifyContent: 'flex-end'
+            display: 'flex',
+            justifyContent: 'center',
+            marginBottom: '24px'
         },
     }
 })

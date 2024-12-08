@@ -69,10 +69,12 @@ const Home = () => {
         </div>
       }
       <div>
-        <Tabs tabsContent={TABS_CONTENT} navIndex={navIndex} handleClick={handleClick} />
-        {
-          TABS_CONTENT[navIndex] === "Liste" && <Sort onChange={sortChange} />
-        }
+        <div className={css(slotsStyles.listHeaderWrapper)}>
+          <Tabs tabsContent={TABS_CONTENT} navIndex={navIndex} handleClick={handleClick} />
+          {
+            TABS_CONTENT[navIndex] === "Liste" && <Sort onChange={sortChange} />
+          }
+        </div>
         {TABS_CONTENT[navIndex] === "Liste" && filtersList && <HomeList list={filtersList} onLikeClick={onLikeClick} />}
         {TABS_CONTENT[navIndex] === "Suggestion" && <HomeSuggestion />}
       </div>

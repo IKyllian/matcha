@@ -102,8 +102,10 @@ const FilterSidebar = ({ onClose, onSubmit, filters, onFiltersReset }: FilterSid
           Afficher utilisateurs like
           <input type='checkbox' className={css(slotsStyles.inputCheckbox)} {...register('display_liked')} />
         </label>
-        <button type='reset' className={css(slotsStyles.button)}>Reset</button>
-        <button type="submit" className={css(slotsStyles.button)}>Sauvegarder</button>
+        <div className={css(slotsStyles.buttonContainer)}>
+          <button type='reset' className={css(slotsStyles.button)}>Reset</button>
+          <button type="submit" className={css(slotsStyles.button)}>Sauvegarder</button>
+        </div>
       </form>
     </div>
   )
