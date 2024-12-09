@@ -20,7 +20,7 @@ const AddTagForm = ({ onSubmit, onCancel }: AddTagFormProps) => {
     const {
         register,
         handleSubmit,
-        reset
+        setValue
     } = useForm<FormValues>()
     const { token } = useStore((state) => state.authStore)
     const addAlert = useStore((state) => state.addAlert)
@@ -32,7 +32,7 @@ const AddTagForm = ({ onSubmit, onCancel }: AddTagFormProps) => {
             const { tag } = ret
             onSubmit(tag)
             addAlert({ message: `Tag "${tag.tag_name}" cree`, type: AlertTypeEnum.SUCCESS })
-            reset()
+            setValue('tag_name', "")
         }
     }
 
