@@ -28,7 +28,6 @@ const AddTagForm = ({ onSubmit, onCancel }: AddTagFormProps) => {
     const onTagSubmit = async (data: FormValues) => {
         const { tag_name } = data
         const ret = await makeTagsCreateRequest({ token, addAlert, tag_name })
-        // const { tag } = await makeTagsCreateRequest({ token, addAlert, tag_name })
         if (ret) {
             const { tag } = ret
             onSubmit(tag)

@@ -48,7 +48,7 @@ def createTag(user_id, validated_data):
     "max_age": {"type": int, "min": 18, "max": 100},
     "max_pos": {"type": int, "min": 30, "max": 100000},
     "min_fame": {"type": int, "min": 0, "max": 5},
-    "tags": {},
+    "tags": {"type": 'tags'},
     "sort": {"type": int, "min": 0, "max": 3},
     "display_liked" : {"type": bool}
 })
@@ -60,9 +60,6 @@ def getProfiles(user_id, validated_data):
     user_latitude = str(user["latitude"])
     user_longitude = str(user["longitude"])
     distance = f"(6371 * acos(cos(radians({user_latitude})) * cos(radians(user.latitude)) * cos(radians(user.longitude) - radians({user_longitude})) + sin(radians({user_latitude})) * sin(radians(user.latitude)))) AS distance,"
-
-    if (type(tags) is str):
-        tags = tags.split(',')
 
     if (not max_pos):
         distance = ""

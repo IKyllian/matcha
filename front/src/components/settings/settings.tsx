@@ -320,7 +320,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
                 {
                   inputPositionsList.map((position, index) =>
                     <span
-                      key={position.displayName}
+                      key={index}
                       className={css(slotsStyles.positionItem)}
                       data-border={+(index < inputPositionsList.length - 1)}
                       onClick={() => onPositionClick(position)}
