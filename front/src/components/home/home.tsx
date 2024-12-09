@@ -12,6 +12,7 @@ import { useStore } from "front/store/store";
 import { ListStateType } from "front/store/homeList";
 import { makeLikeRequest } from "front/api/profile";
 import Select from "front/components/input/select";
+import { UrlParamsType } from "front/typing/filters";
 
 type HomeTabs = 'Liste' | 'Suggestion'
 const TABS_CONTENT: HomeTabs[] = ["Liste", "Suggestion"]
@@ -37,7 +38,10 @@ const Home = () => {
     setShowSidebar(prev => !prev)
   }
 
-
+  const onFilterChange = (filters: UrlParamsType) => {
+    setFilters(filters)
+    setShowSidebar(false)
+  }
   const { isLoading } = useApi<ListStateType[]>({
     endpoint: 'profile',
     urlParams: { ...filters, sort },
@@ -60,7 +64,7 @@ const Home = () => {
   return (
     <div className={css(slotsStyles.homeContainer)}>
       {
-        showSidebar && TABS_CONTENT[navIndex] === "Liste" && <FilterSidebar filters={filters} onFiltersReset={resetFilters} onSubmit={setFilters} onClose={onSidebarClose} />
+        showSidebar && TABS_CONTENT[navIndex] === "Liste" && <FilterSidebar filters={filters} onFiltersReset={resetFilters} onSubmit={onFilterChange} onClose={onSidebarClose} />
       }
       {
         TABS_CONTENT[navIndex] === "Liste" &&

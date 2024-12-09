@@ -9,6 +9,7 @@ import { Tags } from "front/typing/user"
 import { useForm } from "react-hook-form"
 import { useApi } from "front/hook/useApi";
 import ChipSelect from "front/components/chips/chipSelect";
+import { useStore } from "front/store/store";
 
 type FormValues = {
   min_age?: number;
@@ -28,11 +29,12 @@ type FilterSidebarProps = {
 const FilterSidebar = ({ onClose, onSubmit, filters, onFiltersReset }: FilterSidebarProps) => {
   const slotsStyles = filterSidebarStyle.raw()
   const ref = useCloseRef({ onClose })
+  const { selectedTags } = useStore(store => store.homeState)
+  const addSelectedTag = useStore(store => store.addSelectedTag)
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
     watch,
     setValue,
     reset
@@ -40,8 +42,6 @@ const FilterSidebar = ({ onClose, onSubmit, filters, onFiltersReset }: FilterSid
     defaultValues: filters
   })
   const [tags, setTags] = useState<Tags[]>([])
-  const [selectedChips, setSelectedChips] = useState<Tags[]>([])
-
   const watchMinPos = watch('max_pos')
   const watchMinFame = watch('min_fame')
 
@@ -51,18 +51,10 @@ const FilterSidebar = ({ onClose, onSubmit, filters, onFiltersReset }: FilterSid
     key: 'tags'
   })
 
-  const onChipClick = (chip: Tags, wasSelected: boolean) => {
-    if (wasSelected) {
-      setSelectedChips(prev => [...prev.filter(c => c.id !== chip.id)])
-    } else {
-      setSelectedChips(prev => [...prev, chip])
-    }
-  }
-
   const submit = (values: FormValues) => {
     onSubmit({
       ...values,
-      tags: [...selectedChips.map(tag => tag.id)]
+      tags: [...selectedTags.map(tag => tag.id)]
     })
   }
 
@@ -96,7 +88,7 @@ const FilterSidebar = ({ onClose, onSubmit, filters, onFiltersReset }: FilterSid
         </label>
         <label>
           Centre d'interets
-          <ChipSelect selectedChips={selectedChips} chips={tags} onChipClick={onChipClick} />
+          <ChipSelect selectedChips={selectedTags} chips={tags} onChipClick={addSelectedTag} />
         </label>
         <label>
           Afficher utilisateurs like
