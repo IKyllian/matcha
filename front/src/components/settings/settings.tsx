@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import ChipSelect from "front/components/chips/chipSelect"
 import { settingsStyle } from "./settings.style"
 import { css } from "styled-system/css"
@@ -218,7 +218,6 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         setInputPositionsList([])
         return
       }
-      console.info('CALL API')
       const ret: any = await makePositionRequest({ city: inputPosition })
       if (ret && Array.isArray(ret)) {
         setInputPositionsList(ret.map(p => ({ displayName: p.display_name, latitude: p.lat, longitude: p.lon })))
@@ -235,11 +234,17 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         <div className={css(slotsStyles.rowInputs)}>
           <label htmlFor="last_name">
             Nom*:
-            <input id="last_name" type='text' {...register('last_name')} />
+            <input id="last_name" type='text' {...register('last_name', {
+              maxLength: 35,
+              required: true
+            })} />
           </label>
           <label htmlFor="first_name">
             Prenom*:
-            <input id="first_name" type='text' {...register('first_name')} />
+            <input id="first_name" type='text' {...register('first_name', {
+              maxLength: 35,
+              required: true
+            })} />
           </label>
         </div>
         <label htmlFor="email">
@@ -263,7 +268,10 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         </label>
         <label>
           Desription:
-          <textarea className={css(slotsStyles.textAreaInput)} {...register('bio')} name="bio" ></textarea>
+          <textarea className={css(slotsStyles.textAreaInput)} {...register('bio', {
+            minLength: 2,
+            maxLength: 1000,
+          })} name="bio" ></textarea>
         </label>
         <label className={css(slotsStyles.positionContainer)}>
           Position:

@@ -39,7 +39,7 @@ export const filterSidebarStyle = sva({
       '& label': {
         display: 'flex',
         flexDirection: 'column',
-        gap: '6px',
+        fontWeight: 'bold'
       }
     },
     button: {
