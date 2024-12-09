@@ -21,12 +21,14 @@ export const profileStyle = sva({
         },
         profilInfosContainer: {
             display: 'flex',
+            justifyContent: 'center',
             gap: '16px',
             border: '2px solid black',
             boxShadow: '3px 3px 0 black',
             borderRadius: '10px',
             backgroundColor: 'secondaryBackground',
-            padding: '16px'
+            padding: '16px',
+            flexWrap: 'wrap'
         },
         profilContent: {
             display: 'flex',
