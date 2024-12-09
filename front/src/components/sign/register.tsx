@@ -19,8 +19,18 @@ const FIELDS: FieldsInputType<FormValues>[] = [
         name: 'first_name',
         type: 'text',
         options: {
-            maxLength: 35,
-            required: true
+            minLength: {
+                value: 2,
+                message: "Taille min: 2"
+            },
+            maxLength: {
+                value: 35,
+                message: "Taille max: 35"
+            },
+            required: {
+                value: true,
+                message: 'Prenom requis'
+            }
         }
     },
     {
@@ -28,8 +38,18 @@ const FIELDS: FieldsInputType<FormValues>[] = [
         name: 'last_name',
         type: 'text',
         options: {
-            maxLength: 35,
-            required: true
+            minLength: {
+                value: 2,
+                message: "Taille min: 2"
+            },
+            maxLength: {
+                value: 35,
+                message: "Taille max: 35"
+            },
+            required: {
+                value: true,
+                message: 'Nom requis'
+            }
         }
     },
     {
@@ -37,9 +57,18 @@ const FIELDS: FieldsInputType<FormValues>[] = [
         name: 'username',
         type: 'text',
         options: {
-            required: true,
-            minLength: 3,
-            maxLength: 20
+            required: {
+                value: true,
+                message: 'Nom d\'utilisateur requis'
+            },
+            minLength: {
+                value: 3,
+                message: "Taille min: 3"
+            },
+            maxLength: {
+                value: 20,
+                message: "Taille max: 20"
+            },
         }
     },
     {
@@ -47,7 +76,10 @@ const FIELDS: FieldsInputType<FormValues>[] = [
         name: 'email',
         type: 'text',
         options: {
-            required: true,
+            required: {
+                value: true,
+                message: 'Email requis'
+            },
             pattern: {
                 value: EMAIL_REGEX,
                 message: 'Mail invalide'
@@ -59,7 +91,10 @@ const FIELDS: FieldsInputType<FormValues>[] = [
         name: 'birth_date',
         type: 'date',
         options: {
-            required: true
+            required: {
+                value: true,
+                message: 'Date de naissance requise'
+            },
         }
     },
     {
@@ -67,7 +102,18 @@ const FIELDS: FieldsInputType<FormValues>[] = [
         name: 'password',
         type: 'password',
         options: {
-            required: true
+            required: {
+                value: true,
+                message: 'Mot de passe requis'
+            },
+            minLength: {
+                value: 8,
+                message: "Taille min: 8"
+            },
+            maxLength: {
+                value: 50,
+                message: "Taille max: 50"
+            },
         }
     }
 ]

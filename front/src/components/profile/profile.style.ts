@@ -58,6 +58,8 @@ export const profileStyle = sva({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '8px'
         },
         profilButtonContainer: {
             display: 'flex',
@@ -69,7 +71,8 @@ export const profileStyle = sva({
         userInfoContainer: {
             display: 'flex',
             alignItems: 'baseline',
-            gap: '8px'
+            gap: '8px',
+            flexWrap: 'wrap'
         },
         lastConnectionText: {
             fontSize: '12px'

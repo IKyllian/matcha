@@ -286,7 +286,7 @@ def checkImages(images, requiredProfilePicture = False):
     "last_name": {"required": True, "type": str, "min": 2, "max": 35},
     "gender": {"type": str, "choices": ["M", "F"]},
     "sexual_preference": {"type": str, "choices": ["M", "F", "B"]},
-    "bio": {"type": str, "min": 2, "max": 1000},
+    "bio": {"type": str, "min": 1, "max": 1000},
     "latitude": {"type": float},
     "longitude": {"type": float},
 })

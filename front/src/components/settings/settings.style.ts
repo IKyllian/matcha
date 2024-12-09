@@ -23,7 +23,8 @@ export const settingsStyle = sva({
         'textInfo',
         'positionListContainer',
         'positionItem',
-        'positionContainer'
+        'positionContainer',
+        'inputError'
     ],
     base: {
         settingsContainer: {
@@ -228,6 +229,10 @@ export const settingsStyle = sva({
             '&[data-border="1"]': {
                 borderBottom: '1px solid black'
             },
+        },
+        'inputError': {
+            color: 'red',
+            fontSize: '12px'
         }
     }
 })
