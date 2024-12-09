@@ -253,6 +253,7 @@ def getProfileById(user_id, validated_data, profile_id): # validated_data doit Ã
     if (user_id == profile_id):
         user["is_connected"] = True
         return jsonify(user=user)
+    user["distance"] = getDistanceOfUser(user_id, profile_id)
     like = getLikes(user_id, profile_id)
     block = getBlocks(user_id, profile_id)
     return jsonify(user=user, like=(len(like) > 0), block=(len(block) > 0))
