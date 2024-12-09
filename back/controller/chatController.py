@@ -1,8 +1,9 @@
 from datetime import datetime
 from flask import jsonify
+from errors.httpErrors import ForbiddenError
 from services.user import getUserWithProfilePictureById
 from database_utils.requests import *
-from decorators.authDecorator import token_required
+from decorators.authDecorator import blocked_check, token_required
 from decorators.dataDecorator import validate_request
 
 def easteregg():
@@ -59,7 +60,12 @@ def getChatList(user_id):
 @validate_request({
     "chatter_id": {"required": True, "type": int, "min": 0},
 })
+@blocked_check('chatter_id')
 def getChatById(user_id, validated_data, chatter_id):
+    matches = getMatchesOfUserIds(user_id)
+    matchIds = [match["matched_user"] for match in matches]
+    if chatter_id not in matchIds:
+        raise ForbiddenError("Vous ne pouver pas chatter avec cet utilisateur car il n'as pas match avec vous")
     chatter = getUserWithProfilePictureById(chatter_id)
     messages = makeRequest("SELECT id, sender_id, receiver_id, created_at, message FROM message WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) ORDER BY created_at ASC",
                            ((str(user_id)), (str(chatter_id)), (str(chatter_id)), (str(user_id))))

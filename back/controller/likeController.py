@@ -2,7 +2,7 @@ from flask import jsonify
 from controller.socketController import sendNotificationEvent
 from services.user import getDistanceOfUser, getUserWithImagesById, getUserWithProfilePictureById
 from database_utils.requests import *
-from decorators.authDecorator import token_required
+from decorators.authDecorator import blocked_check, token_required
 from decorators.dataDecorator import validate_request
 from errors.httpErrors import ForbiddenError
 from utils.images import decodeImagesFromArray
@@ -23,6 +23,7 @@ def updateFame(user_id):
 @validate_request({
     "user_to_like_id": {"required": True, "type": int, "min": 0},
 })
+@blocked_check('user_to_like_id')
 def likeUserById(user_id, validated_data):
     user_to_like_id = validated_data['user_to_like_id']
     if (user_id == user_to_like_id):
@@ -65,14 +66,7 @@ def getUserLikes(user_id, validated_data, liked_id):
 @token_required
 def getMatchesOfUser(user_id):
     matches = []
-    matched_users_id = makeRequest('''
-        SELECT l1.liked_user_id AS matched_user
-        FROM like l1
-        JOIN like l2
-        ON l1.user_id = l2.liked_user_id
-        AND l1.liked_user_id = l2.user_id
-        WHERE l1.user_id = :user_id;
-    ''', {"user_id": user_id})
+    matched_users_id = getMatchesOfUserIds(user_id)
     for user in matched_users_id:
         foundUser = getUserWithImagesById(user['matched_user'])
         if foundUser:
@@ -82,8 +76,23 @@ def getMatchesOfUser(user_id):
 
 @token_required
 def getLikesOfUser(user_id):
-    likes = makeRequest("SELECT user.id, user.first_name, user.last_name, user.gender, user.fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM like LEFT JOIN user ON like.liked_user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE like.user_id = ?", (str(user_id),))
-    for like in likes:
+    # First we get a list of matches ids
+    matches = getMatchesOfUserIds(user_id)
+    matchIds = [match["matched_user"] for match in matches]
+    
+    # Then we get the list of users liked
+    likes = makeRequest('''SELECT user.id, user.first_name, user.last_name, user.gender, user.fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name
+                        FROM like
+                        LEFT JOIN user ON like.liked_user_id = user.id
+                        LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1
+                        LEFT JOIN block ON (block.user_id = ? AND block.blocked_user_id = user.id) 
+                        OR (block.user_id = user.id AND block.blocked_user_id = ?)
+                        WHERE like.user_id = ? AND block.user_id IS NULL''', (str(user_id), str(user_id), str(user_id)))
+
+    # Then we filter those liked users because we don't want matches to also appear in liked tab
+    filteredLikes = [like for like in likes if like['id'] not in matchIds]    
+    
+    for like in filteredLikes:
         like["distance"] = getDistanceOfUser(user_id, like["id"])
-    likes = decodeImagesFromArray(likes)
-    return jsonify(likes=likes)
+    filteredLikes = decodeImagesFromArray(filteredLikes)
+    return jsonify(likes=filteredLikes)

@@ -55,6 +55,13 @@ def handle_disconnect(data, user_id):
 def handle_send_message(data, user_id):
     sender_id = data.get('sender_id')
     receiver_id = data.get('receiver_id')
+    blocks = makeRequest('''SELECT block.id FROM block
+                        WHERE (block.user_id = :user_id AND block.blocked_user_id = :user_to_interact_id)
+                        OR (block.user_id = :user_to_interact_id AND block.blocked_user_id = :user_id)''',
+                        {"user_id": sender_id, "user_to_interact_id": receiver_id})
+    if len(blocks) > 0:
+        raise ForbiddenError("Vous ne pouver pas interagir car cet utilisateur vous a bloqué ou vous l'avez bloqué")
+    
     message = data.get('message')
 
     if (len(message) > 500):

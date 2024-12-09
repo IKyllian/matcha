@@ -150,3 +150,15 @@ def send_email_password(user_email, url_identifier):
             <button type="submit">Send Email</button>
         </form>
     ''')
+
+def getMatchesOfUserIds(user_id):
+    return makeRequest('''
+        SELECT l1.liked_user_id AS matched_user
+        FROM like l1
+        JOIN like l2
+        ON l1.user_id = l2.liked_user_id
+        AND l1.liked_user_id = l2.user_id
+        LEFT JOIN block ON (block.user_id = :user_id AND block.blocked_user_id = matched_user) 
+                        OR (block.user_id = matched_user AND block.blocked_user_id = :user_id)
+        WHERE l1.user_id = :user_id AND block.user_id IS NULL;
+    ''', {"user_id": user_id})
