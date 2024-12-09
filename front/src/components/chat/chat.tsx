@@ -37,10 +37,10 @@ const Chat = ({ chatId }: ChatProps) => {
 
     // Scroll to the bottom whenever messages change
     useEffect(() => {
-        if (messagesContainerRef.current) {
+        if (messagesContainerRef.current && !isLoading) {
             messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
         }
-    }, [chat?.messages]);
+    }, [chat?.messages, chatId, isLoading]);
 
     const onSubmit = (data: FormValues) => {
         if (user) {
