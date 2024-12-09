@@ -27,16 +27,16 @@ const ChipSelect = ({ selectedChips, onChipClick, chips, disableForm = true }: C
         setFilteredTags(newArray)
     }, [allTags])
 
-    const changeFormDisplay = useCallback(() => {
+    const changeFormDisplay = () => {
         setDisplayForm(prev => !prev)
-    }, [])
+    }
 
-    const onTagCreated = useCallback((tag: Tags) => {
+    const onTagCreated = (tag: Tags) => {
         setAllTags(prev => [...prev, tag])
         if (tag.tag_name.includes(currentSearch)) {
             setFilteredTags(prev => [...prev, tag])
         }
-    }, [currentSearch])
+    }
 
     return (
         <div className={css(slotsStyles.selectContainer)}>

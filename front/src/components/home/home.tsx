@@ -11,7 +11,7 @@ import { useApi } from "front/hook/useApi";
 import { useStore } from "front/store/store";
 import { ListStateType } from "front/store/homeList";
 import { makeLikeRequest } from "front/api/profile";
-import Sort from "./sort";
+import Select from "front/components/input/select";
 
 type HomeTabs = 'Liste' | 'Suggestion'
 const TABS_CONTENT: HomeTabs[] = ["Liste", "Suggestion"]
@@ -30,7 +30,7 @@ const Home = () => {
   const setFilters = useStore(state => state.setFilters)
   const resetFilters = useStore(state => state.resetFilters)
   const { sort } = useStore(state => state.homeState)
-  const sortChange = useStore(state => state.sortChange) 
+  const sortChange = useStore(state => state.sortChange)
 
   const handleClick = (index: number) => setNavIndex(index)
   const onSidebarClose = () => {
@@ -72,7 +72,7 @@ const Home = () => {
         <div className={css(slotsStyles.listHeaderWrapper)}>
           <Tabs tabsContent={TABS_CONTENT} navIndex={navIndex} handleClick={handleClick} />
           {
-            TABS_CONTENT[navIndex] === "Liste" && <Sort onChange={sortChange} />
+            TABS_CONTENT[navIndex] === "Liste" && <Select onChange={sortChange} />
           }
         </div>
         {TABS_CONTENT[navIndex] === "Liste" && filtersList && <HomeList list={filtersList} onLikeClick={onLikeClick} />}

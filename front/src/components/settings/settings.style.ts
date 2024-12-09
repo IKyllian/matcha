@@ -220,6 +220,9 @@ export const settingsStyle = sva({
             flexDir: 'column',
             backgroundColor: 'white',
             width: '100%',
+            zIndex: '2',
+            borderRadius: '7px',
+            border: '2px solid black'
         },
         positionItem: {
             padding: '8px 4px',

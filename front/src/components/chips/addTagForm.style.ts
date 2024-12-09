@@ -34,6 +34,9 @@ export const tagFormStyle = sva({
             borderRadius: '50%',
             border: '2px solid black',
             boxShadow: '1.3px 1.3px 0 black',
+            _focus: {
+                outline: 'none',
+            }
         },
         closeIcon: {
             backgroundColor: 'lightRed',

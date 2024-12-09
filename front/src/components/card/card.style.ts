@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css";
 
 export const cardStyle = sva({
-    slots: ['cardsContainer', 'cardWrapper', 'cardContent', 'cardImg', 'textWrapper', 'cardPrimaryText', 'cardSecondaryText', 'nameWrapper', 'gender', 'likeButton'],
+    slots: ['cardsContainer', 'cardWrapper', 'cardContent', 'cardImg', 'textWrapper', 'cardPrimaryText', 'cardSecondaryText', 'nameWrapper', 'gender', 'likeButton', 'ageText'],
     base: {
         cardsContainer: {
             display: 'flex',
@@ -68,6 +68,9 @@ export const cardStyle = sva({
         },
         likeButton: {
             width: '40px'
+        },
+        ageText: {
+            fontSize: '12px'
         }
     }
 })

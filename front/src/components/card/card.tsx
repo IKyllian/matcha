@@ -21,12 +21,11 @@ type CardProps = {
     showLike?: boolean
 }
 const Card = ({ user, cardType, className, isLike, onLikeClick, showLike = false }: CardProps) => {
-    const { location, last_name, first_name } = user
+    const { last_name, first_name, age, distance, fame_rating, gender, images, id } = user
     const slotsStyles = cardStyle.raw()
 
     const diplayGender = () => {
-        const gender = user.gender
-        if (!user.gender) return null
+        if (!gender) return null
         if (gender === 'F') {
             return (
                 <TbGenderFemale color='pink' className={css(slotsStyles.gender)} />
@@ -41,27 +40,27 @@ const Card = ({ user, cardType, className, isLike, onLikeClick, showLike = false
         <div className={css(slotsStyles.cardWrapper, className, {
             // height: cardType === 'image-content' ? '370px' : 'auto'
         })}>
-            <ProfilePicture className={slotsStyles.cardImg} userImages={user.images} width='280px' height='280px' />
+            <ProfilePicture className={slotsStyles.cardImg} userImages={images} width='280px' height='280px' />
             {
                 cardType === 'image-content' && (
                     <div className={css(slotsStyles.cardContent)}>
                         <div className={css(slotsStyles.textWrapper)}>
                             <div className={css(slotsStyles.nameWrapper)}>
                                 {diplayGender()}
-                                <Link to={`/profile/${user.id}`} className={css(slotsStyles.cardPrimaryText)}> {first_name} {last_name} </Link>
+                                <Link to={`/profile/${id}`} className={css(slotsStyles.cardPrimaryText)}> {first_name} {last_name} <span className={css(slotsStyles.ageText)}>{age}ans</span> </Link>
                             </div>
                             <div className={css({
                                 display: 'flex',
                                 gap: '8px',
                                 alignItems: ' center',
                             })}>
-                                {user.distance >= 0 && <p className={css(slotsStyles.cardSecondaryText)}> <FaLocationDot /> {Math.round(user.distance)}km </p>}
-                                {user.fame_rating && <StarRating isReadOnly initialRating={user.fame_rating} unit="float" size={15} />}
+                                {distance >= 0 && <p className={css(slotsStyles.cardSecondaryText)}> <FaLocationDot /> {Math.round(distance)}km </p>}
+                                {fame_rating && <StarRating isReadOnly initialRating={fame_rating} unit="float" size={15} />}
                             </div>
-                            {/* {user.fame_rating && <StarRating isReadOnly initialRating={user.fame_rating} unit="float" size={15} />}
-                            {user.distance && <p className={css(slotsStyles.cardSecondaryText)}> <FaLocationDot /> {Math.round(user.distance)}km </p>} */}
+                            {/* {fame_rating && <StarRating isReadOnly initialRating={fame_rating} unit="float" size={15} />}
+                            {distance && <p className={css(slotsStyles.cardSecondaryText)}> <FaLocationDot /> {Math.round(distance)}km </p>} */}
                         </div>
-                        {showLike && <IconButton className={slotsStyles.likeButton} buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => onLikeClick(user.id)} />}
+                        {showLike && <IconButton className={slotsStyles.likeButton} buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => onLikeClick(id)} />}
                     </div>
                 )
             }

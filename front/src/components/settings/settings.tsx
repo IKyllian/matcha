@@ -93,6 +93,13 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const [inputPositionsList, setInputPositionsList] = useState<PositionType[]>([])
   const [positionSelected, setPositionSelected] = useState<PositionType>()
   const [inputPosition, setInputPosition] = useState<string>('')
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<Partial<User>>({
+    defaultValues: profileSettings.user
+  })
 
   useEffect(() => {
     const getPos = async () => {
@@ -110,14 +117,6 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     }
     getPos()
   }, [])
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Partial<User>>({
-    defaultValues: profileSettings.user
-  })
 
   const onChipClick = (chip: Tags, wasSelected: boolean) => {
     if (wasSelected) {
@@ -246,6 +245,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const onPositionClick = (value: PositionType) => {
     setInputPosition(value.displayName)
     setPositionSelected(value)
+    setInputPositionsList([])
   }
 
   const handleChange = (e) => {
