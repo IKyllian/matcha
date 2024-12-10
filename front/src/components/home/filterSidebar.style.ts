@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css";
 
 export const filterSidebarStyle = sva({
-  slots: ['sidebarContainer', 'filtersContainer', 'rangeInput', 'title', 'button', 'closeButton', 'inputCheckbox'],
+  slots: ['sidebarContainer', 'filtersContainer', 'rangeInput', 'title', 'button', 'closeButton', 'inputCheckbox', 'buttonContainer', 'resetButton'],
   base: {
     title: {
       fontSize: '24px',
@@ -39,12 +39,12 @@ export const filterSidebarStyle = sva({
       '& label': {
         display: 'flex',
         flexDirection: 'column',
-        gap: '6px',
+        fontWeight: 'bold'
       }
     },
     button: {
       height: '50px',
-      width: '200px',
+      width: '150px',
       border: '2px solid black',
       boxShadow: '2.5px 2.5px 0 black',
       backgroundColor: 'buttonPrimaryBackground',
@@ -62,6 +62,10 @@ export const filterSidebarStyle = sva({
     },
     inputCheckbox: {
       accentColor: 'buttonPrimaryBackground'
+    },
+    buttonContainer: {
+      display: 'flex',
+      gap: '8px'
     }
   }
 })

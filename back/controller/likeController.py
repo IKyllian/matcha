@@ -1,6 +1,6 @@
 from flask import jsonify
 from controller.socketController import sendNotificationEvent
-from services.user import getUserWithImagesById, getUserWithProfilePictureById
+from services.user import getDistanceOfUser, getUserWithImagesById, getUserWithProfilePictureById
 from database_utils.requests import *
 from decorators.authDecorator import token_required
 from decorators.dataDecorator import validate_request
@@ -76,11 +76,14 @@ def getMatchesOfUser(user_id):
     for user in matched_users_id:
         foundUser = getUserWithImagesById(user['matched_user'])
         if foundUser:
+            foundUser["distance"] = getDistanceOfUser(user_id, user['matched_user'])
             matches.append(foundUser)
     return jsonify(matches=matches)
 
 @token_required
 def getLikesOfUser(user_id):
-    likes = makeRequest("SELECT user.id, user.first_name, user.last_name, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM like LEFT JOIN user ON like.liked_user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE like.user_id = ?", (str(user_id),))
+    likes = makeRequest("SELECT user.id, user.first_name, user.last_name, user.gender, user.fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM like LEFT JOIN user ON like.liked_user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE like.user_id = ?", (str(user_id),))
+    for like in likes:
+        like["distance"] = getDistanceOfUser(user_id, like["id"])
     likes = decodeImagesFromArray(likes)
     return jsonify(likes=likes)

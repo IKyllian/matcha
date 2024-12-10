@@ -1,11 +1,11 @@
 import { sva } from "styled-system/css";
 
 export const homeStyle = sva({
-  slots: ['homeContainer', 'listContainer', 'filterIconContainer', 'filterIcon'],
+  slots: ['homeContainer', 'listContainer', 'filterIconContainer', 'filterIcon', 'listHeaderWrapper'],
   base: {
     homeContainer: {
-      position: 'relative',
-      padding: '0 45px',
+      padding: '0 45px 24px 45px',
+      overflow: 'hidden'
     },
     listContainer: {
       display: 'flex',
@@ -33,6 +33,12 @@ export const homeStyle = sva({
     },
     filterIcon: {
       fontSize: '24px',
+    },
+    listHeaderWrapper: {
+      // position: 'fixed',
+      // backgroundColor: 'primaryBackground',
+      // zIndex: '2',
+      // width: '100%'
     }
   }
 })

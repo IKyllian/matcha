@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import ProfilePicture from "front/components/utils/profilePicture"
 import { getMessageDateString } from "front/utils/chat";
 import { Link } from "react-router-dom";
+import { useEffect, useRef } from 'react';
 
 type ChatProps = {
     chatId: number;
@@ -31,6 +32,15 @@ const Chat = ({ chatId }: ChatProps) => {
     } = useForm<FormValues>()
     const { isLoading } = useApi<ChatType>({ endpoint: "chat", dependencies: [chatId], params: { id: chatId }, setter: setChat })
     const recipient = chat?.chatter
+
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+    // Scroll to the bottom whenever messages change
+    useEffect(() => {
+        if (messagesContainerRef.current && !isLoading) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
+    }, [chat?.messages, chatId, isLoading]);
 
     const onSubmit = (data: FormValues) => {
         if (user) {
@@ -58,7 +68,7 @@ const Chat = ({ chatId }: ChatProps) => {
                     <ProfilePicture className={slotsStyles.img} width="40px" height="40px" userImages={recipient.images} />
                     <p> {recipient.first_name} {recipient.last_name} </p>
                 </Link>
-                <div className={css(slotsStyles.messagesContainer)}>
+                <div ref={messagesContainerRef} className={css(slotsStyles.messagesContainer)}>
                     {
                         chat.messages.map((message) => {
                             return (

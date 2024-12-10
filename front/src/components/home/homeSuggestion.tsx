@@ -1,5 +1,4 @@
 import Card from "front/components/card/card"
-import { USERS } from "front/typing/user"
 import { homeSuggestionStyle } from "./homeSuggestion.style"
 import { css } from "styled-system/css"
 import { useState } from "react"
@@ -10,7 +9,6 @@ import { ListStateType } from "front/store/homeList"
 import { useStore } from "front/store/store"
 import { makeLikeRequest } from "front/api/profile"
 
-const LIST = [...USERS]
 const HomeSuggestion = () => {
   const slotsStyles = homeSuggestionStyle.raw()
   const [index, setIndex] = useState(0)
