@@ -6,6 +6,15 @@ class ValidationError(Exception):
         super().__init__(message)
         self.field = field
 
+def check_tags_array(tags):
+  tags = tags.split(',')
+  for tag in tags:
+    try:
+      tag = int(tag)
+    except ValueError:
+      raise ValidationError(f"Les tags doivent etre des ids", "tags")
+  return tags
+
 def validate_data(data, rules):
     validated_data = {}
     for field, rule in rules.items():
@@ -13,20 +22,23 @@ def validate_data(data, rules):
         if 'required' in rule and rule['required'] and value is None:
           raise ValidationError(f"{field} est requis.", field)
         if value is not None:
-          expected_type = rule["type"]
-          try:
-            if expected_type is int:
-              value = int(value)
-            elif expected_type is float:
-              value = float(value)
-            elif expected_type is str:
-              value = str(value)
-            elif expected_type is bool:
-              value = bool(value)
-            else:
-              raise ValidationError(f"Type inconnu pour '{field}'.", field)
-          except ValueError:
-            raise ValidationError(f"Le champ '{field}' doit être de type {expected_type}.", field)
+          if 'type' in rule:
+            expected_type = rule["type"]
+            try:
+              if expected_type is int:
+                value = int(value)
+              elif expected_type is float:
+                value = float(value)
+              elif expected_type is str:
+                value = str(value)
+              elif expected_type is bool:
+                value = bool(value)
+              elif expected_type == 'tags':
+                value = check_tags_array(value)
+              else:
+                raise ValidationError(f"Type inconnu pour '{field}'.", field)
+            except ValueError:
+              raise ValidationError(f"Le champ '{field}' doit être de type {expected_type}.", field)
           if 'isalnum' in rule and rule['isalnum'] and not str(value).isalnum():
             raise ValidationError(f"{field} doit être alphanumérique.", field)
           if 'isalpha' in rule and rule['isalpha'] and not str(value).isalpha():
