@@ -49,7 +49,7 @@ def createTag(user_id, validated_data):
     "max_pos": {"type": int, "min": 30, "max": 100000},
     "min_fame": {"type": int, "min": 0, "max": 5},
     "tags": {},
-    "sort": {"type": int, "min": 0, "max": 3},
+    "sort": {"type": int, "min": 0, "max": 5},
     "display_liked" : {"type": bool}
 })
 def getProfiles(user_id, validated_data):
@@ -118,6 +118,11 @@ def getProfiles(user_id, validated_data):
         requestQuery += ' ORDER BY user.birth_date ASC'
     if (sort == 3):
         requestQuery += ' ORDER BY user.birth_date DESC'
+    if (sort == 4):
+        requestQuery += ' ORDER BY user.fame_rating ASC'
+    if (sort == 5):
+        requestQuery += ' ORDER BY user.fame_rating DESC'
+    
     
     print("requestQuery = ", requestQuery)
     print("queryParams = ", queryParams)
