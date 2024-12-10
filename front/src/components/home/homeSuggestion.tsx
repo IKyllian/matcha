@@ -1,5 +1,4 @@
 import Card from "front/components/card/card"
-import { USERS } from "front/typing/user"
 import { homeSuggestionStyle } from "./homeSuggestion.style"
 import { css } from "styled-system/css"
 import { useState } from "react"
@@ -10,7 +9,6 @@ import { ListStateType } from "front/store/homeList"
 import { useStore } from "front/store/store"
 import { makeLikeRequest } from "front/api/profile"
 
-const LIST = [...USERS]
 const HomeSuggestion = () => {
   const slotsStyles = homeSuggestionStyle.raw()
   const [index, setIndex] = useState(0)
@@ -40,7 +38,7 @@ const HomeSuggestion = () => {
   const onLikeClick = async (profile_id: number) => {
     const ret = await makeLikeRequest({ token, id: profile_id, addAlert })
     if (ret) {
-      updateProfileListLike({ listKey: 'filtersList', profile_id })
+      updateProfileListLike({ listKey: 'suggestionList', profile_id })
     }
   }
 
@@ -52,13 +50,11 @@ const HomeSuggestion = () => {
     return <p>No profile...</p>
   }
 
-  console.info('suggestionList = ', suggestionList)
-
   return (
     <div className={css(slotsStyles.suggestionContainer)}>
       <div className={css(slotsStyles.suggestionWrapper)}>
         <MdOutlineKeyboardArrowLeft className={css(slotsStyles.arrowIcon)} onClick={onPrev} />
-        <Card user={suggestionList[index].user} cardType='image-content' className={slotsStyles.cardSuggestion} onLikeClick={onLikeClick} />
+        <Card user={suggestionList[index].user} cardType='image-content' isLike={suggestionList[index].like} className={slotsStyles.cardSuggestion} onLikeClick={onLikeClick} showLike />
         <MdOutlineKeyboardArrowRight className={css(slotsStyles.arrowIcon)} onClick={onNext} />
       </div>
     </div>

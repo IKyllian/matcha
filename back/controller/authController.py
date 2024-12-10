@@ -34,7 +34,7 @@ def signin(validated_data):
     "first_name": {"required": True, "type": str, "min": 2, "max": 35, "isalpha": True},
     "last_name": {"required": True, "type": str, "min": 2, "max": 35, "isalpha": True},
     "email": {"required": True, "type": str, "regex": r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'},
-    "password": {"required": True, "type": str, "min": 8},
+    "password": {"required": True, "type": str, "min": 8, "max": 50},
     "birth_date": {"required": True, "type": str, "date_format": "%Y-%m-%d"}
 })
 def signup(validated_data):

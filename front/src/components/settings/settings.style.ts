@@ -23,7 +23,8 @@ export const settingsStyle = sva({
         'textInfo',
         'positionListContainer',
         'positionItem',
-        'positionContainer'
+        'positionContainer',
+        'inputError'
     ],
     base: {
         settingsContainer: {
@@ -63,6 +64,7 @@ export const settingsStyle = sva({
         },
         rowInputs: {
             display: 'flex',
+            flexWrap: 'wrap',
             gap: '8px',
             '& > label': {
                 display: 'flex',
@@ -218,15 +220,22 @@ export const settingsStyle = sva({
             flexDir: 'column',
             backgroundColor: 'white',
             width: '100%',
+            zIndex: '2',
+            borderRadius: '7px',
+            border: '2px solid black'
         },
         positionItem: {
             padding: '8px 4px',
-            '&:hover': {
+            _hover: {
                 backgroundColor: '#dce2f7'
             },
             '&[data-border="1"]': {
                 borderBottom: '1px solid black'
             },
+        },
+        'inputError': {
+            color: 'red',
+            fontSize: '12px'
         }
     }
 })

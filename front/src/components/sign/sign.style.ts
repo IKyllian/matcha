@@ -78,7 +78,7 @@ export const formStyle = sva({
             textAlign: 'center',
             '& > a': {
                 color: 'buttonPrimaryBackground',
-                '&:hover': {
+                _hover: {
                     textDecoration: 'underline'
                 }
             }
@@ -93,7 +93,7 @@ export const formStyle = sva({
             marginTop: '5px',
             '& > a': {
                 color: 'buttonPrimaryBackground',
-                '&:hover': {
+                _hover: {
                     textDecoration: 'underline'
                 }
             }

@@ -59,7 +59,7 @@ const StarRating: React.FC<StarRatingProps> = ({
   const slotsStyles = profileStyle.raw()
 
   return (
-    <span className={css(slotsStyles.starsContainer)}>
+    <span className={css(slotsStyles.starsContainer)} title={`${initialRating.toFixed(2)}`}>
       {Array.from({ length: count }, (v, i) => {
         return (
           <Star

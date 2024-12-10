@@ -6,16 +6,16 @@ export const homeSuggestionStyle = sva({
     cardSuggestion: {
     },
     suggestionContainer: {
-      height: '100vh',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      marginTop: '54px'
     },
     suggestionWrapper: {
       width: '100%',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'space-between'
+      justifyContent: 'space-evenly'
     },
     arrowIcon: {
       fontSize: '60px'

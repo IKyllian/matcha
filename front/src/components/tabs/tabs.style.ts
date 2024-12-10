@@ -10,9 +10,14 @@ export const tabsStyle = sva({
             border: '2px solid black',
             boxShadow: '0px 3px 0 black',
             padding: '5px',
-            width: 'fit-content',
             backgroundColor: 'secondaryBackground',
-            margin: '24px auto'
+            margin: '24px auto',
+            width: 'fit-content',
+            mdDown: {
+                overflow: 'scroll',
+                width: 'fit-content',
+                // width: '90%'
+            }
         },
         tab: {
             height: '40px',
@@ -23,8 +28,6 @@ export const tabsStyle = sva({
             borderRadius: '7px',
             fontWeight: '600',
             cursor: 'pointer',
-            // transition: 'border 0.3s ease, background-color 0.3s ease',
-
             '&[data-active="true"]': {
                 border: '2px solid black',
                 backgroundColor: 'buttonPrimaryBackground',

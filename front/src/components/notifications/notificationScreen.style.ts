@@ -6,8 +6,9 @@ export const notificationsScreenStyle = sva({
     screenContainer: {
       display: 'flex',
       flexDirection: 'column',
-      width: '700px',
       margin: '0 auto 24px auto',
+      padding: '0 24px',
+      maxWidth: '700px'
     },
     title: {
       textAlign: 'center',
@@ -34,7 +35,7 @@ export const notificationsScreenStyle = sva({
       gap: '12px',
       cursor: 'pointer',
       transition: 'background-color 0.2s ease-in-out',
-      '&:hover': {
+      _hover: {
         backgroundColor: '#d2eef7'
       },
       '& > span': {

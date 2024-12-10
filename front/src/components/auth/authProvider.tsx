@@ -1,5 +1,6 @@
 import { makeAuthRequest } from "front/api/auth";
 import { COOKIE_JWT_TOKEN } from "front/constant/cookie";
+import { useLogout } from "front/hook/useLogout";
 import { useStore } from "front/store/store";
 import { ReactNode, useEffect } from "react"
 import { useCookies } from "react-cookie";
@@ -7,16 +8,11 @@ import { useCookies } from "react-cookie";
 const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [cookies, setCookie, removeCookie] = useCookies();
     const logUser = useStore((state) => state.logUser)
-    const logoutUser = useStore((state) => state.logoutUser)
     const setNotifications = useStore((state) => state.setNotifications)
     const setAuthStatus = useStore((state) => state.setAuthStatus)
     const initSocket = useStore((state) => state.initSocket)
     const addAlert = useStore((state) => state.addAlert)
-    const resetChat = useStore((state) => state.resetChat)
-    const resetChatSidebar = useStore((state) => state.resetChatSidebar)
-    const deleteAllNotification = useStore((state) => state.deleteAllNotification)
-    const closeModal = useStore((state) => state.closeModal)
-    const socketDisconnect = useStore((state) => state.socketDisconnect)
+    const { onLogout } = useLogout()
 
     useEffect(() => {
         const authRequest = async () => {
@@ -33,13 +29,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
                             setNotifications(notifications)
                         }
                     } else {
-                        removeCookie(COOKIE_JWT_TOKEN)
-                        resetChat()
-                        resetChatSidebar()
-                        deleteAllNotification()
-                        closeModal('report')
-                        socketDisconnect()
-                        logoutUser()
+                        onLogout()
                     }
                 } catch (e) {
                     console.error("Error auth request: ", e)
