@@ -28,6 +28,16 @@ const SELECT_LIST = [
         value: 'Age',
         icon: FaSortAmountDown
     },
+    {
+        id: SORT_ENUM.FAME_ASC,
+        value: 'Fame Rating',
+        icon: FaSortAmountDownAlt
+    },
+    {
+        id: SORT_ENUM.FAME_DESC,
+        value: 'Fame Rating',
+        icon: FaSortAmountDown
+    },
 ]
 
 type SelectProps = {

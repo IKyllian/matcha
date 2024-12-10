@@ -26,6 +26,9 @@ export const headerStyle = sva({
             position: 'fixed',
             backgroundColor: 'primaryBackground',
             borderBottom: '2px solid black',
+            mdDown: {
+                display: 'none'
+            }
         },
         headerContentWrapper: {
             display: 'flex',

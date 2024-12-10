@@ -131,7 +131,6 @@ def getProfiles(user_id, validated_data):
 
 @token_required
 def getSuggested(user_id):
-    
     user = getUserWithImagesById(user_id)
     user_latitude = str(user["latitude"])
     user_longitude = str(user["longitude"])

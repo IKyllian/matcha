@@ -15,9 +15,9 @@ const ProfilePicture = ({ userImages, width = '100%', height = '100%', className
     return (
         <div
             className={css({
-                width,
-                height,
-                position: 'relative'
+                // width,
+                // height,
+                // position: 'relative'
             })}
             onClick={onClick ? onClick : undefined}
         >

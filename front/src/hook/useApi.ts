@@ -6,6 +6,7 @@ import { UrlParamsType } from "front/typing/filters";
 import { HTTPError } from "ky";
 import { useEffect, useState } from "react"
 import { useCookies } from "react-cookie";
+import { useLogout } from "front/hook/useLogout";
 
 type UseApiProps<T> = {
     endpoint: EndpointType,
@@ -55,12 +56,7 @@ export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], sett
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const addAlert = useStore((state) => state.addAlert)
     const [cookies, setCookie, removeCookie] = useCookies();
-    const logoutUser = useStore((state) => state.logoutUser)
-    const resetChat = useStore((state) => state.resetChat)
-    const resetChatSidebar = useStore((state) => state.resetChatSidebar)
-    const deleteAllNotification = useStore((state) => state.deleteAllNotification)
-    const closeModal = useStore((state) => state.closeModal)
-    const socketDisconnect = useStore((state) => state.socketDisconnect)
+    const { onLogout } = useLogout()
 
     useEffect(() => {
         const fetch = async () => {
@@ -91,13 +87,7 @@ export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], sett
                 addAlert({ message: errorMessage, type: AlertTypeEnum.ERROR });
                 if (codeError && codeError === 401) {
                     console.error("AUTH Error -> diconnect")
-                    removeCookie(COOKIE_JWT_TOKEN)
-                    resetChat()
-                    resetChatSidebar()
-                    deleteAllNotification()
-                    closeModal('report')
-                    socketDisconnect()
-                    logoutUser()
+                    onLogout()
                 }
             } finally {
                 setIsLoading(false);

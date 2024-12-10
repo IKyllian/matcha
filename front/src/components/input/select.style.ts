@@ -25,7 +25,7 @@ export const selectInputStyle = sva({
                 justifyContent: 'space-between',
                 padding: '4px',
                 borderRadius: '4px',
-                width: '110px',
+                width: '150px',
             }
         },
         selectListContainer: {
@@ -46,7 +46,7 @@ export const selectInputStyle = sva({
             alignItems: 'center',
             padding: '4px',
             borderRadius: '4px',
-            width: '110px',
+            width: '150px',
             '&:hover': {
                 backgroundColor: 'buttonPrimaryBackground',
             }
