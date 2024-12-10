@@ -81,7 +81,7 @@ const Home = () => {
         <div className={css(slotsStyles.listHeaderWrapper)}>
           <Tabs tabsContent={TABS_CONTENT} navIndex={navIndex} handleClick={handleClick} />
           {
-            TABS_CONTENT[navIndex] === "Liste" && <Select onChange={sortChange} />
+            TABS_CONTENT[navIndex] === "Liste" && <Select onChange={sortChange} defaultValue={sort} />
           }
         </div>
         {TABS_CONTENT[navIndex] === "Liste" && filtersList && <HomeList list={filtersList} onLikeClick={onLikeClick} />}

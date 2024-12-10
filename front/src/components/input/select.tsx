@@ -42,11 +42,12 @@ const SELECT_LIST = [
 
 type SelectProps = {
     onChange: (value: number) => void
+    defaultValue: SORT_ENUM
 }
-const Select = ({ onChange }: SelectProps) => {
+const Select = ({ onChange, defaultValue }: SelectProps) => {
     const slotsStyles = selectInputStyle.raw()
     const [showList, setShowList] = useState(false)
-    const [selectedItem, setSelectedItem] = useState(SELECT_LIST[0])
+    const [selectedItem, setSelectedItem] = useState(SELECT_LIST.find(e => e.id === defaultValue) || SELECT_LIST[0])
 
     const onClose = () => setShowList(false)
     const closeRef = useCloseRef({ onClose })

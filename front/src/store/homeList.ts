@@ -46,10 +46,8 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
     setSuggestionList: (list: ListStateType[]) => set((state) => ({ ...state, homeState: { ...state.homeState, suggestionList: list } })),
     updateProfileListLike: ({ listKey, profile_id }: OnLikeProps) => set((state) => {
         const userFound = state.homeState[listKey].find(l => l.user.id === profile_id)
-        console.info("userFound = ", userFound)
         if (userFound) {
             const newList = state.homeState[listKey].map(l => l.user.id === profile_id ? { ...l, like: !l.like } : l)
-            console.info("newList = ", newList)
             return {
                 ...state,
                 homeState: {

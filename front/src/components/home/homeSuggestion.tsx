@@ -50,13 +50,11 @@ const HomeSuggestion = () => {
     return <p>No profile...</p>
   }
 
-  console.info('suggestionList = ', suggestionList)
-
   return (
     <div className={css(slotsStyles.suggestionContainer)}>
       <div className={css(slotsStyles.suggestionWrapper)}>
         <MdOutlineKeyboardArrowLeft className={css(slotsStyles.arrowIcon)} onClick={onPrev} />
-        <Card user={suggestionList[index].user} cardType='image-content' className={slotsStyles.cardSuggestion} onLikeClick={onLikeClick} showLike />
+        <Card user={suggestionList[index].user} cardType='image-content' isLike={suggestionList[index].like} className={slotsStyles.cardSuggestion} onLikeClick={onLikeClick} showLike />
         <MdOutlineKeyboardArrowRight className={css(slotsStyles.arrowIcon)} onClick={onNext} />
       </div>
     </div>
