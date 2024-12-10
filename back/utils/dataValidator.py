@@ -19,7 +19,6 @@ def validate_data(data, rules):
     validated_data = {}
     for field, rule in rules.items():
         value = data.get(field)
-        print("value = ", value, " - ", type(value))
         if 'required' in rule and rule['required'] and value is None:
           raise ValidationError(f"{field} est requis.", field)
         if value is not None:
