@@ -47,7 +47,7 @@ export const selectInputStyle = sva({
             padding: '4px',
             borderRadius: '4px',
             width: '150px',
-            '&:hover': {
+            _hover: {
                 backgroundColor: 'buttonPrimaryBackground',
             }
         },

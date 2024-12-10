@@ -75,7 +75,7 @@ export const headerStyle = sva({
             borderRadius: '10px',
             cursor: 'pointer',
             height: '40px',
-            '&:hover': {
+            _hover: {
                 boxShadow: '1px 1px 0 black',
                 transition: 'box-shadow 0.3s',
             }

@@ -38,7 +38,7 @@ const HomeSuggestion = () => {
   const onLikeClick = async (profile_id: number) => {
     const ret = await makeLikeRequest({ token, id: profile_id, addAlert })
     if (ret) {
-      updateProfileListLike({ listKey: 'filtersList', profile_id })
+      updateProfileListLike({ listKey: 'suggestionList', profile_id })
     }
   }
 
@@ -56,7 +56,7 @@ const HomeSuggestion = () => {
     <div className={css(slotsStyles.suggestionContainer)}>
       <div className={css(slotsStyles.suggestionWrapper)}>
         <MdOutlineKeyboardArrowLeft className={css(slotsStyles.arrowIcon)} onClick={onPrev} />
-        <Card user={suggestionList[index].user} cardType='image-content' className={slotsStyles.cardSuggestion} onLikeClick={onLikeClick} />
+        <Card user={suggestionList[index].user} cardType='image-content' className={slotsStyles.cardSuggestion} onLikeClick={onLikeClick} showLike />
         <MdOutlineKeyboardArrowRight className={css(slotsStyles.arrowIcon)} onClick={onNext} />
       </div>
     </div>

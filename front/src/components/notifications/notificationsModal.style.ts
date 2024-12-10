@@ -32,7 +32,7 @@ export const notificationsModalStyle = sva({
       gap: '10px',
       padding: '10px',
       borderRadius: '10px',
-      '&:hover': {
+      _hover: {
         backgroundColor: '#fae3d2'
       },
       '& > span': {
@@ -47,7 +47,7 @@ export const notificationsModalStyle = sva({
     link: {
       textAlign: 'center',
       cursor: 'pointer',
-      '&:hover': {
+      _hover: {
         textDecoration: 'underline'
       }
     }

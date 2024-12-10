@@ -226,7 +226,7 @@ export const settingsStyle = sva({
         },
         positionItem: {
             padding: '8px 4px',
-            '&:hover': {
+            _hover: {
                 backgroundColor: '#dce2f7'
             },
             '&[data-border="1"]': {

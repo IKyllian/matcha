@@ -13,6 +13,7 @@ import { ListStateType } from "front/store/homeList";
 import { makeLikeRequest } from "front/api/profile";
 import Select from "front/components/input/select";
 import { UrlParamsType } from "front/typing/filters";
+import { FaArrowUp } from "react-icons/fa";
 
 type HomeTabs = 'Liste' | 'Suggestion'
 const TABS_CONTENT: HomeTabs[] = ["Liste", "Suggestion"]
@@ -57,6 +58,10 @@ const Home = () => {
     }
   }
 
+  const onScrollClick = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+  }
+
   if (isLoading) {
     return <p>loading...</p>
   }
@@ -81,6 +86,9 @@ const Home = () => {
         </div>
         {TABS_CONTENT[navIndex] === "Liste" && filtersList && <HomeList list={filtersList} onLikeClick={onLikeClick} />}
         {TABS_CONTENT[navIndex] === "Suggestion" && <HomeSuggestion />}
+      </div>
+      <div className={css(slotsStyles.arrowContainer)} onClick={onScrollClick}>
+        <FaArrowUp />
       </div>
     </div>
   )

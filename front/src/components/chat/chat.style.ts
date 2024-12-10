@@ -8,6 +8,8 @@ export const chatStyle = sva({
             flex: 1,
             padding: '24px',
             height: 'calc(100vh - 70px)',
+            display: 'flex',
+            justifyContent: 'center'
         },
         chatWrapper: {
             display: 'flex',
@@ -16,6 +18,8 @@ export const chatStyle = sva({
             borderRadius: '20px',
             height: '100%',
             border: '2px solid black',
+            maxWidth: '1000px',
+            width: '100%'
         },
         chatHeader: {
             borderBottom: '2px solid black',
@@ -38,12 +42,14 @@ export const chatStyle = sva({
             overflowY: 'scroll',
         },
         messageItem: {
-            padding: '12px',
+            padding: '6px 10px',
             backgroundColor: 'secondaryBackground',
             borderRadius: '10px',
             maxWidth: '95%',
             wordWrap: 'break-word',
             position: 'relative',
+            border: '2px solid black',
+            fontSize: '16px'
         },
         recipient: {
             alignSelf: 'flex-start',
@@ -51,7 +57,8 @@ export const chatStyle = sva({
         },
         sender: {
             alignSelf: 'flex-end',
-            backgroundColor: '#cffce3'
+            // backgroundColor: '#cffce3'
+            backgroundColor: '#ADDAFA',
         },
         chatFormContainer: {
             borderTop: '2px solid black',
@@ -84,7 +91,7 @@ export const chatStyle = sva({
             borderRadius: '50%',
         },
         dateMessage: {
-            fontSize: '13px'
+            fontSize: '12px'
         }
     }
 })

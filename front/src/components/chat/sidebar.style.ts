@@ -21,7 +21,7 @@ export const sidebarStyle = sva({
             cursor: 'pointer',
             padding: '12px',
             borderRadius: '10px',
-            '&:hover': {
+            _hover: {
                 backgroundColor: '#ffcfbb',
             }
         },

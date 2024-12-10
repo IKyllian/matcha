@@ -64,8 +64,8 @@ def handle_send_message(data, user_id):
     
     message = data.get('message')
 
-    if (len(message) > 500):
-        raise ForbiddenError("Votr message ne doit pas contenir plus que 500 charactere")
+    if (len(message) > 500 or len(message) < 1):
+        raise ForbiddenError("Votre message doit contenir entre 1 et 500 characteres")
     messageCreated = createMessage(sender_id, receiver_id, message)
     sender = getUserWithProfilePictureById(user_id)
     username = sender["username"]
