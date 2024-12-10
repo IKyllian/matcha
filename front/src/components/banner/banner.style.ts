@@ -10,7 +10,6 @@ export const bannerStyle = sva({
             justifyContent: 'center',
             alignItems: 'center',
             width: '100%',
-            height: '60px',
             backgroundColor: '#FFA07A',
             padding: '12px',
             fontWeight: 'bold',
@@ -18,8 +17,15 @@ export const bannerStyle = sva({
             position: 'fixed',
             top: '70px',
             zIndex: '1',
+            md: {
+              height: 'fit-content',
+            },
+            xl: {
+              height: '60px',
+            },
             '& > span': {
               fontWeight: '800',
+              textAlign: 'center'
             },
             '& > a': {
               padding: '5px 15px',
