@@ -1,15 +1,15 @@
 import Card from "front/components/card/card"
 import { homeStyle } from "./home.style"
 import { css } from "styled-system/css"
-import { ListStateType } from "front/store/homeList"
+import { ListType } from "front/store/homeList"
 
 type HomeListProps = {
-  list: ListStateType[]
+  list: ListType
   onLikeClick: (profile_id: number) => void
   onNextPagination: () => void
 }
 
-const HomeList = ({ list, onLikeClick, onNextPagination }: HomeListProps) => {
+const HomeList = ({ list: { list, reachedEnd }, onLikeClick, onNextPagination }: HomeListProps) => {
   const slotsStyles = homeStyle.raw()
 
   return (
@@ -21,7 +21,10 @@ const HomeList = ({ list, onLikeClick, onNextPagination }: HomeListProps) => {
           ))
         }
       </div>
-      <button onClick={onNextPagination} className={css(slotsStyles.paginationButton)}>Afficher plus</button>
+      {
+        !reachedEnd &&
+        <button onClick={onNextPagination} className={css(slotsStyles.paginationButton)}>Afficher plus</button>
+      }
     </div>
   )
 }

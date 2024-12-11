@@ -5,7 +5,7 @@ import { useState } from "react"
 import { MdOutlineKeyboardArrowLeft } from "react-icons/md";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { useApi } from "front/hook/useApi"
-import { ListStateType } from "front/store/homeList"
+import { ListType } from "front/store/homeList"
 import { useStore } from "front/store/store"
 import { makeLikeRequest } from "front/api/profile"
 
@@ -16,7 +16,7 @@ const HomeSuggestion = () => {
   const setSuggestionList = useStore(state => state.setSuggestionList)
   const token = useStore(state => state.authStore.token)
   const addAlert = useStore(state => state.addAlert)
-  const { suggestionList } = useStore(state => state.homeState)
+  const { suggestionList: { list: suggestionList, reachedEnd } } = useStore(state => state.homeState)
   const updateProfileListLike = useStore(state => state.updateProfileListLike)
   const suggestionNextOffeset = useStore(state => state.suggestionNextOffeset)
   const { suggestionOffset } = useStore(state => state.homeState)
@@ -28,15 +28,14 @@ const HomeSuggestion = () => {
   const onNext = () => {
     if (index < suggestionList?.length - 1) {
       setIndex(prev => prev + 1)
-    } else {
+    } else if (!reachedEnd) {
       suggestionNextOffeset()
     }
   }
 
-  const { isLoading } = useApi<ListStateType[]>({
+  const { isLoading } = useApi<ListType>({
     endpoint: 'suggestion',
     setter: setSuggestionList,
-    key: 'list',
     dependencies: [suggestionOffset]
   })
 
@@ -60,7 +59,7 @@ const HomeSuggestion = () => {
       <div className={css(slotsStyles.suggestionWrapper)}>
         <MdOutlineKeyboardArrowLeft className={css(slotsStyles.arrowIcon)} onClick={onPrev} />
         <Card user={suggestionList[index].user} cardType='image-content' isLike={suggestionList[index].like} className={slotsStyles.cardSuggestion} onLikeClick={onLikeClick} showLike />
-        <MdOutlineKeyboardArrowRight className={css(slotsStyles.arrowIcon)} onClick={onNext} />
+        {!reachedEnd && <MdOutlineKeyboardArrowRight className={css(slotsStyles.arrowIcon)} onClick={onNext} />}
       </div>
     </div>
   )

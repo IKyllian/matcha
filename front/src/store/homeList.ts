@@ -7,18 +7,28 @@ export type ListStateType = {
     like: boolean
 }
 
+export type ListType = {
+    list: ListStateType[],
+    reachedEnd: boolean
+}
+
 type HomeListType = {
-    filtersList: ListStateType[],
-    suggestionList: ListStateType[],
+    filtersList: ListType,
+    suggestionList: ListType,
     filters: UrlParamsType,
     sort: SORT_ENUM,
     selectedTags: Tags[],
     suggestionOffset: number
 }
 
+const defaultList: ListType = {
+    list: [],
+    reachedEnd: false
+}
+
 const defaultValues: HomeListType = {
-    filtersList: [],
-    suggestionList: [],
+    filtersList: defaultList,
+    suggestionList: defaultList,
     filters: DEFAULT_FILTERS,
     sort: SORT_ENUM.DISTANCE_ASC,
     selectedTags: [],
@@ -32,8 +42,8 @@ export type OnLikeProps = {
 
 export type HomeStoreType = {
     homeState: HomeListType,
-    setFilterList: (list: ListStateType[]) => void,
-    setSuggestionList: (list: ListStateType[]) => void,
+    setFilterList: (list: ListType) => void,
+    setSuggestionList: (list: ListType) => void,
     updateProfileListLike: ({ listKey, profile_id }: OnLikeProps) => void,
     setFilters: ({ filters, reset }: { filters: UrlParamsType, reset?: boolean }) => void,
     resetFilters: () => void,
@@ -44,19 +54,22 @@ export type HomeStoreType = {
 
 export const homeSlice = (set: StoreSetType): HomeStoreType => ({
     homeState: defaultValues,
-    setFilterList: (list: ListStateType[]) => set((state) => ({ ...state, homeState: { ...state.homeState, filtersList: [...state.homeState.filtersList, ...list] } })),
-    setSuggestionList: (list: ListStateType[]) => set((state) => ({ ...state, homeState: { ...state.homeState, suggestionList: [...state.homeState.suggestionList, ...list] } })),
+    setFilterList: (list: ListType) => set((state) => ({ ...state, homeState: { ...state.homeState, filtersList: { reachedEnd: list.reachedEnd, list: [...state.homeState.filtersList.list, ...list.list] } } })),
+    setSuggestionList: (list: ListType) => set((state) => ({ ...state, homeState: { ...state.homeState, suggestionList: { reachedEnd: list.reachedEnd, list: [...state.homeState.suggestionList.list, ...list.list] } } })),
     updateProfileListLike: ({ listKey, profile_id }: OnLikeProps) => set((state) => {
-        const userFound = state.homeState[listKey].find(l => l.user.id === profile_id)
+        const userFound = state.homeState[listKey].list.find(l => l.user.id === profile_id)
         if (userFound) {
-            const newList = state.homeState[listKey].map(l => l.user.id === profile_id ? { ...l, like: !l.like } : l)
+            const newList = state.homeState[listKey].list.map(l => l.user.id === profile_id ? { ...l, like: !l.like } : l)
             return {
                 ...state,
                 homeState: {
                     ...state.homeState,
-                    [listKey]: [
-                        ...newList
-                    ]
+                    [listKey]: {
+                        [listKey]: {
+                            ...state.homeState[listKey],
+                            list: [...newList]
+                        }
+                    }
                 }
             }
         }
@@ -67,7 +80,10 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
         ...state,
         homeState: {
             ...state.homeState,
-            filtersList: reset ? [] : state.homeState.filtersList,
+            filtersList: {
+                ...state.homeState.filtersList,
+                list: reset ? [] : state.homeState.filtersList.list,
+            },
             filters: {
                 ...filters,
                 offset: reset ? 0 : state.homeState.filters.offset + OFFSET_PAGINATION
@@ -82,7 +98,10 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
             ...state,
             homeState: {
                 ...state.homeState,
-                filtersList: [],
+                filtersList: {
+                    ...state.homeState.filtersList,
+                    list: []
+                },
                 sort: value
             }
         }

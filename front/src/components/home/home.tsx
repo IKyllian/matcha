@@ -9,7 +9,7 @@ import HomeList from "./homeList";
 import HomeSuggestion from "./homeSuggestion";
 import { useApi } from "front/hook/useApi";
 import { useStore } from "front/store/store";
-import { ListStateType } from "front/store/homeList";
+import { ListType } from "front/store/homeList";
 import { makeLikeRequest } from "front/api/profile";
 import Select from "front/components/input/select";
 import { UrlParamsType } from "front/typing/filters";
@@ -26,7 +26,7 @@ const Home = () => {
   const setFilterList = useStore(state => state.setFilterList)
   const token = useStore(state => state.authStore.token)
   const addAlert = useStore(state => state.addAlert)
-  const { filtersList } = useStore(state => state.homeState)
+  const { filtersList, filtersList: { list: listFilters } } = useStore(state => state.homeState)
   const updateProfileListLike = useStore(state => state.updateProfileListLike)
   const { filters } = useStore(state => state.homeState)
   const setFilters = useStore(state => state.setFilters)
@@ -43,12 +43,11 @@ const Home = () => {
     setFilters({ filters, reset: true })
     setShowSidebar(false)
   }
-  const { isLoading } = useApi<ListStateType[]>({
+  const { isLoading } = useApi<ListType>({
     endpoint: 'profile',
     urlParams: { ...filters, sort },
     setter: setFilterList,
     dependencies: [filters, sort],
-    key: 'list'
   })
 
   const onLikeClick = async (profile_id: number) => {
@@ -88,12 +87,12 @@ const Home = () => {
             TABS_CONTENT[navIndex] === "Liste" && (
               <div className={css({ display: 'flex', justifyContent: 'center' })}>
                 <Select onChange={sortChange} defaultValue={sort} />
-                <span>Length: {filtersList.length}</span>
+                <span>Length: {listFilters.length}</span>
               </div>
             )
           }
         </div>
-        {TABS_CONTENT[navIndex] === "Liste" && filtersList && <HomeList list={filtersList} onLikeClick={onLikeClick} onNextPagination={onNextPagination} />}
+        {TABS_CONTENT[navIndex] === "Liste" && listFilters && <HomeList list={filtersList} onLikeClick={onLikeClick} onNextPagination={onNextPagination} />}
         {TABS_CONTENT[navIndex] === "Suggestion" && <HomeSuggestion />}
       </div>
       <div className={css(slotsStyles.arrowContainer)} onClick={onScrollClick}>
