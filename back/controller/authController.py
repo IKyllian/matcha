@@ -25,7 +25,8 @@ def signin(validated_data):
     user["is_connected"] = '1'
     if (user["is_activated"] == '0'):
         raise APIAuthError('Compte invalide')
-    access_token = create_access_token(identity=user["id"])
+    stringId = str(user["id"])
+    access_token = create_access_token(identity=stringId)
     notifications = getAllNotifs(user["id"])
     return jsonify(access_token=access_token, user=user, notifications=notifications)
 
