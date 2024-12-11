@@ -101,7 +101,7 @@ CREATE TABLE notification (
     receiver_id INTEGER     NOT NULL,
     created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     was_seen    BOOLEAN     NOT NULL,
+    notif_type  INTEGER     NOT NULL,
     FOREIGN KEY (sender_id) REFERENCES user(id),
-    FOREIGN KEY (receiver_id) REFERENCES user(id),
-    notif_type  INTEGER     NOT NULL
+    FOREIGN KEY (receiver_id) REFERENCES user(id)
 );
