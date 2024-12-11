@@ -13,6 +13,7 @@ type HomeListType = {
     filters: UrlParamsType,
     sort: SORT_ENUM,
     selectedTags: Tags[],
+    suggestionOffset: number
 }
 
 const defaultValues: HomeListType = {
@@ -21,6 +22,7 @@ const defaultValues: HomeListType = {
     filters: DEFAULT_FILTERS,
     sort: SORT_ENUM.DISTANCE_ASC,
     selectedTags: [],
+    suggestionOffset: 0
 }
 
 export type OnLikeProps = {
@@ -37,6 +39,7 @@ export type HomeStoreType = {
     resetFilters: () => void,
     sortChange: (value: SORT_ENUM) => void,
     addSelectedTag: (tag: Tags, wasSelected: boolean) => void,
+    suggestionNextOffeset: () => void
 }
 
 export const homeSlice = (set: StoreSetType): HomeStoreType => ({
@@ -94,5 +97,6 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
                     [...state.homeState.selectedTags, tag]
 
         }
-    }))
+    })),
+    suggestionNextOffeset: () => set((state) => ({ ...state, homeState: { ...state.homeState, suggestionOffset: state.homeState.suggestionOffset + OFFSET_PAGINATION } }))
 })

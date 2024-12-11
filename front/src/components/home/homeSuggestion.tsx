@@ -13,26 +13,31 @@ const HomeSuggestion = () => {
   const slotsStyles = homeSuggestionStyle.raw()
   const [index, setIndex] = useState(0)
 
-
   const setSuggestionList = useStore(state => state.setSuggestionList)
   const token = useStore(state => state.authStore.token)
   const addAlert = useStore(state => state.addAlert)
   const { suggestionList } = useStore(state => state.homeState)
   const updateProfileListLike = useStore(state => state.updateProfileListLike)
-
+  const suggestionNextOffeset = useStore(state => state.suggestionNextOffeset)
+  const { suggestionOffset } = useStore(state => state.homeState)
 
   const onPrev = () => {
     setIndex(prev => prev > 0 ? prev - 1 : prev)
   }
 
   const onNext = () => {
-    setIndex(prev => prev < suggestionList?.length - 1 ? prev + 1 : prev)
+    if (index < suggestionList?.length - 1) {
+      setIndex(prev => prev + 1)
+    } else {
+      suggestionNextOffeset()
+    }
   }
 
   const { isLoading } = useApi<ListStateType[]>({
     endpoint: 'suggestion',
     setter: setSuggestionList,
-    key: 'list'
+    key: 'list',
+    dependencies: [suggestionOffset]
   })
 
   const onLikeClick = async (profile_id: number) => {
