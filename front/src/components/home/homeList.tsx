@@ -6,18 +6,22 @@ import { ListStateType } from "front/store/homeList"
 type HomeListProps = {
   list: ListStateType[]
   onLikeClick: (profile_id: number) => void
+  onNextPagination: () => void
 }
 
-const HomeList = ({ list, onLikeClick }: HomeListProps) => {
+const HomeList = ({ list, onLikeClick, onNextPagination }: HomeListProps) => {
   const slotsStyles = homeStyle.raw()
 
   return (
-    <div className={css(slotsStyles.listContainer)}>
-      {
-        list.map(l => (
-          <Card key={l.user.id} user={l.user} isLike={l.like} onLikeClick={onLikeClick} cardType='image-content' showLike />
-        ))
-      }
+    <div className={css(slotsStyles.filterListWrapper)}>
+      <div className={css(slotsStyles.listContainer)}>
+        {
+          list.map(l => (
+            <Card key={l.user.id} user={l.user} isLike={l.like} onLikeClick={onLikeClick} cardType='image-content' showLike />
+          ))
+        }
+      </div>
+      <button onClick={onNextPagination} className={css(slotsStyles.paginationButton)}>Afficher plus</button>
     </div>
   )
 }

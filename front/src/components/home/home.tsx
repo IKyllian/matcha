@@ -40,14 +40,14 @@ const Home = () => {
   }
 
   const onFilterChange = (filters: UrlParamsType) => {
-    setFilters(filters)
+    setFilters({ filters, reset: true })
     setShowSidebar(false)
   }
   const { isLoading } = useApi<ListStateType[]>({
     endpoint: 'profile',
     urlParams: { ...filters, sort },
     setter: setFilterList,
-    dependencies: [filters],
+    dependencies: [filters, sort],
     key: 'list'
   })
 
@@ -60,6 +60,10 @@ const Home = () => {
 
   const onScrollClick = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+  }
+
+  const onNextPagination = () => {
+    setFilters({ filters })
   }
 
   if (isLoading) {
@@ -81,10 +85,15 @@ const Home = () => {
         <div className={css(slotsStyles.listHeaderWrapper)}>
           <Tabs tabsContent={TABS_CONTENT} navIndex={navIndex} handleClick={handleClick} />
           {
-            TABS_CONTENT[navIndex] === "Liste" && <Select onChange={sortChange} defaultValue={sort} />
+            TABS_CONTENT[navIndex] === "Liste" && (
+              <div className={css({ display: 'flex', justifyContent: 'center' })}>
+                <Select onChange={sortChange} defaultValue={sort} />
+                <span>Length: {filtersList.length}</span>
+              </div>
+            )
           }
         </div>
-        {TABS_CONTENT[navIndex] === "Liste" && filtersList && <HomeList list={filtersList} onLikeClick={onLikeClick} />}
+        {TABS_CONTENT[navIndex] === "Liste" && filtersList && <HomeList list={filtersList} onLikeClick={onLikeClick} onNextPagination={onNextPagination} />}
         {TABS_CONTENT[navIndex] === "Suggestion" && <HomeSuggestion />}
       </div>
       <div className={css(slotsStyles.arrowContainer)} onClick={onScrollClick}>

@@ -8,6 +8,7 @@ export type UrlParamsType = {
     tags?: number[]
     sort?: SORT_ENUM
     display_liked?: boolean
+    offset: number
 }
 
 export enum SORT_ENUM {
@@ -38,4 +39,6 @@ export const getKeyBySortValue = (value: SORT_ENUM): keyof User => {
     }
 }
 
-export const DEFAULT_FILTERS = { min_age: 18, max_age: 100, min_fame: 0, max_pos: 1000, display_liked: true }
+export const DEFAULT_FILTERS = { min_age: 18, max_age: 100, min_fame: 0, max_pos: 1000, display_liked: true, offset: 0 }
+
+export const OFFSET_PAGINATION = 100
