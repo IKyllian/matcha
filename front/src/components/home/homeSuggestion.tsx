@@ -7,6 +7,8 @@ import { useApi } from "front/hook/useApi"
 import { ListType } from "front/store/homeList"
 import { useStore } from "front/store/store"
 import { makeLikeRequest } from "front/api/profile"
+import _ from 'lodash'
+import { useCallback } from 'react';
 
 const HomeSuggestion = () => {
   const slotsStyles = homeSuggestionStyle.raw()
@@ -35,12 +37,12 @@ const HomeSuggestion = () => {
     dependencies: [suggestionOffset]
   })
 
-  const onLikeClick = async (profile_id: number) => {
+  const onLikeClick = useCallback(_.debounce(async (profile_id: number) => {
     const ret = await makeLikeRequest({ token, id: profile_id, addAlert })
     if (ret) {
       updateProfileListLike({ listKey: 'suggestionList', profile_id })
     }
-  }
+  }, 500, { leading: true }), [token])
 
   if (isLoading) {
     return <p>loading...</p>

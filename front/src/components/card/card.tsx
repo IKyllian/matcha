@@ -60,7 +60,15 @@ const Card = ({ user, cardType, className, isLike, onLikeClick, showLike = false
                             {/* {fame_rating && <StarRating isReadOnly initialRating={fame_rating} unit="float" size={15} />}
                             {distance && <p className={css(slotsStyles.cardSecondaryText)}> <FaLocationDot /> {Math.round(distance)}km </p>} */}
                         </div>
-                        {showLike && <IconButton className={slotsStyles.likeButton} buttonIcon={BUTTONS_ICON["LIKE"]} status={isLike} onClick={() => onLikeClick(id)} />}
+                        {
+                            showLike &&
+                            <IconButton
+                                className={slotsStyles.likeButton}
+                                buttonIcon={BUTTONS_ICON["LIKE"]}
+                                status={isLike}
+                                onClick={() => onLikeClick(id)}
+                            />
+                        }
                     </div>
                 )
             }

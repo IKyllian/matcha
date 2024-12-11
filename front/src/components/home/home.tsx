@@ -2,7 +2,7 @@
 import { homeStyle } from "./home.style"
 import { css } from "styled-system/css"
 import { MdOutlineFilterAlt } from "react-icons/md";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import FilterSidebar from "front/components/home/filterSidebar";
 import Tabs from "front/components/tabs/tabs";
 import HomeList from "./homeList";
@@ -14,6 +14,7 @@ import { makeLikeRequest } from "front/api/profile";
 import Select from "front/components/input/select";
 import { UrlParamsType } from "front/typing/filters";
 import { FaArrowUp } from "react-icons/fa";
+import _ from 'lodash'
 
 type HomeTabs = 'Liste' | 'Suggestion'
 const TABS_CONTENT: HomeTabs[] = ["Liste", "Suggestion"]
@@ -55,12 +56,12 @@ const Home = () => {
     dependencies: [filters, sort],
   })
 
-  const onLikeClick = async (profile_id: number) => {
+  const onLikeClick = useCallback(_.debounce(async (profile_id: number) => {
     const ret = await makeLikeRequest({ token, id: profile_id, addAlert })
     if (ret) {
       updateProfileListLike({ listKey: 'filtersList', profile_id })
     }
-  }
+  }, 500, { leading: true }), [token])
 
   const onScrollClick = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })

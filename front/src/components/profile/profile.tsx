@@ -5,7 +5,7 @@ import ChipsList from "front/components/chips/chips"
 import { useStore } from "front/store/store"
 import { useNavigate, useParams } from "react-router-dom"
 import IconButton from "front/components/buttons/iconButton"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useApi } from "front/hook/useApi"
 import { BUTTONS_ICON } from "front/typing/button"
 import { makeBlockRequest, makeLikeRequest, makeViewRequest } from "front/api/profile"
@@ -18,6 +18,7 @@ import ProfileViewScreen from "./profileView"
 import ProfileBlocks from "./profileBlocks"
 import { getMessageDateString } from "front/utils/chat"
 import { ProfileStateType } from "front/store/profile.store"
+import _ from 'lodash'
 
 type NAV_CONTENT_TYPE =
     'Likes' |
@@ -77,19 +78,33 @@ const Profile = () => {
         return <span> 404 Not found </span>
     }
 
-    const onLikeClick = async () => {
+    // const onLikeClick = useCallback(_.debounce(async () => {
+    //     const ret = await makeLikeRequest({ token, id: profile.user.id, addAlert })
+    //     if (ret) {
+    //         updateProfileBooleanByKey({ key: 'like' })
+    //     }
+    // }, 500, { leading: true }), [token, profile?.user?.id])
+
+    // const onBlockclick = useCallback(_.debounce(async () => {
+    //     const ret = await makeBlockRequest({ token, id: profile.user.id, addAlert })
+    //     if (ret) {
+    //         updateProfileBooleanByKey({ key: 'block' })
+    //     }
+    // }, 500, { leading: true }), [token, profile?.user?.id])
+
+    const onLikeClick = _.debounce(async () => {
         const ret = await makeLikeRequest({ token, id: profile.user.id, addAlert })
         if (ret) {
             updateProfileBooleanByKey({ key: 'like' })
         }
-    }
+    }, 500, { leading: true })
 
-    const onBlockclick = async () => {
+    const onBlockclick = _.debounce(async () => {
         const ret = await makeBlockRequest({ token, id: profile.user.id, addAlert })
         if (ret) {
             updateProfileBooleanByKey({ key: 'block' })
         }
-    }
+    }, 500, { leading: true })
 
     const onReportClick = () => {
         openModal({ modalKey: 'report', userToReportId: +userId })
