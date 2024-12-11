@@ -1,6 +1,6 @@
 from flask import jsonify, request
 from services.user import getDistanceOfUser, getUserWithProfilePictureById
-from controller.socketController import sendNotificationEvent
+from controller.socketController import NotifType, sendNotificationEvent
 from database_utils.requests import *
 from decorators.authDecorator import token_required
 from errors.httpErrors import ForbiddenError
@@ -26,7 +26,7 @@ def viewUserById(user_id, validated_data):
                            (str(user_id), str(user_to_view_id)))
         user = getUserWithProfilePictureById(user_id)
         username = user["username"]
-        sendNotificationEvent(username + " a visité votre profile", user, user_to_view_id)
+        sendNotificationEvent(username + " a visité votre profile", user, user_to_view_id, NotifType.VIEW)
     return jsonify(ok=True)
 
 @token_required

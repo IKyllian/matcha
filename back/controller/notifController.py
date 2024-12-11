@@ -5,7 +5,7 @@ from decorators.authDecorator import token_required
 from decorators.dataDecorator import validate_request
 
 def getAllNotifs(user_id):
-    notifs = makeRequest("SELECT id, content, sender_id, receiver_id, created_at, was_seen FROM notification WHERE receiver_id = :id ORDER BY created_at DESC", (str(user_id),))
+    notifs = makeRequest("SELECT id, content, sender_id, receiver_id, created_at, was_seen, notif_type FROM notification WHERE receiver_id = :id ORDER BY created_at DESC", (str(user_id),))
     receiver = getUserWithProfilePictureById(user_id)
     for notif in notifs:
         sender = getUserWithProfilePictureById(notif["sender_id"])
