@@ -50,12 +50,16 @@ def createTag(user_id, validated_data):
     "min_fame": {"type": int, "min": 0, "max": 5},
     "tags": {},
     "sort": {"type": int, "min": 0, "max": 5},
-    "display_liked" : {"type": bool}
+    "display_liked" : {"type": bool},
+    "offset": {"type": int, "min": 0}
 })
 def getProfiles(user_id, validated_data):
-    fields = ["min_age", "max_age", "max_pos", "min_fame", "tags", "sort", "display_liked"]
-    min_age, max_age, max_pos, min_fame, tags, sort, display_liked = (validated_data[key] for key in fields)
-    
+    fields = ["min_age", "max_age", "max_pos", "min_fame", "tags", "sort", "display_liked", "offset"]
+    min_age, max_age, max_pos, min_fame, tags, sort, display_liked, offset = [validated_data.get(key) for key in fields]
+    if (not offset):
+        offset = 0
+    # Variable that tracks if we got every users yet (Used in front for 'display more' button)
+    reachedEnd = False
     user = getUserWithImagesById(user_id)
     user_latitude = str(user["latitude"])
     user_longitude = str(user["longitude"])
@@ -108,25 +112,29 @@ def getProfiles(user_id, validated_data):
         requestQuery += ' WHERE '
         requestQuery += " AND ".join(whereConditions)
 
-    groupByClose = ' GROUP BY user.id '
+    groupByClose = ' GROUP BY user.id'
     requestQuery += groupByClose
     if (sort == 0):
         requestQuery += ' ORDER BY distance ASC'
     if (sort == 1):
         requestQuery += ' ORDER BY distance DESC'
     if (sort == 2):
-        requestQuery += ' ORDER BY user.birth_date ASC'
-    if (sort == 3):
         requestQuery += ' ORDER BY user.birth_date DESC'
+    if (sort == 3):
+        requestQuery += ' ORDER BY user.birth_date ASC'
     if (sort == 4):
         requestQuery += ' ORDER BY user.fame_rating ASC'
     if (sort == 5):
         requestQuery += ' ORDER BY user.fame_rating DESC'
     
+    requestQuery += ' LIMIT 100 OFFSET ' + str(offset)
     
     print("requestQuery = ", requestQuery)
     print("queryParams = ", queryParams)
     users = makeRequest(requestQuery, queryParams)
+    # if there are less than 100 users, it means we got to the end of the request
+    if (len(users) < 100):
+        reachedEnd = True
     users = decodeImagesFromArray(users)
     users = filteredForSexualOrientation(user, users)
     users = filteredForInteraction(users)
@@ -135,11 +143,18 @@ def getProfiles(user_id, validated_data):
         user["age"] = getAgeFromTime(user["birth_date"])
         del user["birth_date"]
         list.append({"like": True if user['like'] else False, "user": user})
-    return jsonify(list=list)
+    return jsonify(list=list, reachedEnd=reachedEnd)
 
 @token_required
-def getSuggested(user_id):
-    
+@validate_request({
+    "offset": {"type": int, "min": 0}
+})
+def getSuggested(user_id, validated_data):
+    # If it doesn't find offset, it initializes it at 0
+    offset = validated_data.get("offset")
+    if (not offset):
+        offset = 0
+    reachedEnd = False
     user = getUserWithImagesById(user_id)
     user_latitude = str(user["latitude"])
     user_longitude = str(user["longitude"])
@@ -202,10 +217,14 @@ def getSuggested(user_id):
 
     groupByClose = ' GROUP BY user.id '
     requestQuery += groupByClose
+
+    requestQuery += ' LIMIT 100 OFFSET ' + str(offset)
     
     print("requestQuery = ", requestQuery)
     print("queryParams = ", queryParams)
     users = makeRequest(requestQuery, queryParams)
+    if (len(users) < 100):
+        reachedEnd = True
     users = decodeImagesFromArray(users)
     users = filteredForSexualOrientation(user, users)
     users = filteredForInteraction(users)
@@ -217,7 +236,7 @@ def getSuggested(user_id):
         list.append({"like": True if user['like'] else False, "user": user})
     #Instead of sorting, we randomize the list of users we get
     random.shuffle(list)
-    return jsonify(list=list)
+    return jsonify(list=list, reachedEnd=reachedEnd)
 
 def filteredForSexualOrientation(currentUser, users):
     filtered_users = [

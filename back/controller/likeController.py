@@ -1,5 +1,5 @@
 from flask import jsonify
-from controller.socketController import sendNotificationEvent
+from controller.socketController import NotifType, sendNotificationEvent
 from services.user import getDistanceOfUser, getUserWithImagesById, getUserWithProfilePictureById
 from database_utils.requests import *
 from decorators.authDecorator import blocked_check, token_required
@@ -39,16 +39,16 @@ def likeUserById(user_id, validated_data):
     match = makeRequest("SELECT id FROM like WHERE like.user_id = ? AND like.liked_user_id = ?", (str(user_to_like_id), str(user_id),))
     if (len(like) > 0):
         makeRequest("DELETE FROM like WHERE like.user_id = ? AND like.liked_user_id = ?", (str(user_id), str(user_to_like_id),))
-        sendNotificationEvent(username + " a unlike votre profile", user, user_to_like_id)
+        sendNotificationEvent(username + " a unlike votre profile", user, user_to_like_id, NotifType.LIKE)
     else :
         #Case where you like the person
         makeRequest("INSERT INTO like (user_id, liked_user_id) VALUES (?, ?)",
                            (str(user_id), str(user_to_like_id)))
         #Check if they also like you to customize notification message
         if (len(match) > 0):
-            sendNotificationEvent("Vous avez match avec " + username , user, user_to_like_id)
+            sendNotificationEvent("Vous avez match avec " + username , user, user_to_like_id, NotifType.MATCH)
         else :
-            sendNotificationEvent(username + " a like votre profile", user, user_to_like_id)
+            sendNotificationEvent(username + " a like votre profile", user, user_to_like_id, NotifType.LIKE)
     
     updateFame(user_id)
     updateFame(user_to_like_id)
