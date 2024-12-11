@@ -52,11 +52,5 @@ export const homeStyle = sva({
         boxShadow: 'none',
       },
     },
-    listHeaderWrapper: {
-      // position: 'fixed',
-      // backgroundColor: 'primaryBackground',
-      // zIndex: '2',
-      // width: '100%'
-    }
   }
 })

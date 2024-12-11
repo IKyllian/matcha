@@ -5,13 +5,26 @@ export const sidebarStyle = sva({
     base: {
         sidebarContainer: {
             height: 'calc(100vh - 70px)',
-            width: '350px',
+            width: '320px',
             borderRight: '2px solid black',
             display: 'flex',
             flexDirection: 'column',
             gap: '16px',
             padding: '16px',
             overflowY: 'scroll',
+            backgroundColor: 'primaryBackground',
+            zIndex: '2',
+            '&[data-isopen="0"]': {
+                width: '70px'
+            },
+            mdDown: {
+                height: '100vh',
+                '&[data-isopen="1"]': {
+                    width: '250px',
+                    position: 'absolute',
+                    top: 0,
+                }
+            }
         },
         sidebarItemContainer: {
             display: 'flex',
@@ -23,12 +36,23 @@ export const sidebarStyle = sva({
             borderRadius: '10px',
             _hover: {
                 backgroundColor: '#ffcfbb',
+            },
+            mdDown: {
+                '&[data-isopen="0"]': {
+                    padding: 0
+                },
             }
         },
         img: {
             width: '40px',
             height: '40px',
             borderRadius: '50%',
+            mdDown: {
+                '&[data-isopen="0"]': {
+                    width: '35px',
+                    height: '35px',
+                },
+            }
         },
         messageContentWrapper: {
             display: 'flex',
