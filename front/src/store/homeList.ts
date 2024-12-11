@@ -19,6 +19,7 @@ type HomeListType = {
     sort: SORT_ENUM,
     selectedTags: Tags[],
     suggestionOffset: number
+    suggestionIndex: number
 }
 
 const defaultList: ListType = {
@@ -32,7 +33,8 @@ const defaultValues: HomeListType = {
     filters: DEFAULT_FILTERS,
     sort: SORT_ENUM.DISTANCE_ASC,
     selectedTags: [],
-    suggestionOffset: 0
+    suggestionOffset: 0,
+    suggestionIndex: 0
 }
 
 export type OnLikeProps = {
@@ -49,7 +51,10 @@ export type HomeStoreType = {
     resetFilters: () => void,
     sortChange: (value: SORT_ENUM) => void,
     addSelectedTag: (tag: Tags, wasSelected: boolean) => void,
-    suggestionNextOffeset: () => void
+    suggestionNextOffeset: () => void,
+    onSuggestionNext: () => void,
+    onSuggestionPrev: () => void,
+    resetList: () => void
 }
 
 export const homeSlice = (set: StoreSetType): HomeStoreType => ({
@@ -65,10 +70,8 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
                 homeState: {
                     ...state.homeState,
                     [listKey]: {
-                        [listKey]: {
-                            ...state.homeState[listKey],
-                            list: [...newList]
-                        }
+                        ...state.homeState[listKey],
+                        list: [...newList]
                     }
                 }
             }
@@ -91,7 +94,18 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
         }
     })
     ),
-    resetFilters: () => set((state) => ({ ...state, homeState: { ...state.homeState, filters: DEFAULT_FILTERS, selectedTags: [] } })),
+    resetFilters: () => set((state) => ({
+        ...state,
+        homeState: {
+            ...state.homeState,
+            filters: DEFAULT_FILTERS,
+            selectedTags: [],
+            filtersList: {
+                list: [],
+                reachedEnd: false
+            },
+        }
+    })),
     sortChange: (value: SORT_ENUM) => set((state) => {
         if (value === state.homeState.sort) {
             return { ...state }
@@ -103,8 +117,9 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
                 ...state.homeState,
                 filtersList: {
                     ...state.homeState.filtersList,
-                    list: []
+                    list: [],
                 },
+                filters: { ...state.homeState.filters, offset: 0 },
                 sort: value
             }
         }
@@ -120,5 +135,33 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
 
         }
     })),
-    suggestionNextOffeset: () => set((state) => ({ ...state, homeState: { ...state.homeState, suggestionOffset: state.homeState.suggestionOffset + OFFSET_PAGINATION } }))
+    suggestionNextOffeset: () => set((state) => ({ ...state, homeState: { ...state.homeState, suggestionOffset: state.homeState.suggestionOffset + OFFSET_PAGINATION } })),
+    onSuggestionNext: () => set((state) => ({
+        ...state,
+        homeState: {
+            ...state.homeState,
+            suggestionIndex: state.homeState.suggestionIndex + 1
+        }
+    })),
+    onSuggestionPrev: () => set((state) => ({
+        ...state,
+        homeState: {
+            ...state.homeState,
+            suggestionIndex: state.homeState.suggestionIndex > 0 ? state.homeState.suggestionIndex - 1 : state.homeState.suggestionIndex
+        }
+    })),
+    resetList: () => set((state) => ({
+        ...state,
+        homeState: {
+            ...state.homeState,
+            filtersList: {
+                list: [],
+                reachedEnd: false
+            },
+            filters: {
+                ...state.homeState.filters,
+                offset: 0
+            }
+        }
+    }))
 })

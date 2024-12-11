@@ -2,7 +2,7 @@
 import { homeStyle } from "./home.style"
 import { css } from "styled-system/css"
 import { MdOutlineFilterAlt } from "react-icons/md";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import FilterSidebar from "front/components/home/filterSidebar";
 import Tabs from "front/components/tabs/tabs";
 import HomeList from "./homeList";
@@ -33,11 +33,11 @@ const Home = () => {
   const resetFilters = useStore(state => state.resetFilters)
   const { sort } = useStore(state => state.homeState)
   const sortChange = useStore(state => state.sortChange)
+  const resetList = useStore(state => state.resetList)
 
-  const duplicate = listFilters.filter((item, index) => listFilters.indexOf(item) !== index)
-  if (duplicate.length > 0) {
-    console.error("DOUBLON DANS LA LISTE", duplicate)
-  }
+  useEffect(() => {
+    return () => resetList()
+  }, [])
 
   const handleClick = (index: number) => setNavIndex(index)
   const onSidebarClose = () => {

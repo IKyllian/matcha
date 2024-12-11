@@ -1,7 +1,6 @@
 import Card from "front/components/card/card"
 import { homeSuggestionStyle } from "./homeSuggestion.style"
 import { css } from "styled-system/css"
-import { useState } from "react"
 import { MdOutlineKeyboardArrowLeft } from "react-icons/md";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { useApi } from "front/hook/useApi"
@@ -11,23 +10,20 @@ import { makeLikeRequest } from "front/api/profile"
 
 const HomeSuggestion = () => {
   const slotsStyles = homeSuggestionStyle.raw()
-  const [index, setIndex] = useState(0)
-
   const setSuggestionList = useStore(state => state.setSuggestionList)
   const token = useStore(state => state.authStore.token)
   const addAlert = useStore(state => state.addAlert)
+  const onSuggestionNext = useStore(state => state.onSuggestionNext)
+  const onSuggestionPrev = useStore(state => state.onSuggestionPrev)
+  const { suggestionIndex } = useStore(state => state.homeState)
   const { suggestionList: { list: suggestionList, reachedEnd } } = useStore(state => state.homeState)
   const updateProfileListLike = useStore(state => state.updateProfileListLike)
   const suggestionNextOffeset = useStore(state => state.suggestionNextOffeset)
   const { suggestionOffset } = useStore(state => state.homeState)
 
-  const onPrev = () => {
-    setIndex(prev => prev > 0 ? prev - 1 : prev)
-  }
-
   const onNext = () => {
-    if (index < suggestionList?.length - 1) {
-      setIndex(prev => prev + 1)
+    if (suggestionIndex < suggestionList?.length - 1) {
+      onSuggestionNext()
     } else if (!reachedEnd) {
       suggestionNextOffeset()
     }
@@ -57,8 +53,8 @@ const HomeSuggestion = () => {
   return (
     <div className={css(slotsStyles.suggestionContainer)}>
       <div className={css(slotsStyles.suggestionWrapper)}>
-        <MdOutlineKeyboardArrowLeft className={css(slotsStyles.arrowIcon)} onClick={onPrev} />
-        <Card user={suggestionList[index].user} cardType='image-content' isLike={suggestionList[index].like} className={slotsStyles.cardSuggestion} onLikeClick={onLikeClick} showLike />
+        <MdOutlineKeyboardArrowLeft className={css(slotsStyles.arrowIcon)} onClick={onSuggestionPrev} />
+        <Card user={suggestionList[suggestionIndex].user} cardType='image-content' isLike={suggestionList[suggestionIndex].like} className={slotsStyles.cardSuggestion} onLikeClick={onLikeClick} showLike />
         {!reachedEnd && <MdOutlineKeyboardArrowRight className={css(slotsStyles.arrowIcon)} onClick={onNext} />}
       </div>
     </div>

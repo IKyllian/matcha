@@ -8,7 +8,7 @@ export type UrlParamsType = {
     tags?: number[]
     sort?: SORT_ENUM
     display_liked?: boolean
-    offset: number
+    offset?: number
 }
 
 export enum SORT_ENUM {
