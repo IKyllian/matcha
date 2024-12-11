@@ -93,6 +93,9 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
     ),
     resetFilters: () => set((state) => ({ ...state, homeState: { ...state.homeState, filters: DEFAULT_FILTERS, selectedTags: [] } })),
     sortChange: (value: SORT_ENUM) => set((state) => {
+        if (value === state.homeState.sort) {
+            return { ...state }
+        }
         // const newFilterList = sortListByKey({ list: state.homeState.filtersList, order: value % 2, key: getKeyBySortValue(value) })
         return {
             ...state,

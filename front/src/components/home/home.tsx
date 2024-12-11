@@ -34,6 +34,11 @@ const Home = () => {
   const { sort } = useStore(state => state.homeState)
   const sortChange = useStore(state => state.sortChange)
 
+  const duplicate = listFilters.filter((item, index) => listFilters.indexOf(item) !== index)
+  if (duplicate.length > 0) {
+    console.error("DOUBLON DANS LA LISTE", duplicate)
+  }
+
   const handleClick = (index: number) => setNavIndex(index)
   const onSidebarClose = () => {
     setShowSidebar(prev => !prev)
@@ -65,10 +70,6 @@ const Home = () => {
     setFilters({ filters })
   }
 
-  if (isLoading) {
-    return <p>loading...</p>
-  }
-
   return (
     <div className={css(slotsStyles.homeContainer)}>
       {
@@ -95,9 +96,15 @@ const Home = () => {
         {TABS_CONTENT[navIndex] === "Liste" && listFilters && <HomeList list={filtersList} onLikeClick={onLikeClick} onNextPagination={onNextPagination} />}
         {TABS_CONTENT[navIndex] === "Suggestion" && <HomeSuggestion />}
       </div>
-      <div className={css(slotsStyles.arrowContainer)} onClick={onScrollClick}>
-        <FaArrowUp />
-      </div>
+      {
+        isLoading && <p>loading...</p>
+      }
+      {
+        TABS_CONTENT[navIndex] === "Liste" &&
+        <div className={css(slotsStyles.arrowContainer)} onClick={onScrollClick}>
+          <FaArrowUp />
+        </div>
+      }
     </div>
   )
 }
