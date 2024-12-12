@@ -189,7 +189,7 @@ while (user_id < 5000):
         gender = "F"
         first_name = femaleNames[random.randint(0, len(femaleNames) - 1)]
 
-    if (user_id > 250):
+    if (user_id > 2500):
         gender = "M"
         first_name = maleNames[random.randint(0, len(maleNames) - 1)]
     
@@ -210,9 +210,9 @@ while (user_id < 5000):
     birth_date = calculate_date_from_age(random.randint(18, 100))
 
     cur.execute('''
-                INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude, is_activated, fame_rating, is_connected)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-            (name, password, email, first_name, last_name, gender, sexual_preference, birth_date, latitude, longitude, "1", fame_rating, "0"))
+                INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude, is_activated, fame_rating, is_connected, is_valid)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            (name, password, email, first_name, last_name, gender, sexual_preference, birth_date, latitude, longitude, "1", fame_rating, "0", "1"))
     
     generated_image_name = image_names[user_id % len(image_names)]
     image_name = './pictures/generated/' + generated_image_name
@@ -244,8 +244,8 @@ while (user_id < 5000):
 
 
 for user in users:
-    cur.execute("INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude, is_activated, fame_rating, is_connected) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (user['name'], user['pass'],user['email'], user['first_name'], user['last_name'], user['gender'], user['sexual_preference'], user['birth_date'], user['latitude'], user['longitude'], "1", user['fame_rating'], "0"))
+    cur.execute("INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude, is_activated, fame_rating, is_connected, is_valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (user['name'], user['pass'],user['email'], user['first_name'], user['last_name'], user['gender'], user['sexual_preference'], user['birth_date'], user['latitude'], user['longitude'], "1", user['fame_rating'], "0", "1"))
     image_name = './pictures/' + user['image_name']
     with open(image_name, "rb") as file:
         file_content = file.read()

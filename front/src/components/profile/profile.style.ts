@@ -14,6 +14,7 @@ export const profileStyle = sva({
         'profilButtonContainer',
         'starsContainer',
         'lastConnectionText',
+        'likeStatusText',
         'profileStatus'
     ],
     base: {
@@ -101,6 +102,10 @@ export const profileStyle = sva({
         },
         lastConnectionText: {
             fontSize: '12px'
+        },
+        likeStatusText: {
+            fontSize: '12px',
+            color: "green"
         },
         profileStatus: {
             width: '10px',

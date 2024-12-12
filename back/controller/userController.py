@@ -95,7 +95,12 @@ def getProfiles(user_id, validated_data):
         queryParams.update({'min_fame': min_fame})
     if (not display_liked):
         whereConditions.append(f"(like.id) IS NULL")
-    
+    userPref = user["sexual_preference"]
+    userGender = user["gender"]
+    if (userPref != "B"):
+        whereConditions.append(f"user.gender = '{userPref}'")
+    whereConditions.append(f"(user.sexual_preference = '{userGender}' OR user.sexual_preference = 'B')")
+    whereConditions.append(f"(user.is_valid = '1')")
     if (tags and len(tags) > 0):
         tagJoin = ""
         i:int = 1
@@ -133,8 +138,9 @@ def getProfiles(user_id, validated_data):
     if (len(users) < 100):
         reachedEnd = True
     users = decodeImagesFromArray(users)
-    users = filteredForSexualOrientation(user, users)
-    users = filteredForInteraction(users)
+    # users = filteredForSexualOrientation(user, users)
+    # users = filteredForInteraction(users)
+
     list = []
     for user in users:
         user["age"] = getAgeFromTime(user["birth_date"])
@@ -199,6 +205,12 @@ def getSuggested(user_id, validated_data):
     queryParams.update({'min_fame': min_fame})
     
     whereConditions.append(f"(like.id) IS NULL")
+    userPref = user["sexual_preference"]
+    userGender = user["gender"]
+    if (userPref != "B"):
+        whereConditions.append(f"user.gender = '{userPref}'")
+    whereConditions.append(f"(user.sexual_preference = '{userGender}' OR user.sexual_preference = 'B')")
+    whereConditions.append(f"(user.is_valid = '1')")
     
     if (tags and len(tags) > 0):
         tagConditions = " INNER JOIN user_tag ut ON user.id = ut.user_id"
@@ -223,8 +235,8 @@ def getSuggested(user_id, validated_data):
     if (len(users) < 100):
         reachedEnd = True
     users = decodeImagesFromArray(users)
-    users = filteredForSexualOrientation(user, users)
-    users = filteredForInteraction(users)
+    # users = filteredForSexualOrientation(user, users)
+    # users = filteredForInteraction(users)
 
     list = []
     for user in users:
@@ -368,6 +380,10 @@ def setSettings(user_id, validated_data):
                     (base64.b64encode(image["file"].read()), image["mime_type"], image['file_name'], str(user_id), bool(image["is_profile_picture"])))
 
     user = getUserWithProfilePictureById(user_id)
+    if isAccountValid(user):
+        makeRequest("UPDATE user SET is_valid = '1' WHERE id = :user_id", (user_id,))
+    else:
+        makeRequest("UPDATE user SET is_valid = '0' WHERE id = :user_id", (user_id,))
     return jsonify(user=user)
 
 @token_required
