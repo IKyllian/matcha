@@ -4,6 +4,10 @@ from errors.httpErrors import ForbiddenError, TokenError
 from flask_jwt_extended import decode_token
 from database_utils.requests import makeRequest
 
+class DecoratorError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
 # Authentication decorator
 def token_required(f):
     @wraps(f)
@@ -19,11 +23,11 @@ def token_required(f):
             user_id = data["sub"]
             response = makeRequest("SELECT username, is_activated FROM user WHERE id = ?", (str(user_id),))
             if len(response) < 1:
-                raise TokenError("Votre token n'est pas associé à un utilisateur")
+                raise DecoratorError("Votre token n'est pas associé à un utilisateur")
             if response[0]["is_activated"] != 1:
-                raise TokenError("Votre compte n'est pas actif, veuillez valider votre email")
-        except:
-            raise TokenError("Vous n'avez pas de token valide")
+                raise DecoratorError("Votre compte n'est pas actif, veuillez valider votre email")
+        except DecoratorError as e:
+            raise TokenError(e.args[0])
         kwargs['user_id'] = user_id
         return f(*args, **kwargs)
     return decorator
@@ -42,11 +46,11 @@ def socket_auth(f):
             user_id = data["sub"]
             response = makeRequest("SELECT username, is_activated FROM user WHERE id = ?", (str(user_id),))
             if len(response) < 1:
-                raise TokenError("Votre token n'est pas associé à un utilisateur")
+                raise DecoratorError("Votre token n'est pas associé à un utilisateur")
             if response[0]["is_activated"] != 1:
-                raise TokenError("Votre compte n'est pas actif, veuillez valider votre email")
-        except:
-            raise TokenError("Vous n'avez pas de token valide")
+                raise DecoratorError("Votre compte n'est pas actif, veuillez valider votre email")
+        except DecoratorError as e:
+            raise TokenError(e.args[0])
         kwargs['user_id'] = user_id
         return f(*args, **kwargs)
     return socket_auth_decorator

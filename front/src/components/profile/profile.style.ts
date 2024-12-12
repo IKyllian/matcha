@@ -3,6 +3,7 @@ import { sva } from "styled-system/css";
 export const profileStyle = sva({
     slots: [
         'profileContainer',
+        'wrapper',
         'profilInfosContainer',
         'userInfoContainer',
         'profileName',
@@ -17,16 +18,32 @@ export const profileStyle = sva({
     ],
     base: {
         profileContainer: {
-            padding: '24px'
+            padding: '24px',
+            display: 'flex',
+            flexDir: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+        },
+        wrapper: {
+            width: '100%',
+            xl: {
+                width: '80%',
+            }
         },
         profilInfosContainer: {
             display: 'flex',
+            justifyContent: 'center',
             gap: '16px',
             border: '2px solid black',
             boxShadow: '3px 3px 0 black',
             borderRadius: '10px',
             backgroundColor: 'secondaryBackground',
-            padding: '16px'
+            padding: '16px',
+            flexWrap: 'wrap',
+            mdDown: {
+                flexDirection: 'column',
+                alignItems: 'center'
+            },
         },
         profilContent: {
             display: 'flex',
@@ -53,11 +70,21 @@ export const profileStyle = sva({
             borderRadius: '10px',
             border: '2px solid black',
             boxShadow: '2.5px 2.5px 0 black',
+            smDown: {
+                width: '200px',
+                height: '200px'
+            }
         },
         flexContainer: {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '8px',
+            mdDown: {
+                flexDirection: 'column',
+                alignItems: 'baseline'
+            }
         },
         profilButtonContainer: {
             display: 'flex',
@@ -69,7 +96,8 @@ export const profileStyle = sva({
         userInfoContainer: {
             display: 'flex',
             alignItems: 'baseline',
-            gap: '8px'
+            gap: '8px',
+            flexWrap: 'wrap',
         },
         lastConnectionText: {
             fontSize: '12px'

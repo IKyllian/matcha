@@ -1,8 +1,12 @@
 import { makeApi } from "front/api/api";
 import { COOKIE_JWT_TOKEN } from "front/constant/cookie";
+import { useStore } from "front/store/store";
+import { AlertTypeEnum } from "front/typing/alert";
 import { UrlParamsType } from "front/typing/filters";
+import { HTTPError } from "ky";
 import { useEffect, useState } from "react"
 import { useCookies } from "react-cookie";
+import { useLogout } from "front/hook/useLogout";
 
 type UseApiProps<T> = {
     endpoint: EndpointType,
@@ -50,7 +54,9 @@ const getUlrParams = ({ urlParams, endpoint, params }: { endpoint: string, urlPa
 
 export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], setter, key }: UseApiProps<T>) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const addAlert = useStore((state) => state.addAlert)
     const [cookies, setCookie, removeCookie] = useCookies();
+    const { onLogout } = useLogout()
 
     useEffect(() => {
         const fetch = async () => {
@@ -64,8 +70,25 @@ export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], sett
                 const response = await api.get<T>(requestparams).json();
                 console.info("REPONSE = ", requestparams, ' =>>>> ', response)
                 setter(key ? response[key] : response)
-            } catch (err) {
-                console.error(err);
+            } catch (error) {
+                let errorMessage = 'An unknown error occurred';
+                let codeError = 0
+                if (error instanceof HTTPError && error.response) {
+                    try {
+                        const errorResponse = await error.response.json();
+                        codeError = errorResponse.code
+                        errorMessage = errorResponse.message || errorMessage;
+                    } catch (jsonError) {
+                        console.error('Error parsing JSON:', jsonError);
+                    }
+                } else {
+                    errorMessage = error.message;
+                }
+                addAlert({ message: errorMessage, type: AlertTypeEnum.ERROR });
+                if (codeError && codeError === 401) {
+                    console.error("AUTH Error -> diconnect")
+                    onLogout()
+                }
             } finally {
                 setIsLoading(false);
             }

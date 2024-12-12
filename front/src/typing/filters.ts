@@ -8,13 +8,16 @@ export type UrlParamsType = {
     tags?: number[]
     sort?: SORT_ENUM
     display_liked?: boolean
+    offset?: number
 }
 
 export enum SORT_ENUM {
     DISTANCE_ASC,
     DISTANCE_DESC,
     AGE_ASC,
-    AGE_DESC
+    AGE_DESC,
+    FAME_ASC,
+    FAME_DESC
 }
 
 export enum SORT_ORDER_ENUM {
@@ -23,9 +26,19 @@ export enum SORT_ORDER_ENUM {
 }
 
 export const getKeyBySortValue = (value: SORT_ENUM): keyof User => {
-    return value === SORT_ENUM.DISTANCE_ASC || value === SORT_ENUM.DISTANCE_DESC ?
-        'distance' :
-        'age'
+    switch (value) {
+        case SORT_ENUM.DISTANCE_ASC:
+        case SORT_ENUM.DISTANCE_DESC:
+            return 'distance'
+        case SORT_ENUM.AGE_ASC:
+        case SORT_ENUM.AGE_DESC:
+            return 'age'
+        default:
+            return 'fame_rating'
+
+    }
 }
 
-export const DEFAULT_FILTERS = { min_age: 18, max_age: 100, min_fame: 0, max_pos: 1000, display_liked: true }
+export const DEFAULT_FILTERS = { min_age: 18, max_age: 100, min_fame: 0, max_pos: 1000, display_liked: true, offset: 0 }
+
+export const OFFSET_PAGINATION = 100

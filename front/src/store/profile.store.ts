@@ -4,6 +4,7 @@ import { User } from "front/typing/user"
 export type ProfileStateType = {
     user: User
     like: boolean
+    liked: boolean
     block: boolean
 }
 

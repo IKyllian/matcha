@@ -5,6 +5,7 @@ import { IconType } from "react-icons";
 import { ImBlocked } from "react-icons/im";
 import { IoSettingsSharp } from "react-icons/io5";
 import { TbFlag3Filled } from "react-icons/tb";
+import { IoChatbox } from "react-icons/io5";
 
 export type IconButtonType = {
     activeBackgroundColor: string
@@ -15,8 +16,7 @@ export type IconButtonType = {
     inactiveIconColor?: string
 }
 
-export type ButtonIconKey = 'LIKE' | 'BLOCKED' | 'SETTINGS' | 'REPORT';
-
+export type ButtonIconKey = 'LIKE' | 'BLOCKED' | 'SETTINGS' | 'REPORT' | 'MESSAGE';
 
 export const BUTTONS_ICON: Record<ButtonIconKey, IconButtonType> = {
     LIKE: {
@@ -44,5 +44,12 @@ export const BUTTONS_ICON: Record<ButtonIconKey, IconButtonType> = {
         inactiveBackgroundColor: '#FEF2E8',
         defaultIconColor: 'black',
         inactiveIconColor: '#FF6B6B'
+    },
+    MESSAGE: {
+        activeIcon: IoChatbox,
+        activeBackgroundColor: '#ACA7FF',
+        inactiveBackgroundColor: '#ACA7FF',
+        defaultIconColor: 'black',
+        inactiveIconColor: 'black'
     }
 }

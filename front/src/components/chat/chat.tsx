@@ -18,6 +18,21 @@ type FormValues = {
     message: string;
 }
 
+const OPTIONS = {
+    minLength: {
+        value: 1,
+        message: "Taille min: 1"
+    },
+    maxLength: {
+        value: 500,
+        message: "Taille max: 500"
+    },
+    required: {
+        value: true,
+        message: 'Le champs ne doit pas etre vide'
+    }
+}
+
 const Chat = ({ chatId }: ChatProps) => {
     const slotsStyles = chatStyle.raw()
     const chat = useStore(state => state.chat)
@@ -87,7 +102,7 @@ const Chat = ({ chatId }: ChatProps) => {
                     }
                 </div>
                 <form className={css(slotsStyles.chatFormContainer)} onSubmit={handleSubmit(onSubmit)}>
-                    <input type='text' {...register('message')} name="message" />
+                    <input type='text' {...register('message', OPTIONS)} name="message" />
                     <button type="submit" className={css(slotsStyles.sendButtonContainer)}>
                         <AiOutlineSend />
                     </button>

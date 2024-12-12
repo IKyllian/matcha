@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import ChipSelect from "front/components/chips/chipSelect"
 import { settingsStyle } from "./settings.style"
 import { css } from "styled-system/css"
@@ -23,6 +23,47 @@ type PositionType = {
   displayName: string,
   latitude: number,
   longitude: number
+}
+
+const INPUT_OPTIONS: Record<'first_name' | 'last_name' | 'bio', any> = {
+  first_name: {
+    minLength: {
+      value: 2,
+      message: "Taille min: 2"
+    },
+    maxLength: {
+      value: 35,
+      message: "Taille max: 35"
+    },
+    required: {
+      value: true,
+      message: 'Prenom requis'
+    }
+  },
+  last_name: {
+    minLength: {
+      value: 2,
+      message: "Taille min: 2"
+    },
+    maxLength: {
+      value: 35,
+      message: "Taille max: 35"
+    },
+    required: {
+      value: true,
+      message: 'Nom requis'
+    }
+  },
+  bio: {
+    minLength: {
+      value: 1,
+      message: "Taille min: 1"
+    },
+    maxLength: {
+      value: 1000,
+      message: "Taille max: 1000"
+    },
+  }
 }
 
 const InputRadio = ({ value, label, register }: InputRadioProps) => {
@@ -52,6 +93,13 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const [inputPositionsList, setInputPositionsList] = useState<PositionType[]>([])
   const [positionSelected, setPositionSelected] = useState<PositionType>()
   const [inputPosition, setInputPosition] = useState<string>('')
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<Partial<User>>({
+    defaultValues: profileSettings.user
+  })
 
   useEffect(() => {
     const getPos = async () => {
@@ -69,14 +117,6 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     }
     getPos()
   }, [])
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Partial<User>>({
-    defaultValues: profileSettings.user
-  })
 
   const onChipClick = (chip: Tags, wasSelected: boolean) => {
     if (wasSelected) {
@@ -205,6 +245,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const onPositionClick = (value: PositionType) => {
     setInputPosition(value.displayName)
     setPositionSelected(value)
+    setInputPositionsList([])
   }
 
   const handleChange = (e) => {
@@ -218,7 +259,6 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         setInputPositionsList([])
         return
       }
-      console.info('CALL API')
       const ret: any = await makePositionRequest({ city: inputPosition })
       if (ret && Array.isArray(ret)) {
         setInputPositionsList(ret.map(p => ({ displayName: p.display_name, latitude: p.lat, longitude: p.lon })))
@@ -235,13 +275,19 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         <div className={css(slotsStyles.rowInputs)}>
           <label htmlFor="last_name">
             Nom*:
-            <input id="last_name" type='text' {...register('last_name')} />
+            <input id="last_name" type='text' {...register('last_name', INPUT_OPTIONS.last_name)} />
+            {errors?.last_name?.message && <span className={css(slotsStyles.inputError)}>{errors?.last_name?.message.toString()}</span>}
           </label>
           <label htmlFor="first_name">
             Prenom*:
-            <input id="first_name" type='text' {...register('first_name')} />
+            <input id="first_name" type='text' {...register('first_name', INPUT_OPTIONS.first_name)} />
+            {errors?.first_name?.message && <span className={css(slotsStyles.inputError)}>{errors?.first_name?.message.toString()}</span>}
           </label>
         </div>
+        <label htmlFor="username">
+          Username*:
+          <input id="username" type='text' disabled {...register('username')} />
+        </label>
         <label htmlFor="email">
           Email*:
           <input id="email" type='text' disabled {...register('email')} />
@@ -263,7 +309,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         </label>
         <label>
           Desription:
-          <textarea className={css(slotsStyles.textAreaInput)} {...register('bio')} name="bio" ></textarea>
+          <textarea className={css(slotsStyles.textAreaInput)} {...register('bio', INPUT_OPTIONS.bio)} name="bio" ></textarea>{errors?.bio?.message && <span className={css(slotsStyles.inputError)}>{errors?.bio?.message.toString()}</span>}
         </label>
         <label className={css(slotsStyles.positionContainer)}>
           Position:
@@ -274,7 +320,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
                 {
                   inputPositionsList.map((position, index) =>
                     <span
-                      key={position.displayName}
+                      key={index}
                       className={css(slotsStyles.positionItem)}
                       data-border={+(index < inputPositionsList.length - 1)}
                       onClick={() => onPositionClick(position)}

@@ -45,10 +45,6 @@ export const socketSlice = (set: StoreSetType): SocketStoreType => ({
             state.addNotification(notification)
         })
 
-        // socket.on('connectionUpdate', ({ user_id, is_connected }: { user_id: number, is_connected: boolean }) => {
-        //     console.info("connectionUpdate = ", user_id, is_connected)
-        // })
-
         return {
             ...state, socket
         }

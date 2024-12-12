@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useApi } from "front/hook/useApi";
 import { makeDeleteAllNotificationRequest, makeDeleteNotificationRequest, makeViewNotificationRequest } from "front/api/notification";
 import { useStore } from "front/store/store";
-import { NotificationType } from "front/typing/notification";
+import { NotificationType, NotificationTypeEnum } from "front/typing/notification";
 import ProfilePicture from "front/components/utils/profilePicture";
 
 const NotificationScreen = () => {
@@ -37,8 +37,12 @@ const NotificationScreen = () => {
     }
   }, [isLoading, notifications])
 
-  const onNotifclick = (senderId: number) => {
-    navigate(`/profile/${senderId}`)
+  const onNotifclick = (senderId: number, notif_type: NotificationTypeEnum) => {
+    if (notif_type === NotificationTypeEnum.NEW_MESSAGE) {
+      navigate(`/chat/${senderId}`)
+    } else {
+      navigate(`/profile/${senderId}`)
+    }
   }
 
   const onNotifDelete = async (notifId: number) => {
@@ -76,7 +80,7 @@ const NotificationScreen = () => {
               {
                 notifications?.map((notification, index) => (
                   <div key={index} className={css(slotsStyles.notificationItem)}>
-                    <ProfilePicture onClick={() => onNotifclick(notification.sender.id)} userImages={notification.sender.images} className={slotsStyles.imgSender} width="52px" height="52px" />
+                    <ProfilePicture onClick={() => onNotifclick(notification.sender.id, notification.notif_type)} userImages={notification.sender.images} className={slotsStyles.imgSender} width="52px" height="52px" />
                     <span>{notification.content}</span>
                     <FaTrash onClick={() => onNotifDelete(notification.id)} />
                   </div>

@@ -11,6 +11,6 @@ export const sortListByKey = ({ list, key, order }: SortListProps) => {
     return list.sort(
         (a, b) => order === SORT_ORDER_ENUM.ASC ?
             a.user[key] - b.user[key] :
-            a.user[key] + b.user[key]
+            b.user[key] - a.user[key]
     )
 }

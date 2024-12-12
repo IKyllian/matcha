@@ -7,6 +7,7 @@ import { makeDeleteNotificationRequest, makeViewNotificationRequest } from "fron
 import { useStore } from "front/store/store";
 import { useEffect } from "react";
 import ProfilePicture from "front/components/utils/profilePicture";
+import { NotificationTypeEnum } from "front/typing/notification";
 
 type NotificationsModalProps = {
   onClose: () => void
@@ -42,9 +43,13 @@ const NotificationsModal = ({ onClose }: NotificationsModalProps) => {
     }
   }
 
-  const onNotifclick = (senderId: number) => {
+  const onNotifclick = (senderId: number, notif_type: NotificationTypeEnum) => {
     onClose()
-    navigate(`/profile/${senderId}`)
+    if (notif_type === NotificationTypeEnum.NEW_MESSAGE) {
+      navigate(`/chat/${senderId}`)
+    } else {
+      navigate(`/profile/${senderId}`)
+    }
   }
 
   return (
@@ -55,7 +60,7 @@ const NotificationsModal = ({ onClose }: NotificationsModalProps) => {
           {
             notifications.slice(0, 3).map(notif => (
               <div key={notif.id} className={css(slotsStyles.notifItem)}>
-                <ProfilePicture userImages={notif.sender.images} height="24px" width="24px" onClick={() => onNotifclick(notif.sender.id)} className={slotsStyles.imgSender} />
+                <ProfilePicture userImages={notif.sender.images} height="24px" width="24px" onClick={() => onNotifclick(notif.sender.id, notif.notif_type)} className={slotsStyles.imgSender} />
                 <span>{notif.content}</span>
                 <FaTrash className={css(slotsStyles.deleteIcon)} onClick={() => onNotifDelete(notif.id)} />
               </div>

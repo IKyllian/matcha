@@ -2,14 +2,14 @@ import { User } from "./user"
 
 export enum NotificationTypeEnum {
   NEW_MESSAGE,
-  NEW_MATCH,
   LIKE,
-
+  NEW_MATCH,
+  VIEW
 }
 
 export type NotificationType = {
   id: number
-  type: NotificationTypeEnum
+  notif_type: NotificationTypeEnum
   content: string
   sender: Pick<User, 'id' | 'images' | 'username'>
   receiver: Pick<User, 'id' | 'images' | 'username'>
