@@ -21,10 +21,10 @@ const HomeList = ({ list: { list, reachedEnd }, onLikeClick, onNextPagination }:
           ))
         }
       </div>
-      {
+      {/* {
         !reachedEnd &&
         <button onClick={onNextPagination} className={css(slotsStyles.paginationButton)}>Afficher plus</button>
-      }
+      } */}
     </div>
   )
 }
