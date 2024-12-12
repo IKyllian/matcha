@@ -3,6 +3,7 @@ import { sva } from "styled-system/css";
 export const profileStyle = sva({
     slots: [
         'profileContainer',
+        'wrapper',
         'profilInfosContainer',
         'userInfoContainer',
         'profileName',
@@ -17,7 +18,17 @@ export const profileStyle = sva({
     ],
     base: {
         profileContainer: {
-            padding: '24px'
+            padding: '24px',
+            display: 'flex',
+            flexDir: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+        },
+        wrapper: {
+            width: '100%',
+            xl: {
+                width: '80%',
+            }
         },
         profilInfosContainer: {
             display: 'flex',
@@ -32,7 +43,7 @@ export const profileStyle = sva({
             mdDown: {
                 flexDirection: 'column',
                 alignItems: 'center'
-            }
+            },
         },
         profilContent: {
             display: 'flex',

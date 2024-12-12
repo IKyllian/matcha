@@ -20,6 +20,7 @@ type HomeListType = {
     selectedTags: Tags[],
     suggestionOffset: number
     suggestionIndex: number
+    navIndex: number
 }
 
 const defaultList: ListType = {
@@ -34,7 +35,8 @@ const defaultValues: HomeListType = {
     sort: SORT_ENUM.DISTANCE_ASC,
     selectedTags: [],
     suggestionOffset: 0,
-    suggestionIndex: 0
+    suggestionIndex: 0,
+    navIndex: 0
 }
 
 export type OnLikeProps = {
@@ -54,7 +56,8 @@ export type HomeStoreType = {
     suggestionNextOffeset: () => void,
     onSuggestionNext: () => void,
     onSuggestionPrev: () => void,
-    resetList: () => void
+    resetList: () => void,
+    onNavClick: (index: number) => void
 }
 
 export const homeSlice = (set: StoreSetType): HomeStoreType => ({
@@ -163,5 +166,13 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
                 offset: 0
             }
         }
-    }))
+    })),
+    onNavClick: (index: number) => set((state) => ({
+        ...state,
+        homeState: {
+            ...state.homeState,
+            navIndex: index
+        }
+    })
+    )
 })

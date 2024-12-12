@@ -22,7 +22,6 @@ const TABS_CONTENT: HomeTabs[] = ["Liste", "Suggestion"]
 const Home = () => {
   const slotsStyles = homeStyle.raw()
   const [showSidebar, setShowSidebar] = useState(false)
-  const [navIndex, setNavIndex] = useState(0)
 
   const setFilterList = useStore(state => state.setFilterList)
   const token = useStore(state => state.authStore.token)
@@ -33,14 +32,15 @@ const Home = () => {
   const setFilters = useStore(state => state.setFilters)
   const resetFilters = useStore(state => state.resetFilters)
   const { sort } = useStore(state => state.homeState)
+  const { navIndex } = useStore(state => state.homeState)
   const sortChange = useStore(state => state.sortChange)
+  const onNavClick = useStore(state => state.onNavClick)
   const resetList = useStore(state => state.resetList)
 
   useEffect(() => {
     return () => resetList()
   }, [])
 
-  const handleClick = (index: number) => setNavIndex(index)
   const onSidebarClose = () => {
     setShowSidebar(prev => !prev)
   }
@@ -84,7 +84,7 @@ const Home = () => {
       }
       <div>
         <div className={css(slotsStyles.listHeaderWrapper)}>
-          <Tabs tabsContent={TABS_CONTENT} navIndex={navIndex} handleClick={handleClick} />
+          <Tabs tabsContent={TABS_CONTENT} navIndex={navIndex} handleClick={onNavClick} />
           {
             TABS_CONTENT[navIndex] === "Liste" && (
               <div className={css({ display: 'flex', justifyContent: 'center' })}>

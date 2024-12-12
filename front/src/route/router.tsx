@@ -1,4 +1,4 @@
-import Profile from "front/components/profile/profile";
+import ProfileScreen from "front/components/profile/profile";
 import Register from "front/components/sign/register";
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./privateRoute";
@@ -42,7 +42,7 @@ export const router = createBrowserRouter([
         path,
         element: (
             <PrivateRoute>
-                <Profile />
+                <ProfileScreen />
             </PrivateRoute>
         )
 
