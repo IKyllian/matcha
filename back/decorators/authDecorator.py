@@ -1,6 +1,6 @@
 from functools import wraps
 from flask import request
-from errors.httpErrors import TokenError
+from errors.httpErrors import ForbiddenError, TokenError
 from flask_jwt_extended import decode_token
 from database_utils.requests import makeRequest
 
@@ -50,3 +50,21 @@ def socket_auth(f):
         kwargs['user_id'] = user_id
         return f(*args, **kwargs)
     return socket_auth_decorator
+
+def blocked_check(key=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            user_id = kwargs['user_id']
+            user_to_interact_id = kwargs["validated_data"][key]
+
+            blocks = makeRequest('''SELECT block.id FROM block
+                        WHERE (block.user_id = :user_id AND block.blocked_user_id = :user_to_interact_id)
+                        OR (block.user_id = :user_to_interact_id AND block.blocked_user_id = :user_id)''',
+                        {"user_id": user_id, "user_to_interact_id": user_to_interact_id})
+
+            if len(blocks) > 0:
+                raise ForbiddenError("Vous ne pouver pas interagir car cet utilisateur vous a bloqué ou vous l'avez bloqué")
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
