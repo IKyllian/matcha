@@ -53,6 +53,7 @@ const Profile = ({ profile, isLoggedUser }: ProfileProps) => {
     const handleClick = (index: number) => setNavIndex(index)
     const navigate = useNavigate()
     const userProfileId = profile.user.id
+    const isProfileMatched = profile.like && profile.liked
 
     const slotsStyles = profileStyle.raw()
     const tabsContent = isLoggedUser ? NAV_CONTENT_LOGGED_USER : NAV_CONTENT_NOT_LOGGED_USER
@@ -66,6 +67,10 @@ const Profile = ({ profile, isLoggedUser }: ProfileProps) => {
         }
         setNavIndex(0)
     }, [userProfileId])
+
+    const onMessageClick = () => {
+        navigate(`/chat/${userProfileId}`)
+    }
 
     const onLikeClick = useCallback(_.debounce(async () => {
         const ret = await makeLikeRequest({ token, id: userProfileId, addAlert })
@@ -124,6 +129,7 @@ const Profile = ({ profile, isLoggedUser }: ProfileProps) => {
                                     {
                                         !isLoggedUser && (
                                             <div className={css(slotsStyles.profilButtonContainer)}>
+                                                {isProfileMatched && <IconButton buttonIcon={BUTTONS_ICON["MESSAGE"]} onClick={onMessageClick} />}
                                                 <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={profile.like} onClick={onLikeClick} />
                                                 <IconButton buttonIcon={BUTTONS_ICON["BLOCKED"]} status={profile.block} onClick={onBlockclick} />
                                                 <IconButton buttonIcon={BUTTONS_ICON["REPORT"]} onClick={onReportClick} />

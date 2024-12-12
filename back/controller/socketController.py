@@ -12,10 +12,10 @@ from services.user import getUserWithProfilePictureById
 user_socket_map = {}
 
 class NotifType(Enum):
-    MESSAGE = 1
-    LIKE = 2
-    MATCH = 3
-    VIEW = 4
+    MESSAGE = 0
+    LIKE = 1
+    MATCH = 2
+    VIEW = 3
 
 @socketio.on('connect')
 def handleConnect():
