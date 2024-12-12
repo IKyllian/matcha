@@ -26,7 +26,7 @@ const Home = () => {
   const setFilterList = useStore(state => state.setFilterList)
   const token = useStore(state => state.authStore.token)
   const addAlert = useStore(state => state.addAlert)
-  const { filtersList, filtersList: { list: listFilters } } = useStore(state => state.homeState)
+  const { filtersList, filtersList: { list: listFilters, reachedEnd } } = useStore(state => state.homeState)
   const updateProfileListLike = useStore(state => state.updateProfileListLike)
   const { filters } = useStore(state => state.homeState)
   const setFilters = useStore(state => state.setFilters)
@@ -70,6 +70,23 @@ const Home = () => {
   const onNextPagination = () => {
     setFilters({ filters })
   }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolledTo = window.scrollY + window.innerHeight
+      const isReachBottom = document.body.scrollHeight === scrolledTo;
+      console.info("isReachBottom = ", isReachBottom, " isLoading = ", isLoading)
+      if (isReachBottom && !isLoading && !reachedEnd) {
+        setFilters({ filters })
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [isLoading, filters, reachedEnd]);
 
   return (
     <div className={css(slotsStyles.homeContainer)}>
