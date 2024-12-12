@@ -6,18 +6,36 @@ import { useNavigate } from "react-router-dom"
 import { useStore } from "front/store/store"
 import ProfilePicture from "front/components/utils/profilePicture"
 import { getLightMessageDateString } from "front/utils/chat"
+import { useEffect, useState } from "react"
 
 type SidebarProps = {
     isOpen: boolean
+    onCloseSidebar: () => void
 }
-const Sidebar = ({ isOpen }: SidebarProps) => {
+const Sidebar = ({ isOpen, onCloseSidebar }: SidebarProps) => {
     const slotsStyles = sidebarStyle.raw()
     const setChatSidebar = useStore(state => state.setChatSidebar)
     const chatSidebar = useStore(state => state.chatSidebar)
     const { isLoading } = useApi<ChatSidebarType[]>({ endpoint: "getChatList", setter: setChatSidebar })
     const navigate = useNavigate()
+    const [shouldCloseSidebarOnClick, setShouldCloseSidebarOnClick] = useState(false)
+
+    useEffect(() => {
+        const onResize = () => {
+            if (window.innerWidth < 768 && !shouldCloseSidebarOnClick) {
+                setShouldCloseSidebarOnClick(true)
+            } else if (window.innerWidth >= 768 && shouldCloseSidebarOnClick) {
+                setShouldCloseSidebarOnClick(false)
+            }
+        }
+        window.addEventListener('resize', onResize)
+        return () => window.removeEventListener('resize', onResize)
+    }, [shouldCloseSidebarOnClick])
 
     const handleClick = (id: number) => {
+        if (shouldCloseSidebarOnClick) {
+            onCloseSidebar()
+        }
         navigate(`/chat/${id}`)
     }
     if (isLoading) {

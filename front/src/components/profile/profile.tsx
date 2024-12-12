@@ -20,6 +20,7 @@ import { getMessageDateString } from "front/utils/chat"
 import { ProfileStateType } from "front/store/profile.store"
 import _ from 'lodash'
 import Screen404 from "front/components/utils/404"
+import { SystemStyleObject } from "styled-system/types"
 
 type NAV_CONTENT_TYPE =
     'Likes' |
@@ -105,6 +106,25 @@ const Profile = ({ profile, isLoggedUser }: ProfileProps) => {
         }
     }
 
+    const displayProfileIcons = (className: SystemStyleObject) => (
+        <div className={css(className)}>
+            {
+                isLoggedUser &&
+                <IconButton buttonIcon={BUTTONS_ICON["SETTINGS"]} onClick={() => navigate('/settings')} />
+            }
+            {
+                !isLoggedUser && (
+                    <div className={css(slotsStyles.profilButtonContainer)}>
+                        {isProfileMatched && <IconButton buttonIcon={BUTTONS_ICON["MESSAGE"]} onClick={onMessageClick} />}
+                        <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={profile.like} onClick={onLikeClick} />
+                        <IconButton buttonIcon={BUTTONS_ICON["BLOCKED"]} status={profile.block} onClick={onBlockclick} />
+                        <IconButton buttonIcon={BUTTONS_ICON["REPORT"]} onClick={onReportClick} />
+                    </div>
+                )
+            }
+        </div>
+    )
+
     return (
         <div className={css(slotsStyles.profileContainer)}>
             <div className={css(slotsStyles.wrapper)}>
@@ -113,6 +133,7 @@ const Profile = ({ profile, isLoggedUser }: ProfileProps) => {
                     <div className={css(slotsStyles.profilContent)}>
                         <div className={css(slotsStyles.profileWrapper)}>
                             <div className={css(slotsStyles.flexContainer)}>
+                                {displayProfileIcons(slotsStyles.iconsWrapperMobile)}
                                 <div className={css(slotsStyles.userInfoContainer)}>
                                     <span className={css(slotsStyles.profileName)}>
                                         {profile.user.first_name} {profile.user.last_name}
@@ -121,22 +142,7 @@ const Profile = ({ profile, isLoggedUser }: ProfileProps) => {
                                     <div className={css(slotsStyles.profileStatus)} data-isonline={+profile.user.is_connected}></div>
                                     <StarRating isReadOnly initialRating={profile.user.fame_rating} unit="float" />
                                 </div>
-                                <div>
-                                    {
-                                        isLoggedUser &&
-                                        <IconButton buttonIcon={BUTTONS_ICON["SETTINGS"]} onClick={() => navigate('/settings')} />
-                                    }
-                                    {
-                                        !isLoggedUser && (
-                                            <div className={css(slotsStyles.profilButtonContainer)}>
-                                                {isProfileMatched && <IconButton buttonIcon={BUTTONS_ICON["MESSAGE"]} onClick={onMessageClick} />}
-                                                <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={profile.like} onClick={onLikeClick} />
-                                                <IconButton buttonIcon={BUTTONS_ICON["BLOCKED"]} status={profile.block} onClick={onBlockclick} />
-                                                <IconButton buttonIcon={BUTTONS_ICON["REPORT"]} onClick={onReportClick} />
-                                            </div>
-                                        )
-                                    }
-                                </div>
+                                {displayProfileIcons(slotsStyles.iconsWrapperDesktop)}
                             </div>
                             <p> {profile.user.location} </p>
                             <p> {profile.user.bio} </p>
@@ -148,7 +154,6 @@ const Profile = ({ profile, isLoggedUser }: ProfileProps) => {
                         {/* {!profile.like && !profile.liked && (<span className={css(slotsStyles.likeStatusText)}>Cette personne ne vous like pas</span>)} */}
                         {!profile.like && profile.liked && (<span className={css(slotsStyles.likeStatusText)}>Cette personne vous a like</span>)}
                         {isProfileMatched && (<span className={css(slotsStyles.likeStatusText)}>Vous etes match avec cette personne</span>)}
-
                         {profile.user.last_connection && !profile.user.is_connected && <p className={css(slotsStyles.lastConnectionText)}>Derniere connexion: {getMessageDateString(profile.user.last_connection)}</p>}
                     </div>
                 </div>

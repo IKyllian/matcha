@@ -37,6 +37,13 @@ const Home = () => {
   const onNavClick = useStore(state => state.onNavClick)
   const resetList = useStore(state => state.resetList)
 
+  // Here to retrieve duplicates if ones. TODO: DELETE
+  const duplicates = listFilters.filter((item, index) => listFilters.indexOf(item) !== index);
+  if (duplicates.length > 0) {
+    console.error("DUPLICATE IN FILTER LIST", duplicates)
+  }
+  //---------------------------------------------------
+
   useEffect(() => {
     return () => resetList()
   }, [])

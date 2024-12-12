@@ -43,7 +43,7 @@ const ResetPasswordForm = () => {
             type: 'password',
             options: {
                 required: true,
-                validate: value => value === getValues('password')
+                validate: value => value === getValues('password') || "Les deux mots de passe doivent etre identique",
             }
         }
     ]

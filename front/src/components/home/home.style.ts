@@ -51,6 +51,13 @@ export const homeStyle = sva({
       _active: {
         boxShadow: 'none',
       },
+      smDown: {
+        right: '5px',
+        bottom: '60px',
+      },
+      xsDown: {
+        display: 'none'
+      }
     },
     paginationButton: {
       height: '50px',
@@ -65,7 +72,7 @@ export const homeStyle = sva({
       cursor: 'pointer',
       _active: {
         boxShadow: 'none',
-      }
+      },
     },
     filterListWrapper: {
       display: 'flex',

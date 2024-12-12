@@ -18,7 +18,7 @@ const ChatScreen = () => {
 
     return (
         <div className={css(slotsStyles.chatScreenContainer)}>
-            <Sidebar isOpen={isSidebarOpen} />
+            <Sidebar isOpen={isSidebarOpen} onCloseSidebar={() => setIsSidebarOpen(false)} />
             {
                 <div className={css(slotsStyles.arrowContainer)} data-issidebaropen={+isSidebarOpen} onClick={onArrowClick}>
                     {isSidebarOpen ? <MdKeyboardArrowLeft /> : <MdKeyboardArrowRight />}
