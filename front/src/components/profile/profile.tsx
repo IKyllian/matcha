@@ -19,8 +19,8 @@ import ProfileBlocks from "./profileBlocks"
 import { getMessageDateString } from "front/utils/chat"
 import { ProfileStateType } from "front/store/profile.store"
 import _ from 'lodash'
-import Screen404 from "front/components/utils/404"
 import { SystemStyleObject } from "styled-system/types"
+import Loader from "front/components/utils/loader"
 
 type NAV_CONTENT_TYPE =
     'Likes' |
@@ -178,19 +178,10 @@ const ProfileScreen = () => {
         dependencies: [userId],
     })
     const isLoggedUser = !userId || userId && loggedUser.id === +userId
-
-    if (isLoading) {
-        return <span>loading...</span>
-    }
-
-    if (!isLoading && !profile) {
-        return (
-            <Screen404 />
-        )
-    }
-
     return (
-        <Profile profile={profile} isLoggedUser={isLoggedUser} />
+        <Loader isLoading={isLoading} data={profile} shouldDisplay404>
+            <Profile profile={profile} isLoggedUser={isLoggedUser} />
+        </Loader>
     )
 }
 
