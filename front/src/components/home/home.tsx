@@ -78,22 +78,22 @@ const Home = () => {
     setFilters({ filters })
   }
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrolledTo = window.scrollY + window.innerHeight
-      const isReachBottom = document.body.scrollHeight === scrolledTo;
-      console.info("isReachBottom = ", isReachBottom, " isLoading = ", isLoading)
-      if (isReachBottom && !isLoading && !reachedEnd) {
-        setFilters({ filters })
-      }
-    }
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     const scrolledTo = window.scrollY + window.innerHeight
+  //     const isReachBottom = document.body.scrollHeight === scrolledTo;
+  //     console.info("isReachBottom = ", isReachBottom, " isLoading = ", isLoading)
+  //     if (isReachBottom && !isLoading && !reachedEnd) {
+  //       setFilters({ filters })
+  //     }
+  //   }
 
-    window.addEventListener("scroll", handleScroll);
+  //   window.addEventListener("scroll", handleScroll);
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [isLoading, filters, reachedEnd]);
+  //   return () => {
+  //     window.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, [isLoading, filters, reachedEnd]);
 
   return (
     <div className={css(slotsStyles.homeContainer)}>
