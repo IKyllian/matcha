@@ -14,6 +14,7 @@ const HomeList = ({ list: { list, reachedEnd }, onLikeClick, onNextPagination }:
   const slotsStyles = homeStyle.raw()
   const onNextPage = useStore(state => state.onNextPage)
   const onPrevPage = useStore(state => state.onPrevPage)
+  const { page } = useStore(state => state.homeState)
 
   return (
     <div className={css(slotsStyles.filterListWrapper)}>
@@ -27,13 +28,9 @@ const HomeList = ({ list: { list, reachedEnd }, onLikeClick, onNextPagination }:
       <div className={css({
         display: 'flex'
       })}>
-        <button onClick={onPrevPage} className={css(slotsStyles.paginationButton)}>Precedent</button>
-        <button onClick={onNextPage} className={css(slotsStyles.paginationButton)}>Suivant</button>
+        {page > 0 && <button onClick={onPrevPage} className={css(slotsStyles.paginationButton)}>Precedent</button>}
+        {!reachedEnd && <button onClick={onNextPage} className={css(slotsStyles.paginationButton)}>Suivant</button>}
       </div>
-      {/* {
-        !reachedEnd &&
-        <button onClick={onNextPagination} className={css(slotsStyles.paginationButton)}>Afficher plus</button>
-      } */}
     </div>
   )
 }
