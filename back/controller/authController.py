@@ -81,6 +81,17 @@ def getAuth():
 
 @validate_request({
     "url_identifier": {"required": True, "type": str},
+})   
+def checkUrlIdentifier(validated_data):
+    print("validated_data ", validated_data)
+    urlIdentifier = validated_data["url_identifier"]
+    response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
+    if (not response or len(response) < 1):
+        raise NotFoundError("No matching account found with the provided urlIdentifier")
+    return jsonify(ok=True)
+
+@validate_request({
+    "url_identifier": {"required": True, "type": str},
 })
 def activateAccount(validated_data):
     urlIdentifier = validated_data["url_identifier"]

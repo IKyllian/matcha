@@ -7,6 +7,8 @@ import { useParams } from "react-router-dom"
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
 import { FieldsInputType } from "front/typing/input"
+import { useApi } from "front/hook/useApi"
+import Screen404 from "front/components/utils/404"
 
 type FormValues = {
     password: string
@@ -23,9 +25,17 @@ const ResetPasswordForm = () => {
         getValues
     } = useForm<FormValues>()
     const { url_identifier } = useParams<{ url_identifier: string }>()
+    const [isValidIdentifier, setIsValidIdentifier] = useState(false)
     const [status, setStatus] = useState<StatusType>('changing')
     const addAlert = useStore(state => state.addAlert)
     const slotsStyles = formStyle.raw()
+    const { isLoading } = useApi<boolean>({
+        endpoint: 'checkUrlIdentifier',
+        urlParams: { url_identifier },
+        setter: setIsValidIdentifier,
+        key: 'ok',
+        useToken: false
+    })
 
     const FIELDS: FieldsInputType<FormValues>[] = [
         {
@@ -61,6 +71,13 @@ const ResetPasswordForm = () => {
             addAlert({ message: "Mot de passe mis a jour", type: AlertTypeEnum.SUCCESS })
             setStatus('success')
         }
+    }
+
+    if (isLoading) {
+        return <span>Loading...</span>
+    }
+    if (!isLoading && !isValidIdentifier) {
+        return <Screen404 />
     }
     return (
         <div className={css({ minHeight: '100vh', display: 'flex' })}>
