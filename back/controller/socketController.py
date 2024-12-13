@@ -94,6 +94,7 @@ def handleConnect():
 
 def sendNotificationEvent(message, sender, receiver_id, type: NotifType):
     sender_id = sender["id"]
+    receiver_id = str(receiver_id)
     created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     isBlocked = makeRequest("SELECT 1 FROM block WHERE user_id = ? AND blocked_user_id = ?", (str(receiver_id), str(sender_id)))
     print(isBlocked)
@@ -103,7 +104,7 @@ def sendNotificationEvent(message, sender, receiver_id, type: NotifType):
     notifId = makeInsertRequest("INSERT INTO notification (content, sender_id, receiver_id, created_at, was_seen, notif_type) VALUES (?, ?, ?, ?, ?, ?)",
                         (str(message), str(sender_id), str(receiver_id), str(created_at), "0", str(type.value)))
     notif = makeRequest("SELECT * FROM notification WHERE id = ?", (notifId,))
-    if not str(receiver_id) in user_socket_map:
+    if not receiver_id in user_socket_map:
         return
     else:
         receiver_socket_id = user_socket_map[receiver_id]
