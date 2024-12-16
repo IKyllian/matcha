@@ -5,8 +5,6 @@ import { MdLogout } from "react-icons/md";
 import { IoMdNotifications } from "react-icons/io";
 import NotificationsModal from "front/components/notifications/notificationsModal";
 import { useState } from "react";
-import { useCookies } from "react-cookie";
-import { COOKIE_JWT_TOKEN } from "front/constant/cookie";
 import { useStore } from "front/store/store";
 import ProfilePicture from "front/components/utils/profilePicture";
 import { useLogout } from "front/hook/useLogout";
@@ -26,7 +24,7 @@ const Header = () => {
 
     return (
         <div className={css(slotsStyles.headerContainer)}>
-            <Link to='/' className={css(slotsStyles.headerLogo)}> matcha </Link>
+            <Link to='/' className={css(slotsStyles.headerLogo)}>matcha</Link>
             <div className={css(slotsStyles.headerContentWrapper)}>
                 <Link to='/chat'>Chat</Link>
                 <Link to='/profile'>Profil</Link>

@@ -2,6 +2,7 @@ import Card from "front/components/card/card"
 import { homeStyle } from "./home.style"
 import { css } from "styled-system/css"
 import { ListType } from "front/store/homeList"
+import { useStore } from "front/store/store"
 
 type HomeListProps = {
   list: ListType
@@ -11,6 +12,9 @@ type HomeListProps = {
 
 const HomeList = ({ list: { list, reachedEnd }, onLikeClick, onNextPagination }: HomeListProps) => {
   const slotsStyles = homeStyle.raw()
+  const onNextPage = useStore(state => state.onNextPage)
+  const onPrevPage = useStore(state => state.onPrevPage)
+  const { page } = useStore(state => state.homeState)
 
   return (
     <div className={css(slotsStyles.filterListWrapper)}>
@@ -21,10 +25,12 @@ const HomeList = ({ list: { list, reachedEnd }, onLikeClick, onNextPagination }:
           ))
         }
       </div>
-      {
-        !reachedEnd &&
-        <button onClick={onNextPagination} className={css(slotsStyles.paginationButton)}>Afficher plus</button>
-      }
+      <div className={css({
+        display: 'flex'
+      })}>
+        {page > 0 && <button onClick={onPrevPage} className={css(slotsStyles.paginationButton)}>Precedent</button>}
+        {!reachedEnd && <button onClick={onNextPage} className={css(slotsStyles.paginationButton)}>Suivant</button>}
+      </div>
     </div>
   )
 }

@@ -37,22 +37,18 @@ export const sidebarStyle = sva({
             _hover: {
                 backgroundColor: '#ffcfbb',
             },
-            mdDown: {
-                '&[data-isopen="0"]': {
-                    padding: 0
-                },
-            }
+            '&[data-isopen="0"]': {
+                padding: 0
+            },
         },
         img: {
             width: '40px',
             height: '40px',
             borderRadius: '50%',
-            mdDown: {
-                '&[data-isopen="0"]': {
-                    width: '35px',
-                    height: '35px',
-                },
-            }
+            '&[data-isopen="0"]': {
+                width: '35px',
+                height: '35px',
+            },
         },
         messageContentWrapper: {
             display: 'flex',

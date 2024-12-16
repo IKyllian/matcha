@@ -9,6 +9,7 @@ import ProfilePicture from "front/components/utils/profilePicture"
 import { getMessageDateString } from "front/utils/chat";
 import { Link } from "react-router-dom";
 import { useEffect, useRef } from 'react';
+import Loader from "../utils/loader";
 
 type ChatProps = {
     chatId: number;
@@ -68,47 +69,43 @@ const Chat = ({ chatId }: ChatProps) => {
         }
     }
 
-    if (isLoading) {
-        return <p>Chargement...</p>
-    }
-
-    if (!chat) {
-        return <p>Not found</p>
-    }
+    console.info("chat = ", chat)
 
     return (
-        <div className={css(slotsStyles.chatContainer)}>
-            <div className={css(slotsStyles.chatWrapper)}>
-                <Link to={`/profile/${recipient.id}`} className={css(slotsStyles.chatHeader)}>
-                    <ProfilePicture className={slotsStyles.img} width="40px" height="40px" userImages={recipient.images} />
-                    <p> {recipient.first_name} {recipient.last_name} </p>
-                </Link>
-                <div ref={messagesContainerRef} className={css(slotsStyles.messagesContainer)}>
-                    {
-                        chat.messages.map((message) => {
-                            return (
-                                <div
-                                    key={message.id}
-                                    className={css(
-                                        slotsStyles.messageItem,
-                                        message.sender_id === recipient.id ? slotsStyles.recipient : slotsStyles.sender
-                                    )}
-                                >
-                                    <p>{message.message}</p>
-                                    <span className={css(slotsStyles.dateMessage)}>{getMessageDateString(message.created_at)}</span>
-                                </div>
-                            )
-                        })
-                    }
+        <Loader isLoading={isLoading} data={chat} shouldDisplay404>
+            <div className={css(slotsStyles.chatContainer)}>
+                <div className={css(slotsStyles.chatWrapper)}>
+                    <Link to={`/profile/${recipient?.id}`} className={css(slotsStyles.chatHeader)}>
+                        <ProfilePicture className={slotsStyles.img} width="40px" height="40px" userImages={recipient?.images} />
+                        <p> {recipient?.first_name} {recipient?.last_name} </p>
+                    </Link>
+                    <div ref={messagesContainerRef} className={css(slotsStyles.messagesContainer)}>
+                        {
+                            chat?.messages.map((message) => {
+                                return (
+                                    <div
+                                        key={message.id}
+                                        className={css(
+                                            slotsStyles.messageItem,
+                                            message.sender_id === recipient?.id ? slotsStyles.recipient : slotsStyles.sender
+                                        )}
+                                    >
+                                        <p>{message.message}</p>
+                                        <span className={css(slotsStyles.dateMessage)}>{getMessageDateString(message.created_at)}</span>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                    <form className={css(slotsStyles.chatFormContainer)} onSubmit={handleSubmit(onSubmit)}>
+                        <input type='text' {...register('message', OPTIONS)} name="message" />
+                        <button type="submit" className={css(slotsStyles.sendButtonContainer)}>
+                            <AiOutlineSend />
+                        </button>
+                    </form>
                 </div>
-                <form className={css(slotsStyles.chatFormContainer)} onSubmit={handleSubmit(onSubmit)}>
-                    <input type='text' {...register('message', OPTIONS)} name="message" />
-                    <button type="submit" className={css(slotsStyles.sendButtonContainer)}>
-                        <AiOutlineSend />
-                    </button>
-                </form>
             </div>
-        </div>
+        </Loader>
     )
 }
 

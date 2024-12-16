@@ -14,6 +14,14 @@ export default defineConfig({
   // Useful for theme customization
   theme: {
     extend: {
+      breakpoints: {
+        xs: '400px',
+        sm: '640px',
+        md: '768px',
+        lg: '1024px',
+        xl: '1280px',
+        '2xl': '1536px'
+      },
       tokens: {
         colors: {
           primary: { value: '#000000' },

@@ -22,7 +22,10 @@ export const formStyle = sva({
             display: 'flex',
             flexDir: 'column',
             gap: '44px',
-            alignItems: 'center'
+            alignItems: 'center',
+            mdDown: {
+                width: '90%'
+            }
         },
         form: {
             display: 'flex',
@@ -30,6 +33,9 @@ export const formStyle = sva({
             justifyContent: 'center',
             alignItems: 'center',
             gap: '8px',
+            smDown: {
+                width: '90%'
+            }
         },
         label: {
             display: 'flex',
@@ -37,6 +43,9 @@ export const formStyle = sva({
             textStyle: 'label',
             width: 'fit-content',
             fontWeight: '800',
+            smDown: {
+                width: '100%'
+            }
         },
         inputStyles: {
             border: '2px solid black',
@@ -46,6 +55,9 @@ export const formStyle = sva({
             padding: '4px',
             _focus: {
                 outline: 'none',
+            },
+            smDown: {
+                width: '100%'
             }
         },
         button: {
@@ -61,6 +73,10 @@ export const formStyle = sva({
             fontFamily: 'body',
             _active: {
                 boxShadow: 'none',
+            },
+            mdDown: {
+                width: 'fit-content',
+                padding: '5px 20px'
             }
         },
         loginButton: {
