@@ -195,7 +195,8 @@ while (user_id < 5000):
     
     last_name = lastNames[random.randint(0, len(lastNames) - 1)]
 
-    name = first_name + str.upper(last_name[0])
+    name = first_name + last_name[0]
+    name = name.lower()
     email = first_name + "." + last_name + "@gmail.com"
 
     sexual_preference = sexualPreferences[random.randint(0, 2)]

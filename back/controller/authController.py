@@ -17,8 +17,9 @@ from utils.auth import encrypt_pass, encode_url_identifier
 def signin(validated_data):
     fields = ["username", "password"]
     username, password = (validated_data[key] for key in fields)
+    username = str(username).lower()
     
-    response = makeRequest("SELECT pass FROM user WHERE username = ?", (str(username),))
+    response = makeRequest("SELECT pass FROM user WHERE username = ?", (username,))
     if len(response) < 1 or not bcrypt.check_password_hash(response[0]["pass"], password):
         raise APIAuthError("Mauvais nom d'utilisateur ou mot de passe")
     user = getUserWithProfilePictureByUsername(username)
@@ -41,6 +42,7 @@ def signin(validated_data):
 def signup(validated_data):
     fields = ["username", "password", "email", "first_name", "last_name", "birth_date"]
     username, password, email, first_name, last_name, birth_date = (validated_data[key] for key in fields)
+    username = str(username).lower()
     
     usernameUsed = makeRequest("SELECT COUNT(*) AS count FROM user WHERE username = :username", (str(username),))
     if (int(usernameUsed[0]["count"]) > 0):
