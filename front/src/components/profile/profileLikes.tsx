@@ -11,7 +11,7 @@ const ProfileLikes = ({ }: ProfileLikesProps) => {
     const [list, setList] = useState<Partial<User[]>>([])
 
     const { isLoading } = useApi<Partial<User[]>>({
-        endpoint: 'getLikesOfUser',
+        endpoint: 'getUserLikes',
         setter: setList,
         key: 'likes'
     })
