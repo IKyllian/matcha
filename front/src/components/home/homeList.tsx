@@ -2,19 +2,19 @@ import Card from "front/components/card/card"
 import { homeStyle } from "./home.style"
 import { css } from "styled-system/css"
 import { ListType } from "front/store/homeList"
-import { useStore } from "front/store/store"
+import { useSearchParams } from "react-router-dom"
 
 type HomeListProps = {
   list: ListType
   onLikeClick: (profile_id: number) => void
   onNextPagination: () => void
+  onPrevPagination: () => void
 }
 
-const HomeList = ({ list: { list, reachedEnd }, onLikeClick, onNextPagination }: HomeListProps) => {
+const HomeList = ({ list: { list, reachedEnd }, onLikeClick, onNextPagination, onPrevPagination }: HomeListProps) => {
   const slotsStyles = homeStyle.raw()
-  const onNextPage = useStore(state => state.onNextPage)
-  const onPrevPage = useStore(state => state.onPrevPage)
-  const { page } = useStore(state => state.homeState)
+  let [searchParams, setSearchParams] = useSearchParams();
+  const page = +(searchParams.get('page'))
 
   return (
     <div className={css(slotsStyles.filterListWrapper)}>
@@ -28,8 +28,8 @@ const HomeList = ({ list: { list, reachedEnd }, onLikeClick, onNextPagination }:
       <div className={css({
         display: 'flex'
       })}>
-        {page > 0 && <button onClick={onPrevPage} className={css(slotsStyles.paginationButton)}>Precedent</button>}
-        {!reachedEnd && <button onClick={onNextPage} className={css(slotsStyles.paginationButton)}>Suivant</button>}
+        {page > 0 && <button onClick={onPrevPagination} className={css(slotsStyles.paginationButton)}>Precedent</button>}
+        {!reachedEnd && <button onClick={onNextPagination} className={css(slotsStyles.paginationButton)}>Suivant</button>}
       </div>
     </div>
   )
