@@ -14,7 +14,10 @@ export const profileStyle = sva({
         'profilButtonContainer',
         'starsContainer',
         'lastConnectionText',
-        'profileStatus'
+        'likeStatusText',
+        'profileStatus',
+        'iconsWrapperDesktop',
+        'iconsWrapperMobile'
     ],
     base: {
         profileContainer: {
@@ -22,7 +25,8 @@ export const profileStyle = sva({
             display: 'flex',
             flexDir: 'column',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
+            overflow: 'hidden'
         },
         wrapper: {
             width: '100%',
@@ -102,6 +106,10 @@ export const profileStyle = sva({
         lastConnectionText: {
             fontSize: '12px'
         },
+        likeStatusText: {
+            fontSize: '12px',
+            color: "green"
+        },
         profileStatus: {
             width: '10px',
             height: '10px',
@@ -112,6 +120,18 @@ export const profileStyle = sva({
             '&[data-isonline="1"]': {
                 backgroundColor: '#7FBC8C',
             }
-        }
+        },
+        iconsWrapperDesktop: {
+            display: 'block',
+            mdDown: {
+                display: 'none'
+            }
+        },
+        iconsWrapperMobile: {
+            display: 'none',
+            mdDown: {
+                display: 'block'
+            }
+        },
     }
 })

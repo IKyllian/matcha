@@ -2,6 +2,7 @@ import { useApi } from "front/hook/useApi"
 import { User } from "front/typing/user"
 import { useState } from "react"
 import { CardsList } from "front/components/card/cardsList"
+import Loader from "front/components/utils/loader"
 
 const ProfileBlocks = () => {
     const [viewedList, setViewList] = useState<Partial<User[]>>([])
@@ -15,9 +16,11 @@ const ProfileBlocks = () => {
         return <div>Loading...</div>
     }
     return (
-        <div>
-            <CardsList list={viewedList} cardType='image-content' />
-        </div>
+        <Loader isLoading={isLoading} data={viewedList}>
+            <div>
+                <CardsList list={viewedList} cardType='image-content' />
+            </div>
+        </Loader>
     )
 }
 

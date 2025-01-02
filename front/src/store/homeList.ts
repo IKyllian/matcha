@@ -21,6 +21,7 @@ type HomeListType = {
     suggestionOffset: number
     suggestionIndex: number
     navIndex: number
+    page: number
 }
 
 const defaultList: ListType = {
@@ -36,7 +37,8 @@ const defaultValues: HomeListType = {
     selectedTags: [],
     suggestionOffset: 0,
     suggestionIndex: 0,
-    navIndex: 0
+    navIndex: 0,
+    page: 0
 }
 
 export type OnLikeProps = {
@@ -57,13 +59,17 @@ export type HomeStoreType = {
     onSuggestionNext: () => void,
     onSuggestionPrev: () => void,
     resetList: () => void,
-    onNavClick: (index: number) => void
+    onNavClick: (index: number) => void,
+    onNextPage: () => void,
+    onPrevPage: () => void
 }
 
 export const homeSlice = (set: StoreSetType): HomeStoreType => ({
     homeState: defaultValues,
-    setFilterList: (list: ListType) => set((state) => ({ ...state, homeState: { ...state.homeState, filtersList: { reachedEnd: list.reachedEnd, list: [...state.homeState.filtersList.list, ...list.list] } } })),
-    setSuggestionList: (list: ListType) => set((state) => ({ ...state, homeState: { ...state.homeState, suggestionList: { reachedEnd: list.reachedEnd, list: [...state.homeState.suggestionList.list, ...list.list] } } })),
+    // setFilterList: (list: ListType) => set((state) => ({ ...state, homeState: { ...state.homeState, filtersList: { reachedEnd: list.reachedEnd, list: [...state.homeState.filtersList.list, ...list.list] } } })),
+    // setSuggestionList: (list: ListType) => set((state) => ({ ...state, homeState: { ...state.homeState, suggestionList: { reachedEnd: list.reachedEnd, list: [...state.homeState.suggestionList.list, ...list.list] } } })),
+    setFilterList: (list: ListType) => set((state) => ({ ...state, homeState: { ...state.homeState, filtersList: { reachedEnd: list.reachedEnd, list: list.list } } })),
+    setSuggestionList: (list: ListType) => set((state) => ({ ...state, homeState: { ...state.homeState, suggestionList: { reachedEnd: list.reachedEnd, list: list.list } } })),
     updateProfileListLike: ({ listKey, profile_id }: OnLikeProps) => set((state) => {
         const userFound = state.homeState[listKey].list.find(l => l.user.id === profile_id)
         if (userFound) {
@@ -92,8 +98,9 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
             },
             filters: {
                 ...filters,
-                offset: reset ? 0 : state.homeState.filters.offset + OFFSET_PAGINATION
-            }
+                offset: reset ? 0 : state.homeState.page * OFFSET_PAGINATION
+            },
+            page: reset ? 0 : state.homeState.page
         }
     })
     ),
@@ -113,7 +120,6 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
         if (value === state.homeState.sort) {
             return { ...state }
         }
-        // const newFilterList = sortListByKey({ list: state.homeState.filtersList, order: value % 2, key: getKeyBySortValue(value) })
         return {
             ...state,
             homeState: {
@@ -173,6 +179,34 @@ export const homeSlice = (set: StoreSetType): HomeStoreType => ({
             ...state.homeState,
             navIndex: index
         }
-    })
-    )
+    })),
+    onNextPage: () => set((state) => {
+        const newPage = state.homeState.page + 1
+        return {
+            ...state,
+            homeState: {
+                ...state.homeState,
+                page: newPage,
+
+                filters: {
+                    ...state.homeState.filters,
+                    offset: newPage * OFFSET_PAGINATION
+                }
+            },
+        }
+    }),
+    onPrevPage: () => set((state) => {
+        const newPage = state.homeState.page > 0 ? state.homeState.page - 1 : 0
+        return {
+            ...state,
+            homeState: {
+                ...state.homeState,
+                page: newPage,
+                filters: {
+                    ...state.homeState.filters,
+                    offset: newPage * OFFSET_PAGINATION
+                }
+            },
+        }
+    }),
 })

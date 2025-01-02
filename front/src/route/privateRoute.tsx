@@ -28,7 +28,6 @@ const PrivateRoute = ({ children }) => {
             <div className={
                 css({
                     marginTop: showBanner ? '130px' : '70px',
-                    display: 'inline-block',
                     width: '100%',
                     mdDown: {
                         marginTop: showBanner ? '50px' : '0'

@@ -17,8 +17,9 @@ from utils.auth import encrypt_pass, encode_url_identifier
 def signin(validated_data):
     fields = ["username", "password"]
     username, password = (validated_data[key] for key in fields)
+    username = str(username).lower()
     
-    response = makeRequest("SELECT pass FROM user WHERE username = ?", (str(username),))
+    response = makeRequest("SELECT pass FROM user WHERE username = ?", (username,))
     if len(response) < 1 or not bcrypt.check_password_hash(response[0]["pass"], password):
         raise APIAuthError("Mauvais nom d'utilisateur ou mot de passe")
     user = getUserWithProfilePictureByUsername(username)
@@ -41,6 +42,7 @@ def signin(validated_data):
 def signup(validated_data):
     fields = ["username", "password", "email", "first_name", "last_name", "birth_date"]
     username, password, email, first_name, last_name, birth_date = (validated_data[key] for key in fields)
+    username = str(username).lower()
     
     usernameUsed = makeRequest("SELECT COUNT(*) AS count FROM user WHERE username = :username", (str(username),))
     if (int(usernameUsed[0]["count"]) > 0):
@@ -56,8 +58,26 @@ def signup(validated_data):
             ipAddress = os.getenv("PUBLIC_IP")
         data = ipdata.lookup(ipAddress)
         encryptedPass = encrypt_pass(password)
-        user_id = makeInsertRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, is_activated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (str(username), encryptedPass, str(email), str(first_name), str(last_name), str(birth_date), str(2.5), str(data['latitude']), str(data['longitude']), str(0)))
+        userData = {
+            'username': username,
+            'pass': encryptedPass,
+            'email': email,
+            'first_name': first_name,
+            'last_name': last_name,
+            'birth_date': birth_date,
+            'fame_rating': 2.5,
+            'latitude': data['latitude'],
+            'longitude': data['longitude'],
+            'is_activated': 0,
+            'sexual_preference': 'B',
+            'is_valid': 0
+            
+        }
+        user_id = makeInsertRequest("""
+            INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, is_activated, sexual_preference, is_valid)
+            VALUES (:username, :pass, :email, :first_name, :last_name, :birth_date, :fame_rating, :latitude, :longitude, :is_activated, :sexual_preference, :is_valid)
+            """
+            , userData)
     except :
         raise APIAuthError('Location est invalide')
     urlIdentifier = encode_url_identifier(user_id)
@@ -78,6 +98,17 @@ def getAuth():
         return jsonify(user=user, notifications=notifications)
     except :
         raise APIAuthError('Token invalide')
+
+@validate_request({
+    "url_identifier": {"required": True, "type": str},
+})   
+def checkUrlIdentifier(validated_data):
+    print("validated_data ", validated_data)
+    urlIdentifier = validated_data["url_identifier"]
+    response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
+    if (not response or len(response) < 1):
+        raise NotFoundError("No matching account found with the provided urlIdentifier")
+    return jsonify(ok=True)
 
 @validate_request({
     "url_identifier": {"required": True, "type": str},

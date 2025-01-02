@@ -55,11 +55,14 @@ def likeUserById(user_id, validated_data):
     return jsonify(ok=True)
 
 @token_required
-@validate_request({
-    "liked_id": {"required": True, "type": int, "min": 0},
-})
-def getUserLikes(user_id, validated_data, liked_id):
-    likes = makeRequest("SELECT user.id, user.first_name, user.last_name, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name FROM like LEFT JOIN user ON like.liked_user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE like.liked_user_id = ?", (str(liked_id),))
+def getUserLikes(user_id):
+    likes = makeRequest("""
+        SELECT user.id, user.first_name, user.last_name, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name
+        FROM like
+        JOIN user ON like.user_id = user.id
+        LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1
+        WHERE like.liked_user_id = :target_user_id;                    
+    """, {'target_user_id': user_id})
     likes = decodeImagesFromArray(likes)
     return jsonify(likes=likes)
 
