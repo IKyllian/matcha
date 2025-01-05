@@ -40,12 +40,11 @@ const Sidebar = ({ isOpen, onCloseSidebar }: SidebarProps) => {
         navigate(`/chat/${id}`)
     }
 
+    if (!isLoading && chatSidebar?.length === 0) return null
+
     return (
         <Loader isLoading={isLoading} data={chatSidebar}>
             <div className={css(slotsStyles.sidebarContainer)} data-isopen={+isOpen}>
-                {!isLoading && chatSidebar?.length === 0 && (
-                    <span>Pas de conversation pour le moment</span>
-                )}
                 {
                     !isLoading && chatSidebar?.length > 0 && (
                         chatSidebar.map((chat) => (
