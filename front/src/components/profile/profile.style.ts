@@ -26,7 +26,10 @@ export const profileStyle = sva({
             flexDir: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            mdDown: {
+                marginBottom: '42px'
+            },
         },
         wrapper: {
             width: '100%',

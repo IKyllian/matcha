@@ -55,18 +55,6 @@ def likeUserById(user_id, validated_data):
     return jsonify(ok=True)
 
 @token_required
-def getUserLikes(user_id):
-    likes = makeRequest("""
-        SELECT user.id, user.first_name, user.last_name, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name
-        FROM like
-        JOIN user ON like.user_id = user.id
-        LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1
-        WHERE like.liked_user_id = :target_user_id;                    
-    """, {'target_user_id': user_id})
-    likes = decodeImagesFromArray(likes)
-    return jsonify(likes=likes)
-
-@token_required
 def getMatchesOfUser(user_id):
     matches = []
     matched_users_id = getMatchesOfUserIds(user_id)
@@ -76,6 +64,24 @@ def getMatchesOfUser(user_id):
             foundUser["distance"] = getDistanceOfUser(user_id, user['matched_user'])
             matches.append(foundUser)
     return jsonify(matches=matches)
+
+@token_required
+def getUserLikes(user_id):
+    # First we get a list of matches ids
+    matches = getMatchesOfUserIds(user_id)
+    matchIds = [match["matched_user"] for match in matches]
+    likes = makeRequest("""
+        SELECT user.id, user.first_name, user.last_name, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name
+        FROM like
+        JOIN user ON like.user_id = user.id
+        LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1
+        LEFT JOIN block ON (block.user_id = :target_user_id AND block.blocked_user_id = user.id) 
+                        OR (block.user_id = user.id AND block.blocked_user_id = :target_user_id)
+        WHERE like.liked_user_id = :target_user_id AND block.user_id IS NULL;                    
+    """, {'target_user_id': user_id})
+    filteredLikes = [like for like in likes if like['id'] not in matchIds]
+    likes = decodeImagesFromArray(filteredLikes)
+    return jsonify(likes=likes)
 
 @token_required
 def getLikesOfUser(user_id):
@@ -88,7 +94,7 @@ def getLikesOfUser(user_id):
                         FROM like
                         LEFT JOIN user ON like.liked_user_id = user.id
                         LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1
-                        LEFT JOIN block ON (block.user_id = ? AND block.blocked_user_id = user.id) 
+                        LEFT JOIN block ON (block.user_id = ? AND block.blocked_user_id = user.id)
                         OR (block.user_id = user.id AND block.blocked_user_id = ?)
                         WHERE like.user_id = ? AND block.user_id IS NULL''', (str(user_id), str(user_id), str(user_id)))
 

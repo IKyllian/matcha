@@ -43,8 +43,8 @@ const Chat = ({ chatId }: ChatProps) => {
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
-        reset
     } = useForm<FormValues>()
     const { isLoading } = useApi<ChatType>({ endpoint: "chat", dependencies: [chatId], params: { id: chatId }, setter: setChat })
     const recipient = chat?.chatter
@@ -65,7 +65,7 @@ const Chat = ({ chatId }: ChatProps) => {
                 sender_id: user.id,
                 message: data.message,
             })
-            reset()
+            setValue('message', '')
         }
     }
 

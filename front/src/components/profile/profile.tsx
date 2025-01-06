@@ -115,8 +115,8 @@ const Profile = ({ profile, isLoggedUser }: ProfileProps) => {
             {
                 !isLoggedUser && (
                     <div className={css(slotsStyles.profilButtonContainer)}>
-                        {isProfileMatched && <IconButton buttonIcon={BUTTONS_ICON["MESSAGE"]} onClick={onMessageClick} />}
-                        <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={profile.like} onClick={onLikeClick} />
+                        {isProfileMatched && !profile.block && <IconButton buttonIcon={BUTTONS_ICON["MESSAGE"]} onClick={onMessageClick} />}
+                        {!profile.block && <IconButton buttonIcon={BUTTONS_ICON["LIKE"]} status={profile.like} onClick={onLikeClick} />}
                         <IconButton buttonIcon={BUTTONS_ICON["BLOCKED"]} status={profile.block} onClick={onBlockclick} />
                         <IconButton buttonIcon={BUTTONS_ICON["REPORT"]} onClick={onReportClick} />
                     </div>
@@ -151,17 +151,14 @@ const Profile = ({ profile, isLoggedUser }: ProfileProps) => {
                                 <ChipsList chipsList={profile.user.tags} />
                             }
                         </div>
-                        {/* {!profile.like && !profile.liked && (<span className={css(slotsStyles.likeStatusText)}>Cette personne ne vous like pas</span>)} */}
                         {!profile.like && profile.liked && (<span className={css(slotsStyles.likeStatusText)}>Cette personne vous a like</span>)}
-                        {isProfileMatched && (<span className={css(slotsStyles.likeStatusText)}>Vous etes match avec cette personne</span>)}
+                        {isProfileMatched && !profile.block && (<span className={css(slotsStyles.likeStatusText)}>Vous etes match avec cette personne</span>)}
                         {profile.user.last_connection && !profile.user.is_connected && <p className={css(slotsStyles.lastConnectionText)}>Derniere connexion: {getMessageDateString(profile.user.last_connection)}</p>}
                     </div>
                 </div>
                 <Tabs tabsContent={tabsContent} navIndex={navIndex} handleClick={handleClick} />
                 {get_tab_content()}
-
             </div>
-
         </div>
     )
 }
