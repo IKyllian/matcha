@@ -129,10 +129,6 @@ def getProfiles(user_id, validated_data):
     if (sort == 5):
         requestQuery += ' ORDER BY user.fame_rating DESC'
     
-    # print("Count requestQuery = ", "COUNT (" + requestQuery + ")")
-
-    # result_number = makeRequest("COUNT (" + requestQuery + ")", queryParams)
-    
     requestQuery += ' LIMIT 100 OFFSET ' + str(offset)
     
     print("requestQuery = ", requestQuery)
@@ -143,8 +139,6 @@ def getProfiles(user_id, validated_data):
     if (len(users) < 100):
         reachedEnd = True
     users = decodeImagesFromArray(users)
-    # users = filteredForSexualOrientation(user, users)
-    # users = filteredForInteraction(users)
 
     list = []
     for user in users:
@@ -181,11 +175,13 @@ def getSuggested(user_id, validated_data):
     tags = [uTag["id"] for uTag in user["tags"]]
 
 
+    #First we get every users that fit our restrictions
     queryParams = {}
     requestQuery = f"SELECT {str(distance)} user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, is_activated, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name, like.id AS like FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
     requestQuery += f" LEFT JOIN block ON user.id = block.blocked_user_id AND block.user_id = {str(user_id)} "
     requestQuery += f" LEFT JOIN like ON user.id = like.liked_user_id AND like.user_id = {str(user_id)} "
     
+    # Since the conditions are always the same we can hardcode the query
     whereConditions = [
         f"user.id != {str(user_id)}",
         "block.blocked_user_id IS NULL ",
@@ -210,12 +206,12 @@ def getSuggested(user_id, validated_data):
         'min_fame': min_fame
     }
 
+    # We also wan users to have at least one tag in common if current user has tags
     if (tags and len(tags) > 0):
         tagConditions = " INNER JOIN user_tag ut ON user.id = ut.user_id"
         tag_params = [f":tag_{i}" for i in range(len(tags))]
         whereConditions.append(f"ut.tag_id IN ({', '.join(tag_params)})")
         queryParams.update({f"tag_{i}": tag for i, tag in enumerate(tags)})
-        print("tagConditions=", tagConditions)
         requestQuery += tagConditions
 
     if whereConditions:
@@ -223,14 +219,10 @@ def getSuggested(user_id, validated_data):
 
     groupByClose = ' GROUP BY user.id '
     requestQuery += groupByClose
-
-    # requestQuery += ' LIMIT 100 OFFSET ' + str(offset)
     
     print("requestQuery = ", requestQuery)
     print("queryParams = ", queryParams)
     users = makeRequest(requestQuery, queryParams)
-    # if (len(users) < 100):
-    #     reachedEnd = True
     users = decodeImagesFromArray(users)
 
     # We arbitrarily decided that dist was more important followed by age and then by fame
@@ -238,6 +230,7 @@ def getSuggested(user_id, validated_data):
     distance_weight = 2
     fame_weight = 0.5
 
+    # We calculate user score and insert it in user object
     list = []
     for user in users:
         user["age"] = getAgeFromTime(user["birth_date"])
@@ -254,9 +247,11 @@ def getSuggested(user_id, validated_data):
 
         user["score"] = weighted_score
         list.append({"like": True if user['like'] else False, "user": user})
+
+    # We sort users by their score
     list.sort(key=lambda x: x["user"]["score"], reverse=True)
 
-    
+    # We only get a 'page' from offset to offset+100 to avoid lag in front
     list = list[offset:100]
     if (len(list) < 100):
         reachedEnd = True
