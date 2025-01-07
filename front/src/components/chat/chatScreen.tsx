@@ -20,16 +20,21 @@ const ChatScreen = () => {
 
     return (
         <div className={css(slotsStyles.chatScreenContainer)}>
-            <Sidebar isOpen={isSidebarOpen} onCloseSidebar={() => setIsSidebarOpen(false)} />
             {
-                chatSidebar?.length > 0 &&
-                <div className={css(slotsStyles.arrowContainer)} data-issidebaropen={+isSidebarOpen} onClick={onArrowClick}>
-                    {isSidebarOpen ? <MdKeyboardArrowLeft /> : <MdKeyboardArrowRight />}
-                </div>
-            }
-            {
-                chatId &&
-                <Chat chatId={+chatId} />
+                chatSidebar?.length > 0 ? (
+                    <>
+                        <Sidebar isOpen={isSidebarOpen} onCloseSidebar={() => setIsSidebarOpen(false)} />
+                        <div className={css(slotsStyles.arrowContainer)} data-issidebaropen={+isSidebarOpen} onClick={onArrowClick}>
+                            {isSidebarOpen ? <MdKeyboardArrowLeft /> : <MdKeyboardArrowRight />}
+                        </div>
+                        {
+                            chatId &&
+                            <Chat chatId={+chatId} />
+                        }
+                    </>
+                ) : (
+                    <span>Pas de conversation pour le moment</span>
+                )
             }
         </div>
     )
