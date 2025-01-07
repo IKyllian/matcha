@@ -40,7 +40,6 @@ const Chat = ({ chatId }: ChatProps) => {
     const { user } = useStore(state => state.authStore)
     const setChat = useStore(state => state.setChat)
     const sendMessage = useStore(state => state.sendMessage)
-    const updateSidebarMessage = useStore(state => state.updateSidebarMessage)
     const {
         register,
         handleSubmit,
@@ -66,7 +65,6 @@ const Chat = ({ chatId }: ChatProps) => {
                 sender_id: user.id,
                 message: data.message,
             })
-            updateSidebarMessage({ message: data.message, chatId })
             setValue('message', '')
         }
     }

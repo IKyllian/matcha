@@ -51,7 +51,7 @@ def socket_auth(f):
                 raise DecoratorError("Votre compte n'est pas actif, veuillez valider votre email")
         except DecoratorError as e:
             raise TokenError(e.args[0])
-        kwargs['user_id'] = user_id
+        kwargs['user_id'] = int(user_id)
         return f(*args, **kwargs)
     return socket_auth_decorator
 

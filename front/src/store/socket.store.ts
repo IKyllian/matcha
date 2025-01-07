@@ -2,6 +2,7 @@ import { MessageType } from "front/typing/chat";
 import { io, Socket } from "socket.io-client"
 import { NotificationType } from "front/typing/notification";
 import { StoreSetType } from "front/typing/store";
+import { AlertTypeEnum } from "front/typing/alert";
 
 export type SocketStoreType = {
     socket: Socket | undefined,
@@ -30,12 +31,13 @@ export const socketSlice = (set: StoreSetType): SocketStoreType => ({
             console.info("DISCONECTED")
         })
 
-        socket.on('error', (message: string) => {
-            console.info('Socket Error message = ', message)
+        socket.on('error', (error: { message: string }) => {
+            console.info('Socket Error message = ', error.message)
+            state.addAlert({ type: AlertTypeEnum.ERROR, message: error.message })
         })
 
         socket.on('receiveMessage', (message: MessageType) => {
-            console.info("message = ", message)
+            console.info("message reveived = ", message)
             state.addMessage(message)
             state.updateLastMessage(message)
         })

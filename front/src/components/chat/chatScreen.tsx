@@ -33,7 +33,7 @@ const ChatScreen = () => {
                         }
                     </>
                 ) : (
-                    <span>Pas de conversation pour le moment</span>
+                    <span>Pas de conversation pour le moment.</span>
                 )
             }
         </div>
