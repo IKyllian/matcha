@@ -52,7 +52,7 @@ const Home = () => {
 
   const onSortChange = (value: number) => {
     sortChange(value)
-    setSearchParams({page: '0'})
+    setSearchParams({ page: '0' })
   }
 
   const onSidebarClose = () => {
@@ -62,7 +62,7 @@ const Home = () => {
   const onFilterChange = (filters: UrlParamsType) => {
     setFilters({ filters, reset: true })
     setShowSidebar(false)
-    setSearchParams({page: '0'})
+    setSearchParams({ page: '0' })
   }
   const { isLoading } = useApi<ListType>({
     endpoint: 'profile',
@@ -83,12 +83,12 @@ const Home = () => {
   }
 
   const onNextPagination = () => {
-    setSearchParams({page: `${page + 1}`})
+    setSearchParams({ page: `${page + 1}` })
     onScrollClick()
   }
   const onPrevPagination = () => {
     if (+page > 0) {
-      setSearchParams({page: `${page - 1}`})
+      setSearchParams({ page: `${page - 1}` })
       onScrollClick()
     }
   }
@@ -111,7 +111,6 @@ const Home = () => {
             TABS_CONTENT[navIndex] === "Liste" && (
               <div className={css({ display: 'flex', justifyContent: 'center' })}>
                 <Select onChange={onSortChange} defaultValue={sort} />
-                <span>Length: {listFilters.length}</span>
               </div>
             )
           }
