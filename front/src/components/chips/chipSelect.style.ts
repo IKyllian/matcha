@@ -16,6 +16,9 @@ export const chipSelectStyle = sva({
             justifyContent: 'center',
             alignItems: 'center',
             overflowY: 'scroll',
+            '&::-webkit-scrollbar': {
+                display: 'none'
+            },
             height: '150px',
             padding: '12px 4px'
         },

@@ -40,6 +40,9 @@ export const chatStyle = sva({
             gap: '8px',
             flex: 1,
             overflowY: 'scroll',
+            '&::-webkit-scrollbar': {
+                display: 'none'
+            }
         },
         messageItem: {
             padding: '6px 10px',
@@ -57,7 +60,6 @@ export const chatStyle = sva({
         },
         sender: {
             alignSelf: 'flex-end',
-            // backgroundColor: '#cffce3'
             backgroundColor: '#ADDAFA',
         },
         chatFormContainer: {
