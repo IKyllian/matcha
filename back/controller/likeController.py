@@ -2,7 +2,7 @@ from flask import jsonify
 from controller.socketController import NotifType, sendNotificationEvent
 from services.user import getDistanceOfUser, getUserWithImagesById, getUserWithProfilePictureById
 from database_utils.requests import *
-from decorators.authDecorator import blocked_check, token_required
+from decorators.authDecorator import blocked_check, auth
 from decorators.dataDecorator import validate_request
 from errors.httpErrors import ForbiddenError
 from utils.images import decodeImagesFromArray
@@ -19,7 +19,7 @@ def updateFame(user_id):
     fame = calculate_fame(likes[0]["likes_received"], likes[0]["likes_given"])
     makeRequest("UPDATE user SET fame_rating = ? WHERE id = ?", ((str(fame)), (str(user_id))))
 
-@token_required
+@auth()
 @validate_request({
     "user_to_like_id": {"required": True, "type": int, "min": 0},
 })
@@ -54,7 +54,7 @@ def likeUserById(user_id, validated_data):
     updateFame(user_to_like_id)
     return jsonify(ok=True)
 
-@token_required
+@auth()
 def getMatchesOfUser(user_id):
     matches = []
     matched_users_id = getMatchesOfUserIds(user_id)
@@ -65,7 +65,7 @@ def getMatchesOfUser(user_id):
             matches.append(foundUser)
     return jsonify(matches=matches)
 
-@token_required
+@auth()
 def getUserLikes(user_id):
     # First we get a list of matches ids
     matches = getMatchesOfUserIds(user_id)
@@ -83,7 +83,7 @@ def getUserLikes(user_id):
     likes = decodeImagesFromArray(filteredLikes)
     return jsonify(likes=likes)
 
-@token_required
+@auth()
 def getLikesOfUser(user_id):
     # First we get a list of matches ids
     matches = getMatchesOfUserIds(user_id)

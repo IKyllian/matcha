@@ -3,7 +3,7 @@ import random
 from flask import jsonify, request
 from services.relations import *
 from services.user import *
-from decorators.authDecorator import token_required
+from decorators.authDecorator import auth
 from decorators.dataDecorator import validate_request
 from database_utils.requests import *
 from database_utils.convert import getAgeFromTime
@@ -22,11 +22,11 @@ def calculate_date_from_age(years):
     today = datetime.now()
     return (today - timedelta(days=years * 365.25)).strftime('%Y-%m-%d')
 
-@token_required
+@auth()
 def getTags(user_id):
     return jsonify(tags=getAllTags())
 
-@token_required
+@auth()
 @validate_request({
     "tag_name": {"type": str, "min": 2, "max": 30, "isalnum": True},
 })
@@ -42,7 +42,7 @@ def createTag(user_id, validated_data):
         raise ForbiddenError('Error during tag creation')
     return jsonify(tag=tag[0])
 
-@token_required
+@auth(False)
 @validate_request({
     "min_age": {"type": int, "min": 18, "max": 100},
     "max_age": {"type": int, "min": 18, "max": 100},
@@ -147,7 +147,7 @@ def getProfiles(user_id, validated_data):
         list.append({"like": True if user['like'] else False, "user": user})
     return jsonify(list=list, reachedEnd=reachedEnd)
 
-@token_required
+@auth()
 @validate_request({
     "offset": {"type": int, "min": 0}
 })
@@ -280,7 +280,7 @@ def filteredForInteraction(users):
     ]
     return filtered_users
 
-@token_required
+@auth()
 @validate_request({
     "profile_id": {"required": True, "type": int, "min": 0},
 })
@@ -299,7 +299,7 @@ def getProfileById(user_id, validated_data, profile_id): # validated_data doit Ã
     block = getBlocks(user_id, profile_id)
     return jsonify(user=user, like=(len(like) > 0), liked=(len(liked) > 0), block=(len(block) > 0))
 
-@token_required
+@auth(False)
 def getSettings(user_id):
     print("user_id = ", user_id)
     user = getUserWithImagesById(user_id)
@@ -319,7 +319,7 @@ def checkImages(images, requiredProfilePicture = False):
         return False
     return True
 
-@token_required
+@auth(False)
 @validate_request({
     "username": {"required": True, "type": str, "min": 3, "max": 20},
     "email": {"required": True, "type": str, "regex": r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'},
@@ -398,7 +398,7 @@ def setSettings(user_id, validated_data):
         makeRequest("UPDATE user SET is_valid = '0' WHERE id = :user_id", (user_id,))
     return jsonify(user=user)
 
-@token_required
+@auth()
 def getViewHistory(user_id):
     response = makeRequest("SELECT user_id FROM view WHERE viewed_user_id = ?", (str(user_id)))
     return jsonify(history=response)
