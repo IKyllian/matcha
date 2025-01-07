@@ -95,7 +95,12 @@ def getProfiles(user_id, validated_data):
         queryParams.update({'min_fame': min_fame})
     if (not display_liked):
         whereConditions.append(f"(like.id) IS NULL")
-    
+    userPref = user["sexual_preference"]
+    userGender = user["gender"]
+    if (userPref != "B"):
+        whereConditions.append(f"user.gender = '{userPref}'")
+    whereConditions.append(f"(user.sexual_preference = '{userGender}' OR user.sexual_preference = 'B')")
+    whereConditions.append(f"(user.is_valid = '1')")
     if (tags and len(tags) > 0):
         tagJoin = ""
         i:int = 1
@@ -129,12 +134,12 @@ def getProfiles(user_id, validated_data):
     print("requestQuery = ", requestQuery)
     print("queryParams = ", queryParams)
     users = makeRequest(requestQuery, queryParams)
+
     # if there are less than 100 users, it means we got to the end of the request
     if (len(users) < 100):
         reachedEnd = True
     users = decodeImagesFromArray(users)
-    users = filteredForSexualOrientation(user, users)
-    users = filteredForInteraction(users)
+
     list = []
     for user in users:
         user["age"] = getAgeFromTime(user["birth_date"])
@@ -157,82 +162,100 @@ def getSuggested(user_id, validated_data):
     user_longitude = str(user["longitude"])
     distance = f"(6371 * acos(cos(radians({user_latitude})) * cos(radians(user.latitude)) * cos(radians(user.longitude) - radians({user_longitude})) + sin(radians({user_latitude})) * sin(radians(user.latitude)))) AS distance,"
 
-    user_age = getAgeFromTime(user["birth_date"])
-    min_age = user_age - 10
-    if (min_age < 18):
-        min_age = 18
-    max_age = user_age + 10 
-    if (max_age > 100):
-        max_age = 100
+    max_pos = 400
+    max_age_diff = 10
 
-    min_fame = user["fame_rating"] - 1.0
-    if (min_fame < 1.0):
-        min_fame = 1.0
+    user_age = getAgeFromTime(user["birth_date"])
+    min_age = max(user_age - max_age_diff, 18)
+    max_age = min(user_age + max_age_diff, 100)
+
+    min_fame = max(user["fame_rating"] - 1.0, 1.0)
     
     user["tags"] = getUserTags(user_id)
-    tags = []
-    for uTag in user["tags"]:
-        tags.append(uTag["id"])
+    tags = [uTag["id"] for uTag in user["tags"]]
 
-    max_pos = 400
 
+    #First we get every users that fit our restrictions
     queryParams = {}
     requestQuery = f"SELECT {str(distance)} user.id, username, first_name, last_name, birth_date, email, gender, sexual_preference, bio, fame_rating, is_activated, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name, like.id AS like FROM user LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1"
     requestQuery += f" LEFT JOIN block ON user.id = block.blocked_user_id AND block.user_id = {str(user_id)} "
     requestQuery += f" LEFT JOIN like ON user.id = like.liked_user_id AND like.user_id = {str(user_id)} "
-    whereConditions = []
-    whereConditions.append(f"user.id != {str(user_id)}")
+    
+    # Since the conditions are always the same we can hardcode the query
+    whereConditions = [
+        f"user.id != {str(user_id)}",
+        "block.blocked_user_id IS NULL ",
+        f"user.birth_date <= :min_birth_date",
+        f"user.birth_date >= :max_birth_date",
+        f"distance <= :max_pos",
+        f"user.fame_rating >= :min_fame",
+        f"(like.id) IS NULL",
+        f"user.is_valid = '1'"
+    ]
+    
+    userPref = user["sexual_preference"]
+    userGender = user["gender"]
+    if (userPref != "B"):
+        whereConditions.append(f"user.gender = '{userPref}'")
+    whereConditions.append(f"(user.sexual_preference = '{userGender}' OR user.sexual_preference = 'B')")
 
-    whereConditions.append("block.blocked_user_id IS NULL ")
-    min_birth_date = calculate_date_from_age(int(min_age))
-    whereConditions.append(f"user.birth_date <= :min_birth_date")
-    queryParams.update({'min_birth_date': str(min_birth_date)})
+    queryParams = {
+        'min_birth_date': str(calculate_date_from_age(min_age)),
+        'max_birth_date': str(calculate_date_from_age(max_age)),
+        'max_pos': max_pos,
+        'min_fame': min_fame
+    }
 
-    max_birth_date = calculate_date_from_age(int(max_age))
-    whereConditions.append(f"user.birth_date >= :max_birth_date")
-    queryParams.update({'max_birth_date': str(max_birth_date)})
-    
-    whereConditions.append(f"distance <= :max_pos")
-    queryParams.update({'max_pos': max_pos})
-    
-    whereConditions.append(f"user.fame_rating >= :min_fame")
-    queryParams.update({'min_fame': min_fame})
-    
-    whereConditions.append(f"(like.id) IS NULL")
-    
+    # We also wan users to have at least one tag in common if current user has tags
     if (tags and len(tags) > 0):
         tagConditions = " INNER JOIN user_tag ut ON user.id = ut.user_id"
         tag_params = [f":tag_{i}" for i in range(len(tags))]
         whereConditions.append(f"ut.tag_id IN ({', '.join(tag_params)})")
         queryParams.update({f"tag_{i}": tag for i, tag in enumerate(tags)})
-        print("tagConditions=", tagConditions)
         requestQuery += tagConditions
 
-    if (len(whereConditions) > 0):
-        requestQuery += ' WHERE '
-        requestQuery += " AND ".join(whereConditions)
+    if whereConditions:
+        requestQuery += ' WHERE ' + " AND ".join(whereConditions)
 
     groupByClose = ' GROUP BY user.id '
     requestQuery += groupByClose
-
-    requestQuery += ' LIMIT 100 OFFSET ' + str(offset)
     
     print("requestQuery = ", requestQuery)
     print("queryParams = ", queryParams)
     users = makeRequest(requestQuery, queryParams)
-    if (len(users) < 100):
-        reachedEnd = True
     users = decodeImagesFromArray(users)
-    users = filteredForSexualOrientation(user, users)
-    users = filteredForInteraction(users)
 
+    # We arbitrarily decided that dist was more important followed by age and then by fame
+    age_weight = 1
+    distance_weight = 2
+    fame_weight = 0.5
+
+    # We calculate user score and insert it in user object
     list = []
     for user in users:
         user["age"] = getAgeFromTime(user["birth_date"])
         del user["birth_date"]
+        age_diff = abs(user["age"] - user_age)
+        dist = user["distance"]
+        fame_rating = user["fame_rating"]
+
+        normalizedAgeDiff = 1 - (age_diff / max_age_diff)
+        normalizedDist = 1 - (dist / max_pos)
+        normalizedFameRating = 1 - (fame_rating / 5)
+
+        weighted_score = (normalizedAgeDiff * age_weight) + (normalizedDist * distance_weight) + (normalizedFameRating * fame_weight)
+
+        user["score"] = weighted_score
         list.append({"like": True if user['like'] else False, "user": user})
-    #Instead of sorting, we randomize the list of users we get
-    random.shuffle(list)
+
+    # We sort users by their score
+    list.sort(key=lambda x: x["user"]["score"], reverse=True)
+
+    # We only get a 'page' from offset to offset+100 to avoid lag in front
+    list = list[offset:100]
+    if (len(list) < 100):
+        reachedEnd = True
+
     return jsonify(list=list, reachedEnd=reachedEnd)
 
 def filteredForSexualOrientation(currentUser, users):
@@ -368,6 +391,10 @@ def setSettings(user_id, validated_data):
                     (base64.b64encode(image["file"].read()), image["mime_type"], image['file_name'], str(user_id), bool(image["is_profile_picture"])))
 
     user = getUserWithProfilePictureById(user_id)
+    if isAccountValid(user):
+        makeRequest("UPDATE user SET is_valid = '1' WHERE id = :user_id", (user_id,))
+    else:
+        makeRequest("UPDATE user SET is_valid = '0' WHERE id = :user_id", (user_id,))
     return jsonify(user=user)
 
 @token_required

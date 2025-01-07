@@ -39,7 +39,8 @@ CREATE TABLE user (
     is_activated        BOOLEAN                         NOT NULL DEFAULT 0,
     url_identifier      TEXT                            NULL,
     is_connected        BOOLEAN                         NOT NULL DEFAULT 0,
-    last_connection     TEXT                            NULL
+    last_connection     TEXT                            NULL,
+    is_valid            BOOLEAN                         NOT NULL
 );
 
 CREATE TABLE image (

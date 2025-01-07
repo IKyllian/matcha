@@ -62,6 +62,7 @@ def handle_disconnect(data, user_id):
 def handle_send_message(data, user_id):
     sender_id = data.get('sender_id')
     receiver_id = data.get('receiver_id')
+    receiver_id = str(receiver_id)
     blocks = makeRequest('''SELECT block.id FROM block
                         WHERE (block.user_id = :user_id AND block.blocked_user_id = :user_to_interact_id)
                         OR (block.user_id = :user_to_interact_id AND block.blocked_user_id = :user_id)''',
@@ -82,7 +83,7 @@ def handle_send_message(data, user_id):
     print(f"Message from {sender_id} to {receiver_id}: {message}")
 
     # Ensure the receiver is identified and connected
-    if receiver_id in user_socket_map:
+    if (receiver_id) in user_socket_map:
         receiver_socket_id = user_socket_map[receiver_id]
         emit('receiveMessage', {'sender_id': sender_id, 'receiver_id': receiver_id,'created_at': messageCreated[0]["created_at"], 'id': messageCreated[0]["id"], 'message': message}, room=receiver_socket_id)
     else:
@@ -96,7 +97,7 @@ def sendNotificationEvent(message, sender, receiver_id, type: NotifType):
     sender_id = sender["id"]
     created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     isBlocked = makeRequest("SELECT 1 FROM block WHERE user_id = ? AND blocked_user_id = ?", (str(receiver_id), str(sender_id)))
-    print(isBlocked)
+    receiver_id = str(receiver_id)
     if (len(isBlocked) >=1):
         return
     
@@ -104,8 +105,9 @@ def sendNotificationEvent(message, sender, receiver_id, type: NotifType):
                         (str(message), str(sender_id), str(receiver_id), str(created_at), "0", str(type.value)))
     notif = makeRequest("SELECT * FROM notification WHERE id = ?", (notifId,))
     print("Notif Created :", notif)
-    if not receiver_id in user_socket_map:
-        return
-    else:
+    print("receiver_id in user_socket_map=", receiver_id in user_socket_map)
+    if receiver_id in user_socket_map:
         receiver_socket_id = user_socket_map[receiver_id]
         socketio.emit('sendNotification', {'sender_id': sender_id, 'receiver_id': receiver_id,'created_at': created_at, 'id': notif[0]["id"], 'content': message, 'sender': sender, "notif_type": type.value}, room=receiver_socket_id)
+    else:
+        print(f"User {receiver_id} not connected, so not notified")

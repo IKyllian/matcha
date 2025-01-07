@@ -145,6 +145,10 @@ const Profile = ({ profile, isLoggedUser }: ProfileProps) => {
                                 <ChipsList chipsList={profile.user.tags} />
                             }
                         </div>
+                        {/* {!profile.like && !profile.liked && (<span className={css(slotsStyles.likeStatusText)}>Cette personne ne vous like pas</span>)} */}
+                        {!profile.like && profile.liked && (<span className={css(slotsStyles.likeStatusText)}>Cette personne vous a like</span>)}
+                        {isProfileMatched && (<span className={css(slotsStyles.likeStatusText)}>Vous etes match avec cette personne</span>)}
+
                         {profile.user.last_connection && !profile.user.is_connected && <p className={css(slotsStyles.lastConnectionText)}>Derniere connexion: {getMessageDateString(profile.user.last_connection)}</p>}
                     </div>
                 </div>

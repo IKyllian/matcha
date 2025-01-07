@@ -18,14 +18,14 @@ def getChatList(user_id):
             m.created_at as last_send_at
         FROM like l1
         JOIN like l2
-        ON l1.user_id = l2.liked_user_id
-        AND l1.liked_user_id = l2.user_id
+            ON l1.user_id = l2.liked_user_id
+            AND l1.liked_user_id = l2.user_id
         LEFT JOIN (
-        SELECT
-            sender_id,
-            receiver_id,
-            message,
-            created_at
+            SELECT
+                sender_id,
+                receiver_id,
+                message,
+                created_at
             FROM message
             WHERE (sender_id, receiver_id, created_at) IN (
                 SELECT 
@@ -46,15 +46,21 @@ def getChatList(user_id):
         ) m
         ON (l1.user_id = m.receiver_id AND l1.liked_user_id = m.sender_id)
         OR (l1.user_id = m.sender_id AND l1.liked_user_id = m.receiver_id)
-        WHERE l1.user_id = :user_id
-        ORDER BY
-            m.created_at DESC;
+    LEFT JOIN block b
+        ON (b.user_id = :user_id AND b.blocked_user_id = l1.liked_user_id)
+        OR (b.user_id = l1.liked_user_id AND b.blocked_user_id = :user_id)                
+    WHERE l1.user_id = :user_id AND b.user_id IS NULL
+    ORDER BY m.created_at DESC;
     ''', {"user_id": user_id})
     user = getUserWithProfilePictureById(user_id)
     for chat in chats:
         chat["user"] = user
         chat["liked_user"] = getUserWithProfilePictureById(chat["matched_user"])
-    return jsonify(chats)
+    uniqueChats = []
+    for chat in chats:
+        if chat not in uniqueChats:
+            uniqueChats.append(chat)
+    return jsonify(uniqueChats)
 
 @token_required
 @validate_request({
