@@ -15,8 +15,8 @@ export const tabsStyle = sva({
             width: 'fit-content',
             mdDown: {
                 overflow: 'scroll',
-                width: 'fit-content',
-                // width: '90%'
+                width: '80%',
+                gap: '12px',
             }
         },
         tab: {
@@ -32,6 +32,10 @@ export const tabsStyle = sva({
                 border: '2px solid black',
                 backgroundColor: 'buttonPrimaryBackground',
             },
+            mdDown: {
+                width: '150px',
+                padding: '10px'
+            }
         },
     }
 })

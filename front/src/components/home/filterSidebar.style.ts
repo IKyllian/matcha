@@ -21,7 +21,14 @@ export const filterSidebarStyle = sva({
       zIndex: '5',
       backgroundColor: 'primaryBackground',
       borderRight: '2px solid black',
-      padding: '24px'
+      padding: '24px',
+      mdDown: {
+        height: '100%',
+        top: '0',
+      },
+      smDown: {
+        width: '100%'
+      }
     },
     closeButton: {
       position: 'absolute',

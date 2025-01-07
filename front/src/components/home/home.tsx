@@ -12,9 +12,10 @@ import { useStore } from "front/store/store";
 import { ListType } from "front/store/homeList";
 import { makeLikeRequest } from "front/api/profile";
 import Select from "front/components/input/select";
-import { UrlParamsType } from "front/typing/filters";
+import { OFFSET_PAGINATION, UrlParamsType } from "front/typing/filters";
 import { FaArrowUp } from "react-icons/fa";
 import _ from 'lodash'
+import { useSearchParams } from "react-router-dom";
 
 type HomeTabs = 'Liste' | 'Suggestion'
 const TABS_CONTENT: HomeTabs[] = ["Liste", "Suggestion"]
@@ -26,7 +27,7 @@ const Home = () => {
   const setFilterList = useStore(state => state.setFilterList)
   const token = useStore(state => state.authStore.token)
   const addAlert = useStore(state => state.addAlert)
-  const { filtersList, filtersList: { list: listFilters } } = useStore(state => state.homeState)
+  const { filtersList, filtersList: { list: listFilters, reachedEnd } } = useStore(state => state.homeState)
   const updateProfileListLike = useStore(state => state.updateProfileListLike)
   const { filters } = useStore(state => state.homeState)
   const setFilters = useStore(state => state.setFilters)
@@ -36,10 +37,23 @@ const Home = () => {
   const sortChange = useStore(state => state.sortChange)
   const onNavClick = useStore(state => state.onNavClick)
   const resetList = useStore(state => state.resetList)
+  let [searchParams, setSearchParams] = useSearchParams();
+  const page = +(searchParams.get('page'))
+  // Here to retrieve duplicates if ones. TODO: DELETE
+  const duplicates = listFilters.filter((item, index) => listFilters.indexOf(item) !== index);
+  if (duplicates.length > 0) {
+    console.error("DUPLICATE IN FILTER LIST", duplicates)
+  }
+  //---------------------------------------------------
 
   useEffect(() => {
     return () => resetList()
   }, [])
+
+  const onSortChange = (value: number) => {
+    sortChange(value)
+    setSearchParams({page: '0'})
+  }
 
   const onSidebarClose = () => {
     setShowSidebar(prev => !prev)
@@ -48,12 +62,13 @@ const Home = () => {
   const onFilterChange = (filters: UrlParamsType) => {
     setFilters({ filters, reset: true })
     setShowSidebar(false)
+    setSearchParams({page: '0'})
   }
   const { isLoading } = useApi<ListType>({
     endpoint: 'profile',
-    urlParams: { ...filters, sort },
+    urlParams: { ...filters, sort, offset: +page * OFFSET_PAGINATION },
     setter: setFilterList,
-    dependencies: [filters, sort],
+    dependencies: [filters, sort, page],
   })
 
   const onLikeClick = useCallback(_.debounce(async (profile_id: number) => {
@@ -68,7 +83,14 @@ const Home = () => {
   }
 
   const onNextPagination = () => {
-    setFilters({ filters })
+    setSearchParams({page: `${page + 1}`})
+    onScrollClick()
+  }
+  const onPrevPagination = () => {
+    if (+page > 0) {
+      setSearchParams({page: `${page - 1}`})
+      onScrollClick()
+    }
   }
 
   return (
@@ -88,13 +110,13 @@ const Home = () => {
           {
             TABS_CONTENT[navIndex] === "Liste" && (
               <div className={css({ display: 'flex', justifyContent: 'center' })}>
-                <Select onChange={sortChange} defaultValue={sort} />
+                <Select onChange={onSortChange} defaultValue={sort} />
                 <span>Length: {listFilters.length}</span>
               </div>
             )
           }
         </div>
-        {TABS_CONTENT[navIndex] === "Liste" && listFilters && <HomeList list={filtersList} onLikeClick={onLikeClick} onNextPagination={onNextPagination} />}
+        {TABS_CONTENT[navIndex] === "Liste" && listFilters && <HomeList list={filtersList} onLikeClick={onLikeClick} onPrevPagination={onPrevPagination} onNextPagination={onNextPagination} />}
         {TABS_CONTENT[navIndex] === "Suggestion" && <HomeSuggestion />}
       </div>
       {

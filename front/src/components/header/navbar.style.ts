@@ -5,7 +5,8 @@ export const navbarStyle = sva({
         "navBarContainer",
         "contentWrapper",
         "icon",
-        "iconContainer"
+        "iconContainer",
+        "notificationBadgeNumber"
     ],
     base: {
         navBarContainer: {
@@ -22,6 +23,7 @@ export const navbarStyle = sva({
             backgroundColor: 'primaryBackground',
             padding: '12px',
             display: 'none',
+            zIndex: '3',
             mdDown: {
                 display: 'flex'
             }
@@ -41,6 +43,24 @@ export const navbarStyle = sva({
             '&[data-isactive="1"]': {
                 backgroundColor: 'buttonPrimaryBackground',
                 border: '2px solid black'
+            },
+            position: 'relative'
+        },
+        notificationBadgeNumber: {
+            position: 'absolute',
+            width: '15px',
+            height: '15px',
+            top: '0px',
+            right: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'lightRed',
+            borderRadius: '50%',
+            color: 'white',
+            '& > span': {
+                fontSize: '9px',
+                fontWeight: 'bold'
             }
         }
     }

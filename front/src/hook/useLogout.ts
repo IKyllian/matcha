@@ -3,7 +3,6 @@ import { useStore } from "front/store/store"
 import { useCookies } from "react-cookie"
 
 export const useLogout = () => {
-    const notifications = useStore((state) => state.notifications)
     const logoutUser = useStore((state) => state.logoutUser)
     const resetChat = useStore((state) => state.resetChat)
     const resetChatSidebar = useStore((state) => state.resetChatSidebar)

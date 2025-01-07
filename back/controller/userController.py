@@ -285,6 +285,7 @@ def filteredForInteraction(users):
     "profile_id": {"required": True, "type": int, "min": 0},
 })
 def getProfileById(user_id, validated_data, profile_id): # validated_data doit être garder ici même si pas utliser sinon erreur (peut être regarder plus tard pour check pourquoi ça met une erreur)
+    user_id = int(user_id)
     user = getUserWithImagesById(profile_id)
     user["age"] = getAgeFromTime(user["birth_date"])
     del user["birth_date"]

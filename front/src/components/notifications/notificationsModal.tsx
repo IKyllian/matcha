@@ -54,7 +54,7 @@ const NotificationsModal = ({ onClose }: NotificationsModalProps) => {
 
   return (
     <div className={css(slotsStyles.modalContainer)} ref={ref}>
-      {notifications.length === 0 && <span style={{ textAlign: 'center' }}> Pas de notifications </span>}
+      {notifications.length === 0 && <span style={{ textAlign: 'center' }}>Pas de notifications</span>}
       {notifications.length > 0 &&
         <>
           {
@@ -66,7 +66,7 @@ const NotificationsModal = ({ onClose }: NotificationsModalProps) => {
               </div>
             ))
           }
-          <Link className={css(slotsStyles.link)} to='/notifications' onClick={onClose}> All notifications </Link>
+          <Link className={css(slotsStyles.link)} to='/notifications' onClick={onClose}>All notifications</Link>
         </>
       }
     </div>

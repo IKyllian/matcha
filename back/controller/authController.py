@@ -58,8 +58,26 @@ def signup(validated_data):
             ipAddress = os.getenv("PUBLIC_IP")
         data = ipdata.lookup(ipAddress)
         encryptedPass = encrypt_pass(password)
-        user_id = makeInsertRequest("INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, is_activated, sexual_preference, is_valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (str(username), encryptedPass, str(email), str(first_name), str(last_name), str(birth_date), str(2.5), str(data['latitude']), str(data['longitude']), "0", "B", "0"))
+        userData = {
+            'username': username,
+            'pass': encryptedPass,
+            'email': email,
+            'first_name': first_name,
+            'last_name': last_name,
+            'birth_date': birth_date,
+            'fame_rating': 2.5,
+            'latitude': data['latitude'],
+            'longitude': data['longitude'],
+            'is_activated': 0,
+            'sexual_preference': 'B',
+            'is_valid': 0
+            
+        }
+        user_id = makeInsertRequest("""
+            INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, is_activated, sexual_preference, is_valid)
+            VALUES (:username, :pass, :email, :first_name, :last_name, :birth_date, :fame_rating, :latitude, :longitude, :is_activated, :sexual_preference, :is_valid)
+            """
+            , userData)
     except :
         raise APIAuthError('Location est invalide')
     urlIdentifier = encode_url_identifier(user_id)
@@ -80,6 +98,17 @@ def getAuth():
         return jsonify(user=user, notifications=notifications)
     except :
         raise APIAuthError('Token invalide')
+
+@validate_request({
+    "url_identifier": {"required": True, "type": str},
+})   
+def checkUrlIdentifier(validated_data):
+    print("validated_data ", validated_data)
+    urlIdentifier = validated_data["url_identifier"]
+    response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
+    if (not response or len(response) < 1):
+        raise NotFoundError("No matching account found with the provided urlIdentifier")
+    return jsonify(ok=True)
 
 @validate_request({
     "url_identifier": {"required": True, "type": str},

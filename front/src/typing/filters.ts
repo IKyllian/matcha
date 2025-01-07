@@ -9,6 +9,8 @@ export type UrlParamsType = {
     sort?: SORT_ENUM
     display_liked?: boolean
     offset?: number
+
+    url_identifier?: string
 }
 
 export enum SORT_ENUM {

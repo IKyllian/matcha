@@ -13,6 +13,8 @@ auth_bp.route("/signup", methods = ["POST"]) (signup)
 
 auth_bp.route("/auth", methods = ["GET"]) (getAuth)
 
+auth_bp.route("/checkUrlIdentifier", methods = ["GET"]) (checkUrlIdentifier)
+
 auth_bp.route("/activateAccount", methods = ["POST"]) (activateAccount)
 
 auth_bp.route("/sendPasswordReset", methods = ["POST"]) (sendResetPassword)

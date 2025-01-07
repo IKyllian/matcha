@@ -11,10 +11,11 @@ import { useLogout } from "front/hook/useLogout";
 type UseApiProps<T> = {
     endpoint: EndpointType,
     urlParams?: UrlParamsType,
-    params?: { id: number },
+    params?: { id: number | string },
     dependencies?: any[],
     setter: (entity: T) => void,
     key?: string
+    useToken?: boolean
 }
 
 const buildUrlParams = (urlParams: UrlParamsType): string => {
@@ -40,9 +41,9 @@ const buildUrlParams = (urlParams: UrlParamsType): string => {
     return stringParams
 }
 
-export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getViewsOfUser' | 'getMatchesOfUser' | 'profile/settings' | 'getTags' | 'getUserViews' | 'notifications' | 'getBlocksOfUser' | 'getChatList' | 'suggestion';
+export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getViewsOfUser' | 'getMatchesOfUser' | 'profile/settings' | 'getTags' | 'getUserViews' | 'notifications' | 'getBlocksOfUser' | 'getChatList' | 'suggestion' | 'checkUrlIdentifier' | 'getUserLikes';
 
-const getUlrParams = ({ urlParams, endpoint, params }: { endpoint: string, urlParams?: UrlParamsType, params?: { id: number } }) => {
+const getUlrParams = ({ urlParams, endpoint, params }: { endpoint: string, urlParams?: UrlParamsType, params?: { id: number | string } }) => {
     if (urlParams) {
         return `${import.meta.env.VITE_API_URL}/${endpoint}${buildUrlParams(urlParams)}`
     } else if (params) {
@@ -52,7 +53,7 @@ const getUlrParams = ({ urlParams, endpoint, params }: { endpoint: string, urlPa
 }
 //--------------------------------------------------------------------------------------------------------//
 
-export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], setter, key }: UseApiProps<T>) => {
+export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], setter, key, useToken = true }: UseApiProps<T>) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const addAlert = useStore((state) => state.addAlert)
     const [cookies, setCookie, removeCookie] = useCookies();
@@ -62,10 +63,11 @@ export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], sett
         const fetch = async () => {
             try {
                 const cookie = cookies[COOKIE_JWT_TOKEN]
-                if (!cookie) {
+                if (!cookie && useToken) {
+                    onLogout()
                     throw new Error("No JWT token found")
                 }
-                const api = makeApi({ token: cookie })
+                const api = makeApi({ token: useToken ? cookie : undefined })
                 const requestparams = getUlrParams({ endpoint, params, urlParams })
                 const response = await api.get<T>(requestparams).json();
                 console.info("REPONSE = ", requestparams, ' =>>>> ', response)
