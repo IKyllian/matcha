@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css";
 
 export const homeSuggestionStyle = sva({
-  slots: ['cardSuggestion', 'suggestionContainer', 'suggestionWrapper', 'arrowIcon', 'iconContainer'],
+  slots: ['cardSuggestion', 'suggestionContainer', 'suggestionWrapper', 'arrowIcon', 'leftArrow', 'rightArrow', 'iconContainer'],
   base: {
     cardSuggestion: {
     },
@@ -9,7 +9,8 @@ export const homeSuggestionStyle = sva({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      marginTop: '54px'
+      marginTop: '54px',
+      position: 'relative'
     },
     suggestionWrapper: {
       width: '100%',
@@ -22,10 +23,17 @@ export const homeSuggestionStyle = sva({
       }
     },
     arrowIcon: {
+      position: 'absolute',
       fontSize: '60px',
       smDown: {
         display: 'none'
       }
+    },
+    leftArrow: {
+      left: '10%'
+    },
+    rightArrow: {
+      right: '10%'
     },
     iconContainer: {
       display: 'none',

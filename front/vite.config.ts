@@ -10,7 +10,10 @@ export default defineConfig(({ mode }) => {
     base: './',
     server: {
       host: env.VITE_FRONT_URL,
-      port: 5173
+      port: 5173,
+      watch: {
+        usePolling: true
+      },
     },
     resolve: {
       alias: {
