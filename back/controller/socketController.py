@@ -22,7 +22,7 @@ def handleConnect():
     print('Received event Connect:', request.sid)
 
 @socketio.on('identify')
-@socket_auth
+@socket_auth(False)
 def handle_identify(token, user_id):
     if not user_id in user_socket_map:
         user_socket_map[user_id] = request.sid
@@ -45,7 +45,7 @@ def handle_disconnect():
             break
 
 @socketio.on('logout')
-@socket_auth
+@socket_auth(False)
 def handle_disconnect(data, user_id):
     print(f"User disconnected: {request.sid}")
     # Remove the user from the map when they disconnect
@@ -60,7 +60,7 @@ def handle_disconnect(data, user_id):
     emit('connectionUpdate', {'user_id': user_id, 'is_connected': False}, broadcast = True)
 
 @socketio.on('sendMessage')
-@socket_auth
+@socket_auth()
 def handle_send_message(data, user_id):
     sender_id = data.get('sender_id')
     receiver_id = data.get('receiver_id')

@@ -12,7 +12,7 @@ class DecoratorValidError(Exception):
         super().__init__(message)
 
 # Authentication decorator
-def auth(check_is_valid = True):
+def auth(check_if_valid = True):
     def token_required(f):
         @wraps(f)
         def decorator(*args, **kwargs):
@@ -30,7 +30,7 @@ def auth(check_is_valid = True):
                     raise DecoratorError("Votre token n'est pas associé à un utilisateur")
                 if response[0]["is_activated"] != 1:
                     raise DecoratorError("Votre compte n'est pas actif, veuillez valider votre email")
-                if check_is_valid and response[0]['is_valid'] != 1:
+                if check_if_valid and response[0]['is_valid'] != 1:
                     raise DecoratorValidError("Votre compte n'est pas complet, veuillez le completer")
             except DecoratorError as e:
                 raise TokenError(e.args[0])
@@ -41,28 +41,34 @@ def auth(check_is_valid = True):
         return decorator
     return token_required
 
-def socket_auth(f):
-    @wraps(f)
-    def socket_auth_decorator(*args, **kwargs):
-        eventArgs = args[0]
-        if not eventArgs:
-            raise TokenError("Erreur avec les arguments")
-        if not 'token' in eventArgs:
-            raise TokenError("Vous n'avez pas de token")
-        token = eventArgs['token']
-        try:
-            data = decode_token(token)
-            user_id = data["sub"]
-            response = makeRequest("SELECT username, is_activated FROM user WHERE id = ?", (str(user_id),))
-            if len(response) < 1:
-                raise DecoratorError("Votre token n'est pas associé à un utilisateur")
-            if response[0]["is_activated"] != 1:
-                raise DecoratorError("Votre compte n'est pas actif, veuillez valider votre email")
-        except DecoratorError as e:
-            raise TokenError(e.args[0])
-        kwargs['user_id'] = int(user_id)
-        return f(*args, **kwargs)
-    return socket_auth_decorator
+def socket_auth(check_if_valid = True):
+    def socket_auth_wrapper(f):
+        @wraps(f)
+        def socket_auth_decorator(*args, **kwargs):
+            eventArgs = args[0]
+            if not eventArgs:
+                raise TokenError("Erreur avec les arguments")
+            if not 'token' in eventArgs:
+                raise TokenError("Vous n'avez pas de token")
+            token = eventArgs['token']
+            try:
+                data = decode_token(token)
+                user_id = data["sub"]
+                response = makeRequest("SELECT username, is_activated, is_valid FROM user WHERE id = ?", (str(user_id),))
+                if len(response) < 1:
+                    raise DecoratorError("Votre token n'est pas associé à un utilisateur")
+                if response[0]["is_activated"] != 1:
+                    raise DecoratorError("Votre compte n'est pas actif, veuillez valider votre email")
+                if check_if_valid and response[0]['is_valid'] != 1:
+                    raise DecoratorValidError("Votre compte n'est pas complet, veuillez le completer")
+            except DecoratorError as e:
+                raise TokenError(e.args[0])
+            except DecoratorValidError as e:
+                raise ForbiddenError(e.args[0])
+            kwargs['user_id'] = int(user_id)
+            return f(*args, **kwargs)
+        return socket_auth_decorator
+    return socket_auth_wrapper
 
 def blocked_check(key=None):
     def decorator(func):

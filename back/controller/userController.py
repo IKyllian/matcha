@@ -42,7 +42,7 @@ def createTag(user_id, validated_data):
         raise ForbiddenError('Error during tag creation')
     return jsonify(tag=tag[0])
 
-@auth(False)
+@auth()
 @validate_request({
     "min_age": {"type": int, "min": 18, "max": 100},
     "max_age": {"type": int, "min": 18, "max": 100},
