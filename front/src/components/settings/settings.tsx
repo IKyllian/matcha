@@ -106,13 +106,16 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       const lat = profileSettings.user.latitude
       const lon = profileSettings.user.longitude
       if (lat && lon) {
-        const { display_name } = await makeReversePositionRequest({ lat, lon })
-        setPositionSelected({
-          displayName: display_name,
-          latitude: lat,
-          longitude: lon
-        })
-        setInputPosition(display_name)
+        const ret = await makeReversePositionRequest({ lat, lon })
+        if (ret) {
+          const { display_name } = ret
+          setPositionSelected({
+            displayName: display_name,
+            latitude: lat,
+            longitude: lon
+          })
+          setInputPosition(display_name)
+        }
       }
     }
     getPos()
@@ -172,19 +175,19 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
 
     console.info('formData = ', formData)
 
-    const { ip } = await makeIpAddressRequest()
-    const { user } = await makeSettingsRequest(
+    const resIp = await makeIpAddressRequest()
+    const retUser = await makeSettingsRequest(
       {
         data: formData,
         token,
         addAlert,
-        ip
+        ip: resIp.ip
       }
     )
 
-    if (user) {
+    if (retUser) {
       addAlert({ message: 'Votre profile a ete update', type: AlertTypeEnum.SUCCESS })
-      setUser(user)
+      setUser(retUser.user)
     }
   }
 
@@ -394,7 +397,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
             <span> Upload </span>
           </div>
         </label>
-        <span className={css(slotsStyles.textInfo)}>* Champs requis pour interagir avec les autres utilisateurs</span>
+        <span className={css(slotsStyles.textInfo)}>* Champs requis pour que votre compte soit valide</span>
         <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
       </form>
     </div>

@@ -4,8 +4,9 @@ import Header from "front/components/header/header"
 import NavBar from "front/components/header/navbar"
 import ReportModal from "front/components/modals/reportModal"
 import { useStore } from "front/store/store"
+import { AlertTypeEnum } from "front/typing/alert"
 import { isUserProfileComplete } from "front/utils/user.utils"
-import { Navigate, useLocation, useNavigate } from "react-router-dom"
+import { Navigate, useLocation } from "react-router-dom"
 import { css } from "styled-system/css"
 
 const PrivateRoute = ({ children }) => {
@@ -14,7 +15,7 @@ const PrivateRoute = ({ children }) => {
     const isProfileComplete = isUserProfileComplete(authStore.user)
     const location = useLocation()
     const showBanner = !isProfileComplete && location.pathname !== '/settings'
-    const navigate = useNavigate()
+    const addAlert = useStore((state) => state.addAlert)
 
     if (authStore.authStatus === 'CHECKING') {
         return <div>Chargement...</div>
@@ -22,8 +23,10 @@ const PrivateRoute = ({ children }) => {
     if (authStore.authStatus === 'CHECKED' && !authStore.isLogged) {
         return <Navigate to="/login" />
     }
-    if (!authStore.user?.is_valid && location.pathname !== '/' || location.pathname !== '/settings') {
-        navigate('/settings')
+
+    if (authStore.authStatus === 'CHECKED' && authStore.isLogged && !authStore.user?.is_valid && location.pathname !== '/settings') {
+        // addAlert({ type: AlertTypeEnum.ERROR, message: 'Vous devez completez votre compte pour acceder au site' })
+        return <Navigate to="/settings" />
     }
 
     return (

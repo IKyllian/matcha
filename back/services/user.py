@@ -41,3 +41,8 @@ def getUserWithProfilePictureByUsername(username):
     images = makeRequest("SELECT id, image_file, is_profile_picture, mime_type, file_name FROM image WHERE image.user_id = ? AND image.is_profile_picture = 1", (str(user["id"]),))
     user["images"] = decodeImages(images)
     return user
+
+def getUserPos(user_id):
+    response = makeRequest("SELECT id, latitude, longitude FROM user WHERE id = :user_id", {'user_id': user_id})
+    user = response[0]
+    return user

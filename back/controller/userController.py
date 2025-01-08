@@ -284,7 +284,7 @@ def filteredForInteraction(users):
 @validate_request({
     "profile_id": {"required": True, "type": int, "min": 0},
 })
-def getProfileById(user_id, validated_data, profile_id): # validated_data doit être garder ici même si pas utliser sinon erreur (peut être regarder plus tard pour check pourquoi ça met une erreur)
+def getProfileById(user_id, validated_data, profile_id):
     user_id = int(user_id)
     user = getUserWithImagesById(profile_id)
     user["age"] = getAgeFromTime(user["birth_date"])
@@ -321,8 +321,6 @@ def checkImages(images, requiredProfilePicture = False):
 
 @auth(False)
 @validate_request({
-    "username": {"required": True, "type": str, "min": 3, "max": 20},
-    "email": {"required": True, "type": str, "regex": r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'},
     "first_name": {"required": True,"type": str, "min": 2, "max": 35},
     "last_name": {"required": True, "type": str, "min": 2, "max": 35},
     "gender": {"type": str, "choices": ["M", "F"]},
@@ -332,12 +330,13 @@ def checkImages(images, requiredProfilePicture = False):
     "longitude": {"type": float},
 })
 def setSettings(user_id, validated_data):
-    fields = ["username", "email", "first_name", "last_name", "gender", "sexual_preference", "bio", "latitude", "longitude"]
+    fields = ["first_name", "last_name", "gender", "sexual_preference", "bio", "latitude", "longitude"]
     latitude = validated_data['latitude']
     longitude = validated_data['longitude']
     tags = request.form.getlist("tag_ids", None)
     images = []
     index = 0
+    userPos = getUserPos(user_id)
 
     if (not latitude or not longitude):
         ipdata.api_key = os.getenv("IP_DATA_API_KEY")
@@ -346,15 +345,20 @@ def setSettings(user_id, validated_data):
             if ('10.11.' in ipAddress or '127.0.'in ipAddress):
                 ipAddress = os.getenv("PUBLIC_IP")
             data = ipdata.lookup(ipAddress)
-            latitude = data['latitude']
-            longitude = data['longitude']
+            if (not data['latitude'] or not data['longitude']):
+                print("Probleme avec la recuperation de la localisation -> Garde l'ancienne position")
+            latitude = data['latitude'] if data['latitude'] else userPos['latitude']
+            longitude = data['longitude'] if data['longitude'] else userPos['longitude']
         except :
             raise APIAuthError('Location est invalide')
 
     fieldsToUpdate = []
     fieldValues = {"user_id": user_id}
     for field in fields:
-        value = validated_data[field]
+        if field == 'latitude' or field == 'longitude':
+            value = latitude if field == 'latitude' else longitude
+        else:
+            value = validated_data[field]
         fieldsToUpdate.append(f"{field} = :{field}")
         fieldValues.update({field: value})
 
@@ -392,10 +396,12 @@ def setSettings(user_id, validated_data):
                     (base64.b64encode(image["file"].read()), image["mime_type"], image['file_name'], str(user_id), bool(image["is_profile_picture"])))
 
     user = getUserWithProfilePictureById(user_id)
-    if isAccountValid(user):
+    if isAccountValid(user) and not user['is_valid']:
         makeRequest("UPDATE user SET is_valid = '1' WHERE id = :user_id", (user_id,))
-    else:
+        user['is_valid'] = True
+    elif not isAccountValid(user) and user['is_valid']:
         makeRequest("UPDATE user SET is_valid = '0' WHERE id = :user_id", (user_id,))
+        user['is_valid'] = False
     return jsonify(user=user)
 
 @auth()
