@@ -9,5 +9,4 @@ RUN python initDb.py
 
 EXPOSE 3000
 
-# CMD ["gunicorn", "-w", "4", "app:app", "-b", "localhost:3000"]
 CMD ["python", "app.py"]

@@ -8,8 +8,9 @@ services:
     environment:
       VITE_API_URL: ${VITE_API_URL}
       VITE_FRONT_URL: ${VITE_FRONT_URL}
+      HOST: ${HOST}
     ports:
-      - "5173:5173"
+      - "80:80"
   back:
     build:
       context: .
@@ -24,8 +25,6 @@ services:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       SMTP_USER: ${SMTP_USER}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
-    # volumes:
-    #   - db:/usr/app/back/uploads
     ports:
       - "3000:3000"
 networks:
