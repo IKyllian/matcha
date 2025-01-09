@@ -29,10 +29,12 @@ export const apiRequest = async <T>({ token, url, options, addAlert, ip }: ApiRe
         return response;
     } catch (error) {
         let errorMessage = 'An unknown error occurred';
+        let codeError = 0
         if (error instanceof HTTPError && error.response) {
             try {
                 const errorResponse = await error.response.json();
                 errorMessage = errorResponse.message || errorMessage;
+                codeError = errorResponse.code
             } catch (jsonError) {
                 console.error('Error parsing JSON:', jsonError);
             }
@@ -41,7 +43,11 @@ export const apiRequest = async <T>({ token, url, options, addAlert, ip }: ApiRe
         }
 
         if (addAlert) {
-            addAlert({ message: errorMessage, type: AlertTypeEnum.ERROR });
+            if (codeError === 413) {
+                addAlert({ message: "Request too large", type: AlertTypeEnum.ERROR });
+            } else {
+                addAlert({ message: errorMessage, type: AlertTypeEnum.ERROR });
+            }
         }
         return null;
     }
