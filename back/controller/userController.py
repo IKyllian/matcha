@@ -84,7 +84,7 @@ def getProfiles(user_id, validated_data):
         whereConditions.append(f"user.birth_date <= :min_birth_date")
         queryParams.update({'min_birth_date': str(min_birth_date)})
     if (max_age):
-        max_birth_date = calculate_date_from_age(int(max_age))
+        max_birth_date = calculate_date_from_age(int(max_age + 1))
         whereConditions.append(f"user.birth_date >= :max_birth_date")
         queryParams.update({'max_birth_date': str(max_birth_date)})
     if (max_pos):
@@ -400,5 +400,5 @@ def setSettings(user_id, validated_data):
 
 @token_required
 def getViewHistory(user_id):
-    response = makeRequest("SELECT user_id FROM view WHERE viewed_user_id = ?", (str(user_id)))
+    response = makeRequest("SELECT user_id FROM view WHERE viewed_user_id = ?", (str(user_id),))
     return jsonify(history=response)
