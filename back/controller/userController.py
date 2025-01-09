@@ -319,6 +319,8 @@ def checkImages(images, requiredProfilePicture = False):
         return False
     return True
 
+MAX_IMAGE_SIZE = 15 * 1024 * 1024  # 15 MB in bytes
+
 @token_required
 @validate_request({
     "username": {"required": True, "type": str, "min": 3, "max": 20},
@@ -360,6 +362,11 @@ def setSettings(user_id, validated_data):
 
     while f"images[{index}][file]" in request.files:
         image_file = request.files.get(f"images[{index}][file]")
+
+        length = image_file.seek(0, os.SEEK_END)
+        if length > MAX_IMAGE_SIZE:
+            raise ForbiddenError(f"Le fichier '{file_name}' dépasse la taille maximale autorisée de 10 Mo.")
+
         mime_type = image_file.content_type if image_file.content_type else "text/plain"
         file_name = image_file.filename if image_file.filename else ""
         is_profile_picture = request.form.get(f"images[{index}][is_profile_picture]") == 'true'

@@ -29,6 +29,7 @@ def createApp():
     from routes.block import block_bp
     from routes.view import view_bp
     from routes.notif import notif_bp
+    app.config['MAX_CONTENT_LENGTH'] = 110 * 1024 * 1024
     app.register_blueprint(user_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(chat_bp)
