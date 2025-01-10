@@ -77,15 +77,44 @@ def handle_send_message(data, user_id):
     if (len(message) > 500 or len(message) < 1):
         emit('error', "Votre message doit contenir entre 1 et 500 characteres", room=request.sid)
         return
+    
     messageCreated = createMessage(sender_id, receiver_id, message)
     if not messageCreated:
         emit('error', {message: "Erreur lors de la creation du message"}, room=request.sid)
         return
+    
     sender = getUserWithProfilePictureById(user_id)
     username = sender["username"]
-    sendNotificationEvent("Vous avez recu un message de " + username , sender, receiver_id, NotifType.MESSAGE)
-
-    emit('receiveMessage', {'sender_id': sender_id, 'receiver_id': int(receiver_id), 'created_at': messageCreated[0]["created_at"], 'id': messageCreated[0]["id"], 'message': message}, room=request.sid)
+    
+    last_notif = makeRequest('''SELECT id, content, notif_type FROM notification 
+                                WHERE receiver_id = ? AND sender_id = ?
+                                AND was_seen = 0 ORDER BY created_at DESC LIMIT 1''',
+                            (receiver_id, sender_id))
+    
+    if last_notif and last_notif[0]["notif_type"] == NotifType.MESSAGE.value:
+        last_notif = last_notif[0]  # Get the most recent notification
+        new_content = last_notif["content"].split(" ")
+        
+        # Increment the message count in the notification content
+        new_content[3] = str(int(new_content[3]) + 1)  # Increment the message count
+        updated_content = " ".join(new_content)
+        
+        # Update the notification with the new content
+        makeRequest('''UPDATE notification SET content = ?, was_seen = 0 WHERE id = ?''',
+                    (updated_content, last_notif["id"],))
+        
+        #Send update notification
+        if receiver_id in user_socket_map:
+            receiver_socket_id = user_socket_map[receiver_id]
+            socketio.emit('updateNotification', {'sender_id': sender_id, 'receiver_id': receiver_id,'created_at': messageCreated[0]["created_at"], 'id': last_notif["id"], 'content': updated_content, 'sender': sender, "notif_type": NotifType.MESSAGE.value}, room=receiver_socket_id)
+        else:
+            print(f"User {receiver_id} not connected, so not notified of notification update")
+    else :
+        sendNotificationEvent("Vous avez recu 1 message de " + username , sender, receiver_id, NotifType.MESSAGE)
+    
+    # Send back message to user who sent it
+    emit('receiveMessage', {'sender_id': sender_id, 'receiver_id': receiver_id, 'created_at': messageCreated[0]["created_at"], 'id': messageCreated[0]["id"], 'message': message}, room=request.sid)
+    
     print(f"Message from {sender_id} to {receiver_id}: {message}")
 
     # Ensure the receiver is identified and connected
@@ -93,9 +122,10 @@ def handle_send_message(data, user_id):
         receiver_socket_id = user_socket_map[receiver_id]
         emit('receiveMessage', {'sender_id': sender_id, 'receiver_id': int(receiver_id),'created_at': messageCreated[0]["created_at"], 'id': messageCreated[0]["id"], 'message': message}, room=receiver_socket_id)
     else:
-        print(f"User {receiver_id} not connected, so not notified")
+        print(f"User {receiver_id} not connected, so not notified of message sent")
 
 def sendNotificationEvent(message, sender, receiver_id, type: NotifType):
+    print("socket map=", user_socket_map)
     sender_id = sender["id"]
     created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     isBlocked = makeRequest("SELECT 1 FROM block WHERE user_id = ? AND blocked_user_id = ?", (str(receiver_id), str(sender_id)))

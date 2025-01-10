@@ -7,8 +7,17 @@ from decorators.dataDecorator import validate_request
 def getAllNotifs(user_id):
     notifs = makeRequest("SELECT id, content, sender_id, receiver_id, created_at, was_seen, notif_type FROM notification WHERE receiver_id = :id ORDER BY created_at DESC", (str(user_id),))
     receiver = getUserWithProfilePictureById(user_id)
+    senderCache = {}
+
     for notif in notifs:
-        sender = getUserWithProfilePictureById(notif["sender_id"])
+        sender_id = notif["sender_id"]
+
+        if sender_id not in senderCache:
+            sender = getUserWithProfilePictureById(sender_id)
+            senderCache[sender_id] = sender
+        else:
+            sender = senderCache[sender_id]
+
         notif["sender"] = sender
         notif["receiver"] = receiver
         del notif["sender_id"]

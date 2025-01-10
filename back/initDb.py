@@ -182,6 +182,53 @@ image_names = [f for f in os.listdir(IMAGES_FOLDER) if os.path.isfile(os.path.jo
 
 sexualPreferences = ["F", "M", "B"]
 
+position = [
+        (48.86009267645108, 2.2982732755944135),    # Paris, tour eiffel
+        (48.79073039617435, 2.0506073585994566),    # Paris, versailles
+        (45.771723748567894, 4.891168382771459),    # Lyon, villeurbane
+        (45.69830709023305, 4.881899830200284),     # Lyon, Venissieux
+        (45.76191904856293, 4.777184036634483),     # Tassin-la-demi-lune
+        (44.84178316779002, -0.5781182978287304),   # Bordeaux
+        (45.199894610230004, 5.724611680709684),    # Grenoble, Bastille
+        (45.16535804630061, 5.765707984419116),     # Genoble, st martin d'heres
+        (43.237114748539085, 5.766501880534904),    # Marseille
+        (45.77609586590469, 3.0151253373951157),    # Clermont-Ferrant
+        (45.84305549077159, 1.1792718051136648),    # Limoges
+        (47.25376020121843, -1.1544131409468266),   # Nantes
+        (43.58341779848921, 1.644559577423305),     # Toulouse
+        (43.65699859055131, 4.242555741751027),     # Montpellier
+        (46.56936941697937, 0.3469385201065583),    # Poitiers
+        (45.433818078814156, 4.382963444569971),    # St-Etienne
+        (45.35838677143102, 5.596770957999823),     # Voiron
+        (45.56595696267661, 5.912848023347748),     # Chambery
+        (44.9275439181462, 4.890331872350312),      # Valence
+        (45.9020247991445, 6.126839659230195),      # Annecy
+        (42.67997799982199, 2.902007658297015),     # Perpignan
+        (47.23816509428725, 6.025924900819127),     # Besancon
+        (47.332167719409384, 5.03741987331862),     # Dijon
+        (49.24963450564252, 4.021199703767359),     # Reims
+        (43.708164934280376, 7.273685446060883),    # Nice
+        (43.54973951516737, 7.032170133737733),     # Cannes
+        (47.46956448283731, -0.5439765503204779),   # Angers
+        (49.43935590736683, 1.1107645394940173),    # Rouen
+        (50.62679583040629, 3.0685860085357692),    # Lille
+        (44.93383133645593, 4.897343910616063),     # Valence
+        (48.5743839961333, 7.761209550241155),      # Strasbourg
+        (46.1949446157051, 6.0409683904286355),     # Geneve
+        (50.84405701385618, 4.347265906862287),     # Bruxelles
+        (51.46939707859999, -0.1469683017249634),   # Londres
+        (52.511484952333596, 13.418969970370558),   # Berlin
+        (41.38616382211025, 2.11039219099627),      # Barcelone
+        (40.426875223087556, -3.7284268953173108),  # Madrid
+        (45.4801472041688, 9.202859573449752),      # Milan
+        (41.8747499068259, 12.502703761975058),     # Rome
+        (40.83871296014318, 14.269685834328847),    # Naples
+        (40.712032396948395, -74.00305098090818),   # New York
+        (42.365498245677564, -71.06101253827207),   # Boston
+        (37.779699145155575, -122.42858724092507),  # San Francisco
+        (34.076665109121635, -118.20972165275657),  # Los Angeles
+    ]
+
 user_id = 1
 gender = "F"
 while (user_id < 5000):
@@ -201,19 +248,17 @@ while (user_id < 5000):
 
     sexual_preference = sexualPreferences[random.randint(0, 2)]
 
-    #TODO : Take the latitude and longitudes of many cities (In pair objects)
-    latitude = '45.74800109863281'
-    longitude = '4.849999904632568'
-
     #fame_rating is between 0 and 5 (random() is between 0 and 1)
     fame_rating = (random.random() * 5)
 
     birth_date = calculate_date_from_age(random.randint(18, 100))
 
+    city = position[user_id % len(position)]
+
     cur.execute('''
                 INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude, is_activated, fame_rating, is_connected, is_valid)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-            (name, password, email, first_name, last_name, gender, sexual_preference, birth_date, latitude, longitude, "1", fame_rating, "0", "1"))
+            (name, password, email, first_name, last_name, gender, sexual_preference, birth_date, city[0], city[1], "1", fame_rating, "0", "1"))
     
     generated_image_name = image_names[user_id % len(image_names)]
     image_name = './pictures/generated/' + generated_image_name
