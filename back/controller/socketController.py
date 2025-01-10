@@ -100,7 +100,7 @@ def handle_send_message(data, user_id):
         #Send update notification
         if receiver_id in user_socket_map:
             receiver_socket_id = user_socket_map[receiver_id]
-            socketio.emit('updateNotification', {'sender_id': sender_id, 'receiver_id': receiver_id,'created_at': created_at, 'id': notif[0]["id"], 'content': message, 'sender': sender, "notif_type": type.value}, room=receiver_socket_id)
+            socketio.emit('updateNotification', {'sender_id': sender_id, 'receiver_id': receiver_id,'created_at': messageCreated[0]["created_at"], 'id': last_notif["id"], 'content': updated_content, 'sender': sender, "notif_type": NotifType.MESSAGE.value}, room=receiver_socket_id)
         else:
             print(f"User {receiver_id} not connected, so not notified of notification update")
     else :
@@ -123,6 +123,7 @@ def handleConnect():
     print('Received event sendNotification:', request.sid)
 
 def sendNotificationEvent(message, sender, receiver_id, type: NotifType):
+    print("socket map=", user_socket_map)
     sender_id = sender["id"]
     receiver_id = str(receiver_id)
     created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

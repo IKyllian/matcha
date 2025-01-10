@@ -65,9 +65,6 @@ def getProfiles(user_id, validated_data):
     user_longitude = str(user["longitude"])
     distance = f"(6371 * acos(cos(radians({user_latitude})) * cos(radians(user.latitude)) * cos(radians(user.longitude) - radians({user_longitude})) + sin(radians({user_latitude})) * sin(radians(user.latitude)))) AS distance,"
 
-    if (not max_pos):
-        distance = ""
-
     if (min_age and max_age and int(min_age) > int(max_age)):
         raise ForbiddenError("Parametre invalide : min_age doit etre plus petit que max_age")
     queryParams = {}
