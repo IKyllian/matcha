@@ -48,7 +48,7 @@ export const socketSlice = (set: StoreSetType): SocketStoreType => ({
         })
 
         socket.on('updateNotification', (notification: NotificationType) => {
-            console.info("notification = ", notification)
+            console.info("UPDATE notification = ", notification)
             state.updateNotification(notification)
         })
 

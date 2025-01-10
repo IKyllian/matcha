@@ -12,6 +12,7 @@ export const chatSidebarSlice = (set: StoreSetType): ChatSidebatStoreType => ({
     chatSidebar: undefined,
     setChatSidebar: (chatSidebar: ChatSidebarType[]) => set((state) => ({ ...state, chatSidebar })),
     updateLastMessage: (message: MessageType) => set((state) => {
+        if (!state.chatSidebar) return { ...state }
         const connectedUserId = state.authStore.user.id
         const senderId = message.sender_id !== connectedUserId ? message.sender_id : message.receiver_id
         const conv = state.chatSidebar.find((c: ChatSidebarType) => c.liked_user.id === senderId)
