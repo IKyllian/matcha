@@ -66,8 +66,6 @@ export type HomeStoreType = {
 
 export const homeSlice = (set: StoreSetType): HomeStoreType => ({
     homeState: defaultValues,
-    // setFilterList: (list: ListType) => set((state) => ({ ...state, homeState: { ...state.homeState, filtersList: { reachedEnd: list.reachedEnd, list: [...state.homeState.filtersList.list, ...list.list] } } })),
-    // setSuggestionList: (list: ListType) => set((state) => ({ ...state, homeState: { ...state.homeState, suggestionList: { reachedEnd: list.reachedEnd, list: [...state.homeState.suggestionList.list, ...list.list] } } })),
     setFilterList: (list: ListType) => set((state) => ({ ...state, homeState: { ...state.homeState, filtersList: { reachedEnd: list.reachedEnd, list: list.list } } })),
     setSuggestionList: (list: ListType) => set((state) => ({ ...state, homeState: { ...state.homeState, suggestionList: { reachedEnd: list.reachedEnd, list: [...state.homeState.suggestionList.list, ...list.list] } } })),
     updateProfileListLike: ({ listKey, profile_id }: OnLikeProps) => set((state) => {

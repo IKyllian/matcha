@@ -20,6 +20,12 @@ import { useSearchParams } from "react-router-dom";
 type HomeTabs = 'Liste' | 'Suggestion'
 const TABS_CONTENT: HomeTabs[] = ["Liste", "Suggestion"]
 
+const getFiltersToSend = (filters: UrlParamsType) => {
+  if (filters?.max_pos > 1000) {
+    delete filters.max_pos
+  }
+  return filters
+}
 const Home = () => {
   const slotsStyles = homeStyle.raw()
   const [showSidebar, setShowSidebar] = useState(false)
@@ -66,7 +72,7 @@ const Home = () => {
   }
   const { isLoading } = useApi<ListType>({
     endpoint: 'profile',
-    urlParams: { ...filters, sort, offset: +page * OFFSET_PAGINATION },
+    urlParams: { ...getFiltersToSend(filters), sort, offset: +page * OFFSET_PAGINATION },
     setter: setFilterList,
     dependencies: [filters, sort, page],
   })

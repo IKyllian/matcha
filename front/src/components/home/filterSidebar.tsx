@@ -42,8 +42,8 @@ const FilterSidebar = ({ onClose, onSubmit, filters, onFiltersReset }: FilterSid
     defaultValues: filters
   })
   const [tags, setTags] = useState<Tags[]>([])
-  const watchMinPos = watch('max_pos')
-  const watchMinFame = watch('min_fame')
+  const watchPos = watch('max_pos')
+  const watchFame = watch('min_fame')
 
   const { isLoading } = useApi<Tags[]>({
     endpoint: 'getTags',
@@ -78,12 +78,12 @@ const FilterSidebar = ({ onClose, onSubmit, filters, onFiltersReset }: FilterSid
         </label>
         <label>
           Position
-          <span>{watchMinPos}</span>
-          <input {...register('max_pos')} className={css(slotsStyles.rangeInput)} type='range' step={30} min={40} max={1000} defaultValue={1000} />
+          <span>{watchPos <= 1000 ? watchPos : '1000+'}</span>
+          <input {...register('max_pos')} className={css(slotsStyles.rangeInput)} type='range' step={30} min={40} max={1030} defaultValue={1030} />
         </label>
         <label>
           Fame
-          <span>{watchMinFame}</span>
+          <span>{watchFame}</span>
           <input {...register('min_fame')} className={css(slotsStyles.rangeInput)} type='range' max={5} min={0} defaultValue={0} />
         </label>
         <label>
