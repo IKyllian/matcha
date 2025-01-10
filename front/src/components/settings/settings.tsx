@@ -11,7 +11,7 @@ import { ImageSettingsType, Tags, User } from "front/typing/user"
 import { useApi } from "front/hook/useApi"
 import { AlertTypeEnum } from "front/typing/alert"
 import { makeIpAddressRequest } from "front/api/auth"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 type InputRadioProps = {
   value: string
@@ -100,7 +100,9 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   } = useForm<Partial<User>>({
     defaultValues: profileSettings.user
   })
-
+  const location = useLocation()
+  const navigate = useNavigate()
+  console.info("location settings = ", location)
   useEffect(() => {
     const getPos = async () => {
       const lat = profileSettings.user.latitude
@@ -188,6 +190,9 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     if (retUser) {
       addAlert({ message: 'Votre profile a ete update', type: AlertTypeEnum.SUCCESS })
       setUser(retUser.user)
+      if (location.state?.prevPath === '/login') {
+        navigate('/')
+      }
     }
   }
 
@@ -415,6 +420,8 @@ const ScreenSettings = () => {
     setter: setProfileSettings,
   })
   const navigate = useNavigate()
+  const location = useLocation()
+  console.info("location settings screen = ", location)
 
   if (isLoading) {
     return <div>loading...</div>

@@ -16,6 +16,7 @@ const PrivateRoute = ({ children }) => {
     const location = useLocation()
     const showBanner = !isProfileComplete && location.pathname !== '/settings'
     const addAlert = useStore((state) => state.addAlert)
+    // console.info("location in private route = ", location)
 
     if (authStore.authStatus === 'CHECKING') {
         return <div>Chargement...</div>
@@ -26,7 +27,7 @@ const PrivateRoute = ({ children }) => {
 
     if (authStore.authStatus === 'CHECKED' && authStore.isLogged && !authStore.user?.is_valid && location.pathname !== '/settings') {
         // addAlert({ type: AlertTypeEnum.ERROR, message: 'Vous devez completez votre compte pour acceder au site' })
-        return <Navigate to="/settings" />
+        return <Navigate to="/settings" state={{ ...location.state }} />
     }
 
     return (

@@ -10,7 +10,7 @@ services:
       VITE_FRONT_URL: ${VITE_FRONT_URL}
       HOST: ${HOST}
     ports:
-      - "80:80"
+      - "5173:5173"
   back:
     build:
       context: .
