@@ -4,9 +4,11 @@ import ky, { HTTPError } from "ky";
 
 export const makeApi = ({ token, ip }: { token?: string, ip?: string }) => {
     return ky.extend({
+        credentials: 'include',
         hooks: {
             beforeRequest: [
                 (request) => {
+                    request.headers.set('Access-Control-Allow-Origin', 'true')
                     if (token) request.headers.set('Authorization', `Bearer ${token}`)
                     if (ip) request.headers.set('X-Forwarded-For', `${ip}`)
                 }

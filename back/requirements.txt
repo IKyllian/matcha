@@ -8,3 +8,4 @@ ipdata
 python-dotenv
 Pillow
 gunicorn
+eventlet

@@ -3,6 +3,9 @@ services:
     build:
       context: .
       dockerfile: ./front/Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_FRONT_URL: ${VITE_FRONT_URL}
     networks:
       - matcha_network
     environment:

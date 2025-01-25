@@ -16,7 +16,11 @@ jwt = JWTManager()
 def createApp():
     app = Flask(__name__)
     load_dotenv()
-    CORS(app)
+    CORS(app, resources={r"/*": {
+         "origins": [os.getenv("FRONT_HOST")],  # Votre frontend Vite
+         "supports_credentials": True
+     }},
+     supports_credentials=True)
     bcrypt.init_app(app)
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=120)
