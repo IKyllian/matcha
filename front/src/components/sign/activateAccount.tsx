@@ -1,7 +1,7 @@
 import { makeActivateAccountRequest } from "front/api/auth"
 import { useStore } from "front/store/store"
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
 
@@ -30,7 +30,12 @@ const ActivateAccount = () => {
         <div className={css({ minHeight: '100vh', display: 'flex' })}>
             <div className={css(slotsStyles.wrapper)}>
                 {status === 'error' && <span className={css(slotsStyles.textConfirm)}>Url non valide</span>}
-                {status === 'loaded' && <span className={css(slotsStyles.textConfirm)}>Votre compte a ete valide</span>}
+                {status === 'loaded' && (
+                    <>
+                        <span className={css(slotsStyles.textConfirm)}>Votre compte a ete valide</span>
+                        <Link to='/login' className={css(slotsStyles.loginButton)}>Se connecter</Link>
+                    </>
+                )}
             </div>
         </div>
     )

@@ -70,7 +70,6 @@ export const formStyle = sva({
             fontWeight: '500',
             fontSize: '20px',
             marginTop: '12px',
-            fontFamily: 'body',
             _active: {
                 boxShadow: 'none',
             },

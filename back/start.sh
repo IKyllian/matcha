@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exec gunicorn --bind 0.0.0.0:3000 \
+exec gunicorn --bind ${HOST:-0000}:3000 \
     --worker-class eventlet \
     --workers 1 \
     --access-logfile - \
