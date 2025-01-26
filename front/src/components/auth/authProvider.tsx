@@ -17,7 +17,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         const authRequest = async () => {
             const cookie = cookies[COOKIE_JWT_TOKEN]
-            console.info("COOKIE = ", cookie)
             if (cookie) {
                 try {
                     const ret = await makeAuthRequest(cookie, addAlert)

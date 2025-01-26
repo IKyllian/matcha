@@ -127,9 +127,7 @@ def getProfiles(user_id, validated_data):
         requestQuery += ' ORDER BY user.fame_rating DESC'
     
     requestQuery += ' LIMIT 100 OFFSET ' + str(offset)
-    
-    print("requestQuery = ", requestQuery)
-    print("queryParams = ", queryParams)
+
     users = makeRequest(requestQuery, queryParams)
 
     # if there are less than 100 users, it means we got to the end of the request
@@ -217,8 +215,6 @@ def getSuggested(user_id, validated_data):
     groupByClose = ' GROUP BY user.id '
     requestQuery += groupByClose
     
-    print("requestQuery = ", requestQuery)
-    print("queryParams = ", queryParams)
     users = makeRequest(requestQuery, queryParams)
     users = decodeImagesFromArray(users)
 
@@ -298,7 +294,6 @@ def getProfileById(user_id, validated_data, profile_id):
 
 @auth(False)
 def getSettings(user_id):
-    print("user_id = ", user_id)
     user = getUserWithImagesById(user_id)
     user["tags"] = getUserTags(user_id)
     return jsonify(user=user, tags=getAllTags())

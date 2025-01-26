@@ -69,8 +69,6 @@ const Chat = ({ chatId }: ChatProps) => {
         }
     }
 
-    console.info("chat = ", chat)
-
     return (
         <Loader isLoading={isLoading} data={chat} shouldDisplay404>
             <div className={css(slotsStyles.chatContainer)}>

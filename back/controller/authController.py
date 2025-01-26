@@ -103,7 +103,6 @@ def getAuth():
     "url_identifier": {"required": True, "type": str},
 })   
 def checkUrlIdentifier(validated_data):
-    print("validated_data ", validated_data)
     urlIdentifier = validated_data["url_identifier"]
     response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
     if (not response or len(response) < 1):

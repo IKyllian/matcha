@@ -7,7 +7,6 @@ def validate_request(rules=None):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            print("args = ", args)
             try:
                 data = {}
                 if request.content_type == 'application/json':

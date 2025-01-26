@@ -102,7 +102,6 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   })
   const location = useLocation()
   const navigate = useNavigate()
-  console.info("location settings = ", location)
   useEffect(() => {
     const getPos = async () => {
       const lat = profileSettings.user.latitude
@@ -170,12 +169,9 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     });
 
     if (positionSelected) {
-      console.info('set new position = ', positionSelected)
       formData.append('longitude', positionSelected.longitude.toString())
       formData.append('latitude', positionSelected.latitude.toString())
     }
-
-    console.info('formData = ', formData)
 
     const resIp = await makeIpAddressRequest()
     const retUser = await makeSettingsRequest(
@@ -214,11 +210,9 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       setProfilPicturePreview(URL.createObjectURL(file))
       setProfilesImages(prev => [...prev, { file, is_profile_picture: true, file_name: file.name }])
     }
-    console.info("upload", file)
   }
 
   const onMultipleUpload = (event: any) => {
-    console.info("data - ", event)
     const imagesLength = profilesImages.length
     if (imagesLength === 4) {
       console.error('Max images Uploaded: ', imagesLength)
@@ -420,8 +414,6 @@ const ScreenSettings = () => {
     setter: setProfileSettings,
   })
   const navigate = useNavigate()
-  const location = useLocation()
-  console.info("location settings screen = ", location)
 
   if (isLoading) {
     return <div>loading...</div>

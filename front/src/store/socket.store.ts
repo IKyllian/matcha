@@ -22,33 +22,28 @@ export const socketSlice = (set: StoreSetType): SocketStoreType => ({
     initSocket: ({ token }: { token: string }) => set(state => {
         const socket = io(import.meta.env.VITE_API_URL)
         socket.on('connect', () => {
-            console.info("SOCKET CONNECTED")
             socket.emit("identify", { token })
             state.initializeSocket()
         })
 
         socket.on('disconnect', () => {
-            console.info("DISCONECTED")
+            console.info("socket disconected")
         })
 
         socket.on('error', (error: { message: string }) => {
-            console.info('Socket Error message = ', error.message)
             state.addAlert({ type: AlertTypeEnum.ERROR, message: error.message })
         })
 
         socket.on('receiveMessage', (message: MessageType) => {
-            console.info("message reveived = ", message)
             state.addMessage(message)
             state.updateLastMessage(message)
         })
 
         socket.on('sendNotification', (notification: NotificationType) => {
-            console.info("notification = ", notification)
             state.addNotification(notification)
         })
 
         socket.on('updateNotification', (notification: NotificationType) => {
-            console.info("UPDATE notification = ", notification)
             state.updateNotification(notification)
         })
 

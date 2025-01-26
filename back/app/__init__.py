@@ -45,10 +45,6 @@ def createApp():
     @app.errorhandler(APIError)
     def handle_exception(err):
         """Return custom JSON when APIError or its children are raised"""
-        print("err", err)
-        print("err", err.code)
-        print("err", err.args)
-        print("err", err.description)
         response = {"error": err.description, "message": "", 'code': err.code, 'description': err.description}
         if len(err.args) > 0:
             response["message"] = err.args[0]

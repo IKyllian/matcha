@@ -70,7 +70,6 @@ export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], sett
                 const api = makeApi({ token: useToken ? cookie : undefined })
                 const requestparams = getUlrParams({ endpoint, params, urlParams })
                 const response = await api.get<T>(requestparams).json();
-                console.info("REPONSE = ", requestparams, ' =>>>> ', response)
                 setter(key ? response[key] : response)
             } catch (error) {
                 let errorMessage = 'An unknown error occurred';

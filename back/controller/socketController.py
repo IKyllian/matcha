@@ -28,7 +28,6 @@ def handle_identify(token, user_id):
         user_socket_map[user_id] = request.sid
     print(f"User {user_id} identified with socket ID {request.sid}")
     dateNow = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print("dateNow=", dateNow)
     makeRequest("UPDATE user SET is_connected = 1, last_connection = ? WHERE id = ?", ((str(dateNow)), (str(user_id))))
     emit('connectionUpdate', {'user_id': user_id, 'is_connected': True}, broadcast = True)
 
@@ -55,7 +54,6 @@ def handle_disconnect(data, user_id):
             del user_socket_map[user_id]
             break
     dateNow = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print("user_id = ", user_id)
     makeRequest("UPDATE user SET is_connected = 0, last_connection = ? WHERE id = ?", ((str(dateNow)), (str(user_id))))
     emit('connectionUpdate', {'user_id': user_id, 'is_connected': False}, broadcast = True)
 
@@ -125,7 +123,6 @@ def handle_send_message(data, user_id):
         print(f"User {receiver_id} not connected, so not notified of message sent")
 
 def sendNotificationEvent(message, sender, receiver_id, type: NotifType):
-    print("socket map=", user_socket_map)
     sender_id = sender["id"]
     created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     isBlocked = makeRequest("SELECT 1 FROM block WHERE user_id = ? AND blocked_user_id = ?", (str(receiver_id), str(sender_id)))
