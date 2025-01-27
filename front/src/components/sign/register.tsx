@@ -6,7 +6,7 @@ import { useStore } from "front/store/store"
 import { User } from "front/typing/user"
 import { makeSignUpRequest } from "front/api/sign"
 import { makeIpAddressRequest } from "front/api/auth"
-import { EMAIL_REGEX, FieldsInputType } from "front/typing/input"
+import { EMAIL_REGEX, FieldsInputType, PASSWORD_REGEX } from "front/typing/input"
 import { AlertTypeEnum } from "front/typing/alert"
 import { useState } from "react"
 
@@ -114,6 +114,10 @@ const FIELDS: FieldsInputType<FormValues>[] = [
                 value: 50,
                 message: "Taille max: 50"
             },
+            pattern: {
+                value: PASSWORD_REGEX,
+                message: "Doit contenir au moins 8 characteres et majuscule, minuscule, nombre, charactere special"
+            }
         }
     }
 ]
@@ -127,9 +131,9 @@ const Register = () => {
     const addAlert = useStore((state) => state.addAlert)
     const slotsStyles = formStyle.raw()
     const onSubmit = async (data: FormValues) => {
-        const { ip } = await makeIpAddressRequest()
-        const { ok } = await makeSignUpRequest({ data, addAlert, ip })
-        if (ok) {
+        const retIp = await makeIpAddressRequest()
+        const ret = await makeSignUpRequest({ data, addAlert, ip: retIp?.ip || undefined })
+        if (ret?.ok) {
             addAlert({ message: "Un mail a ete envoyer", type: AlertTypeEnum.SUCCESS })
             setStatus('registered')
         }

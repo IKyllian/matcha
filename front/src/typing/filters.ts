@@ -41,6 +41,6 @@ export const getKeyBySortValue = (value: SORT_ENUM): keyof User => {
     }
 }
 
-export const DEFAULT_FILTERS = { min_age: 18, max_age: 100, min_fame: 0, max_pos: 1000, display_liked: true, offset: 0 }
+export const DEFAULT_FILTERS = { min_age: 18, max_age: 100, min_fame: 0, max_pos: 1030, display_liked: true, offset: 0 }
 
 export const OFFSET_PAGINATION = 100

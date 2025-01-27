@@ -16,7 +16,11 @@ jwt = JWTManager()
 def createApp():
     app = Flask(__name__)
     load_dotenv()
-    CORS(app)
+    CORS(app, resources={r"/*": {
+         "origins": [os.getenv("FRONT_HOST")],  # Votre frontend Vite
+         "supports_credentials": True
+     }},
+     supports_credentials=True)
     bcrypt.init_app(app)
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=120)
@@ -29,21 +33,18 @@ def createApp():
     from routes.block import block_bp
     from routes.view import view_bp
     from routes.notif import notif_bp
-    app.register_blueprint(user_bp)
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(chat_bp)
-    app.register_blueprint(like_bp)
-    app.register_blueprint(block_bp)
-    app.register_blueprint(view_bp)
-    app.register_blueprint(notif_bp)
+    app.config['MAX_CONTENT_LENGTH'] = 110 * 1024 * 1024
+    app.register_blueprint(user_bp, url_prefix='/api')
+    app.register_blueprint(auth_bp, url_prefix='/api')
+    app.register_blueprint(chat_bp, url_prefix='/api')
+    app.register_blueprint(like_bp, url_prefix='/api')
+    app.register_blueprint(block_bp, url_prefix='/api')
+    app.register_blueprint(view_bp, url_prefix='/api')
+    app.register_blueprint(notif_bp, url_prefix='/api')
     
     @app.errorhandler(APIError)
     def handle_exception(err):
         """Return custom JSON when APIError or its children are raised"""
-        print("err", err)
-        print("err", err.code)
-        print("err", err.args)
-        print("err", err.description)
         response = {"error": err.description, "message": "", 'code': err.code, 'description': err.description}
         if len(err.args) > 0:
             response["message"] = err.args[0]

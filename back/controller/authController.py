@@ -36,7 +36,7 @@ def signin(validated_data):
     "first_name": {"required": True, "type": str, "min": 2, "max": 35, "isalpha": True},
     "last_name": {"required": True, "type": str, "min": 2, "max": 35, "isalpha": True},
     "email": {"required": True, "type": str, "regex": r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'},
-    "password": {"required": True, "type": str, "min": 8, "max": 50},
+    "password": {"required": True, "type": str, "regex": r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$'},
     "birth_date": {"required": True, "type": str, "date_format": "%Y-%m-%d"}
 })
 def signup(validated_data):
@@ -103,7 +103,6 @@ def getAuth():
     "url_identifier": {"required": True, "type": str},
 })   
 def checkUrlIdentifier(validated_data):
-    print("validated_data ", validated_data)
     urlIdentifier = validated_data["url_identifier"]
     response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
     if (not response or len(response) < 1):
@@ -138,10 +137,11 @@ def sendResetPassword(validated_data):
 
 @validate_request({
     "url_identifier": {"required": True, "type": str},
+    "pass": {"required": True, "type": str, "regex": r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$'}
 })
 def resetPassword(validated_data):
     urlIdentifier = validated_data["url_identifier"]
-    password = request.json.get("pass", None)
+    password = validated_data["pass"]
     encryptedPass = encrypt_pass(password)
     response = makeRequest("SELECT id FROM user WHERE url_identifier = ?", (urlIdentifier,))
     if (not response):

@@ -7,10 +7,17 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
     plugins: [react()],
-    base: './',
+    base: '/',
     server: {
       host: env.VITE_FRONT_URL,
-      port: 5173
+      port: 5173,
+      watch: {
+        usePolling: true
+      },
+    },
+    define: {
+      'process.env.VITE_FRONT_URL': JSON.stringify(env.VITE_FRONT_URL),
+      'process.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL)
     },
     resolve: {
       alias: {

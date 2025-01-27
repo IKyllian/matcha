@@ -22,6 +22,10 @@ const PrivateRoute = ({ children }) => {
         return <Navigate to="/login" />
     }
 
+    if (authStore.authStatus === 'CHECKED' && authStore.isLogged && !authStore.user?.is_valid && location.pathname !== '/settings') {
+        return <Navigate to="/settings" state={{ ...location.state }} />
+    }
+
     return (
         <div>
             <Header />
@@ -30,7 +34,8 @@ const PrivateRoute = ({ children }) => {
                     marginTop: showBanner ? '130px' : '70px',
                     width: '100%',
                     mdDown: {
-                        marginTop: showBanner ? '50px' : '0'
+                        marginTop: showBanner ? '50px' : '0',
+                        marginBottom: '60px'
                     },
                     smDown: {
                         marginTop: showBanner ? '80px' : '0'

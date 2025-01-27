@@ -3,7 +3,7 @@ import random
 from flask import jsonify, request
 from services.relations import *
 from services.user import *
-from decorators.authDecorator import token_required
+from decorators.authDecorator import auth
 from decorators.dataDecorator import validate_request
 from database_utils.requests import *
 from database_utils.convert import getAgeFromTime
@@ -22,11 +22,11 @@ def calculate_date_from_age(years):
     today = datetime.now()
     return (today - timedelta(days=years * 365.25)).strftime('%Y-%m-%d')
 
-@token_required
+@auth()
 def getTags(user_id):
     return jsonify(tags=getAllTags())
 
-@token_required
+@auth()
 @validate_request({
     "tag_name": {"type": str, "min": 2, "max": 30, "isalnum": True},
 })
@@ -42,7 +42,7 @@ def createTag(user_id, validated_data):
         raise ForbiddenError('Error during tag creation')
     return jsonify(tag=tag[0])
 
-@token_required
+@auth()
 @validate_request({
     "min_age": {"type": int, "min": 18, "max": 100},
     "max_age": {"type": int, "min": 18, "max": 100},
@@ -64,9 +64,6 @@ def getProfiles(user_id, validated_data):
     user_latitude = str(user["latitude"])
     user_longitude = str(user["longitude"])
     distance = f"(6371 * acos(cos(radians({user_latitude})) * cos(radians(user.latitude)) * cos(radians(user.longitude) - radians({user_longitude})) + sin(radians({user_latitude})) * sin(radians(user.latitude)))) AS distance,"
-
-    if (not max_pos):
-        distance = ""
 
     if (min_age and max_age and int(min_age) > int(max_age)):
         raise ForbiddenError("Parametre invalide : min_age doit etre plus petit que max_age")
@@ -130,9 +127,7 @@ def getProfiles(user_id, validated_data):
         requestQuery += ' ORDER BY user.fame_rating DESC'
     
     requestQuery += ' LIMIT 100 OFFSET ' + str(offset)
-    
-    print("requestQuery = ", requestQuery)
-    print("queryParams = ", queryParams)
+
     users = makeRequest(requestQuery, queryParams)
 
     # if there are less than 100 users, it means we got to the end of the request
@@ -147,7 +142,7 @@ def getProfiles(user_id, validated_data):
         list.append({"like": True if user['like'] else False, "user": user})
     return jsonify(list=list, reachedEnd=reachedEnd)
 
-@token_required
+@auth()
 @validate_request({
     "offset": {"type": int, "min": 0}
 })
@@ -220,8 +215,6 @@ def getSuggested(user_id, validated_data):
     groupByClose = ' GROUP BY user.id '
     requestQuery += groupByClose
     
-    print("requestQuery = ", requestQuery)
-    print("queryParams = ", queryParams)
     users = makeRequest(requestQuery, queryParams)
     users = decodeImagesFromArray(users)
 
@@ -280,11 +273,11 @@ def filteredForInteraction(users):
     ]
     return filtered_users
 
-@token_required
+@auth()
 @validate_request({
     "profile_id": {"required": True, "type": int, "min": 0},
 })
-def getProfileById(user_id, validated_data, profile_id): # validated_data doit être garder ici même si pas utliser sinon erreur (peut être regarder plus tard pour check pourquoi ça met une erreur)
+def getProfileById(user_id, validated_data, profile_id):
     user_id = int(user_id)
     user = getUserWithImagesById(profile_id)
     user["age"] = getAgeFromTime(user["birth_date"])
@@ -299,9 +292,8 @@ def getProfileById(user_id, validated_data, profile_id): # validated_data doit �
     block = getBlocks(user_id, profile_id)
     return jsonify(user=user, like=(len(like) > 0), liked=(len(liked) > 0), block=(len(block) > 0))
 
-@token_required
+@auth(False)
 def getSettings(user_id):
-    print("user_id = ", user_id)
     user = getUserWithImagesById(user_id)
     user["tags"] = getUserTags(user_id)
     return jsonify(user=user, tags=getAllTags())
@@ -319,10 +311,9 @@ def checkImages(images, requiredProfilePicture = False):
         return False
     return True
 
-@token_required
+MAX_IMAGE_SIZE = 15 * 1024 * 1024  # 15 MB in bytes
+@auth(False)
 @validate_request({
-    "username": {"required": True, "type": str, "min": 3, "max": 20},
-    "email": {"required": True, "type": str, "regex": r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'},
     "first_name": {"required": True,"type": str, "min": 2, "max": 35},
     "last_name": {"required": True, "type": str, "min": 2, "max": 35},
     "gender": {"type": str, "choices": ["M", "F"]},
@@ -332,12 +323,13 @@ def checkImages(images, requiredProfilePicture = False):
     "longitude": {"type": float},
 })
 def setSettings(user_id, validated_data):
-    fields = ["username", "email", "first_name", "last_name", "gender", "sexual_preference", "bio", "latitude", "longitude"]
+    fields = ["first_name", "last_name", "gender", "sexual_preference", "bio", "latitude", "longitude"]
     latitude = validated_data['latitude']
     longitude = validated_data['longitude']
     tags = request.form.getlist("tag_ids", None)
     images = []
     index = 0
+    userPos = getUserPos(user_id)
 
     if (not latitude or not longitude):
         ipdata.api_key = os.getenv("IP_DATA_API_KEY")
@@ -346,20 +338,30 @@ def setSettings(user_id, validated_data):
             if ('10.11.' in ipAddress or '127.0.'in ipAddress):
                 ipAddress = os.getenv("PUBLIC_IP")
             data = ipdata.lookup(ipAddress)
-            latitude = data['latitude']
-            longitude = data['longitude']
+            if (not data['latitude'] or not data['longitude']):
+                print("Probleme avec la recuperation de la localisation -> Garde l'ancienne position")
+            latitude = data['latitude'] if data['latitude'] else userPos['latitude']
+            longitude = data['longitude'] if data['longitude'] else userPos['longitude']
         except :
             raise APIAuthError('Location est invalide')
 
     fieldsToUpdate = []
     fieldValues = {"user_id": user_id}
     for field in fields:
-        value = validated_data[field]
+        if field == 'latitude' or field == 'longitude':
+            value = latitude if field == 'latitude' else longitude
+        else:
+            value = validated_data[field]
         fieldsToUpdate.append(f"{field} = :{field}")
         fieldValues.update({field: value})
 
     while f"images[{index}][file]" in request.files:
         image_file = request.files.get(f"images[{index}][file]")
+
+        length = image_file.seek(0, os.SEEK_END)
+        if length > MAX_IMAGE_SIZE:
+            raise ForbiddenError(f"Le fichier '{file_name}' dépasse la taille maximale autorisée de 10 Mo.")
+
         mime_type = image_file.content_type if image_file.content_type else "text/plain"
         file_name = image_file.filename if image_file.filename else ""
         is_profile_picture = request.form.get(f"images[{index}][is_profile_picture]") == 'true'
@@ -392,13 +394,15 @@ def setSettings(user_id, validated_data):
                     (base64.b64encode(image["file"].read()), image["mime_type"], image['file_name'], str(user_id), bool(image["is_profile_picture"])))
 
     user = getUserWithProfilePictureById(user_id)
-    if isAccountValid(user):
+    if isAccountValid(user) and not user['is_valid']:
         makeRequest("UPDATE user SET is_valid = '1' WHERE id = :user_id", (user_id,))
-    else:
+        user['is_valid'] = True
+    elif not isAccountValid(user) and user['is_valid']:
         makeRequest("UPDATE user SET is_valid = '0' WHERE id = :user_id", (user_id,))
+        user['is_valid'] = False
     return jsonify(user=user)
 
-@token_required
+@auth()
 def getViewHistory(user_id):
-    response = makeRequest("SELECT user_id FROM view WHERE viewed_user_id = ?", (str(user_id)))
+    response = makeRequest("SELECT user_id FROM view WHERE viewed_user_id = ?", (str(user_id),))
     return jsonify(history=response)

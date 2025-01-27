@@ -23,6 +23,7 @@ export type User = {
     longitude: number
     last_connection?: string
     is_connected: boolean
+    is_valid: boolean
 }
 
 export type Tags = {

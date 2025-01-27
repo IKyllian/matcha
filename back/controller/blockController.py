@@ -2,12 +2,12 @@ from flask import jsonify, request
 from services.user import getDistanceOfUser
 from services.relations import *
 from database_utils.requests import *
-from decorators.authDecorator import token_required
+from decorators.authDecorator import auth
 from decorators.dataDecorator import validate_request
 from errors.httpErrors import ForbiddenError
 from utils.images import decodeImagesFromArray
 
-@token_required
+@auth()
 def blockUserById(user_id):
     user_to_block_id = request.json.get("user_to_block_id", None)
     if (user_id == user_to_block_id):
@@ -20,7 +20,7 @@ def blockUserById(user_id):
                            (str(user_id), str(user_to_block_id)))
     return jsonify(ok=True)
 
-@token_required
+@auth()
 @validate_request({
     "blocked_id": {"required": True, "type": int, "min": 0},
 })
@@ -29,7 +29,7 @@ def getUserBlocks(user_id, validated_data, blocked_id):
     blocks = decodeImagesFromArray(blocks)
     return jsonify(blocks=blocks)
 
-@token_required
+@auth()
 def getBlocksOfUser(user_id):
     blocks = makeRequest("SELECT user.id, user.first_name, user.last_name, user.gender, user.fame_rating, image.id AS image_id, image.image_file, image.mime_type, image.file_name, image.is_profile_picture FROM block LEFT JOIN user ON block.blocked_user_id = user.id LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1 WHERE block.user_id = ?", (str(user_id),))
     for block in blocks:
@@ -37,7 +37,7 @@ def getBlocksOfUser(user_id):
     blocks = decodeImagesFromArray(blocks)
     return jsonify(blocks=blocks)
 
-@token_required
+@auth()
 @validate_request({
     "user_to_report_id": {"required": True, "type": int, "min": 0},
 })

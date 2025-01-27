@@ -41,7 +41,7 @@ const buildUrlParams = (urlParams: UrlParamsType): string => {
     return stringParams
 }
 
-export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getViewsOfUser' | 'getMatchesOfUser' | 'profile/settings' | 'getTags' | 'getUserViews' | 'notifications' | 'getBlocksOfUser' | 'getChatList' | 'suggestion' | 'checkUrlIdentifier' | 'getUserLikes';
+export type EndpointType = 'chat' | 'profile' | 'sidebar' | 'getLikesOfUser' | 'getMatchesOfUser' | 'profile/settings' | 'getTags' | 'getUserViews' | 'notifications' | 'getBlocksOfUser' | 'getChatList' | 'suggestion' | 'checkUrlIdentifier' | 'getUserLikes';
 
 const getUlrParams = ({ urlParams, endpoint, params }: { endpoint: string, urlParams?: UrlParamsType, params?: { id: number | string } }) => {
     if (urlParams) {
@@ -70,7 +70,6 @@ export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], sett
                 const api = makeApi({ token: useToken ? cookie : undefined })
                 const requestparams = getUlrParams({ endpoint, params, urlParams })
                 const response = await api.get<T>(requestparams).json();
-                console.info("REPONSE = ", requestparams, ' =>>>> ', response)
                 setter(key ? response[key] : response)
             } catch (error) {
                 let errorMessage = 'An unknown error occurred';
@@ -86,7 +85,11 @@ export const useApi = <T>({ endpoint, params, urlParams, dependencies = [], sett
                 } else {
                     errorMessage = error.message;
                 }
-                addAlert({ message: errorMessage, type: AlertTypeEnum.ERROR });
+                if (codeError === 413) {
+                    addAlert({ message: "Request too large", type: AlertTypeEnum.ERROR });
+                } else {
+                    addAlert({ message: errorMessage, type: AlertTypeEnum.ERROR });
+                }
                 if (codeError && codeError === 401) {
                     console.error("AUTH Error -> diconnect")
                     onLogout()

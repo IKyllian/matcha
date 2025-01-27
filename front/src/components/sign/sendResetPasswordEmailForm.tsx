@@ -33,11 +33,11 @@ const SendResetPasswordEmailForm = () => {
     const slotsStyles = formStyle.raw()
 
     const onSubmit = async (data: FormValues) => {
-        const { ok } = await makeSendResetPasswordEmailRequest({
+        const ret = await makeSendResetPasswordEmailRequest({
             email: data.email, addAlert
         })
 
-        if (ok) {
+        if (ret?.ok) {
             addAlert({ message: "Email envoyer", type: AlertTypeEnum.SUCCESS })
         }
     }

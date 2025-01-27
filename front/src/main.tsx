@@ -8,7 +8,11 @@ import { CookiesProvider } from 'react-cookie'
 createRoot(document.getElementById('root')!).render(
   <CookiesProvider defaultSetOptions={{ path: '/' }}>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <RouterProvider
+        router={router} future={{
+          v7_startTransition: true
+        }}
+      />
     </AuthProvider>
   </CookiesProvider>
 )

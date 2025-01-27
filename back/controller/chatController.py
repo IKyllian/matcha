@@ -3,13 +3,13 @@ from flask import jsonify
 from errors.httpErrors import ForbiddenError
 from services.user import getUserWithProfilePictureById
 from database_utils.requests import *
-from decorators.authDecorator import blocked_check, token_required
+from decorators.authDecorator import blocked_check, auth
 from decorators.dataDecorator import validate_request
 
 def easteregg():
     return "<p>Congrats! You found the easteregg!</p>"
 
-@token_required
+@auth()
 def getChatList(user_id):
     chats = makeRequest('''
         SELECT
@@ -58,11 +58,17 @@ def getChatList(user_id):
         chat["liked_user"] = getUserWithProfilePictureById(chat["matched_user"])
     uniqueChats = []
     for chat in chats:
-        if chat not in uniqueChats:
+        found = False
+        for i, u in enumerate(uniqueChats):
+            if chat["matched_user"] == u["matched_user"]:
+                uniqueChats[i] = chat
+                found = True
+                break
+        if not found:
             uniqueChats.append(chat)
     return jsonify(uniqueChats)
 
-@token_required
+@auth()
 @validate_request({
     "chatter_id": {"required": True, "type": int, "min": 0},
 })

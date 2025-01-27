@@ -101,4 +101,8 @@ export const router = createBrowserRouter([
             <Screen404 />
         )
     }
-])
+],
+    {future:{
+        v7_relativeSplatPath: true
+    }}
+)

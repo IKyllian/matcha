@@ -52,12 +52,8 @@ export const homeStyle = sva({
         boxShadow: 'none',
       },
       smDown: {
-        right: '5px',
-        bottom: '60px',
-      },
-      xsDown: {
         display: 'none'
-      }
+      },
     },
     paginationButton: {
       height: '50px',

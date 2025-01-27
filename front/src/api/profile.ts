@@ -2,6 +2,7 @@ import { apiRequest } from "front/api/api";
 import { AlertStoreType } from "front/store/alert.store";
 import { RequestProps } from "front/typing/api";
 import { Tags, User } from "front/typing/user";
+import ky from "ky";
 
 export const makeLikeRequest = async ({ token, id, addAlert }: RequestProps) => {
     return apiRequest<{ ok: boolean }>({
@@ -77,19 +78,11 @@ export const makeTagsCreateRequest = async ({ tag_name, token, addAlert }: { tag
 }
 
 export const makePositionRequest = async ({ city }) => {
-    return apiRequest({
-        url: `https://nominatim.openstreetmap.org/search?city=${city}&format=json`,
-        options: {
-            method: 'GET',
-        },
-    });
+    const response = await ky.get<any>(`https://nominatim.openstreetmap.org/search?city=${city}&format=json`).json()
+    return response
 }
 
 export const makeReversePositionRequest = async ({ lat, lon }: { lat: number, lon: number }) => {
-    return apiRequest<any>({
-        url: `https://nominatim.openstreetmap.org/reverse.php?lat=${lat}&lon=${lon}&zoom=10&format=jsonv2`,
-        options: {
-            method: 'GET',
-        },
-    });
+    const response = await ky.get<any>(`https://nominatim.openstreetmap.org/reverse.php?lat=${lat}&lon=${lon}&zoom=10&format=jsonv2`).json()
+    return response
 }

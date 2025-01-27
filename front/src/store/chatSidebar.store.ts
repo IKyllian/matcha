@@ -5,7 +5,6 @@ export type ChatSidebatStoreType = {
     chatSidebar: ChatSidebarType[] | undefined,
     setChatSidebar: (chatSidebar: ChatSidebarType[]) => void,
     updateLastMessage: (message: MessageType) => void,
-    updateSidebarMessage: ({ message, chatId }: { message: string, chatId: number }) => void,
     resetChatSidebar: () => void
 }
 
@@ -13,6 +12,7 @@ export const chatSidebarSlice = (set: StoreSetType): ChatSidebatStoreType => ({
     chatSidebar: undefined,
     setChatSidebar: (chatSidebar: ChatSidebarType[]) => set((state) => ({ ...state, chatSidebar })),
     updateLastMessage: (message: MessageType) => set((state) => {
+        if (!state.chatSidebar) return { ...state }
         const connectedUserId = state.authStore.user.id
         const senderId = message.sender_id !== connectedUserId ? message.sender_id : message.receiver_id
         const conv = state.chatSidebar.find((c: ChatSidebarType) => c.liked_user.id === senderId)
@@ -23,19 +23,6 @@ export const chatSidebarSlice = (set: StoreSetType): ChatSidebatStoreType => ({
             return { ...state, chatSidebar: [conv, ...newChatSidebar] }
         }
         return { ...state }
-    }),
-    updateSidebarMessage: ({ message, chatId }: { message: string, chatId: number }) => set((state) => {
-        const foundConv = state.chatSidebar.find((c: ChatSidebarType) => c.liked_user.id === chatId)
-        const sidebarWithoutConv = state.chatSidebar.filter((c: ChatSidebarType) => c.liked_user.id !== chatId)
-        foundConv.last_message = message
-        foundConv.last_send_at = new Date().toISOString()
-        return {
-            ...state,
-            chatSidebar: [
-                foundConv,
-                ...sidebarWithoutConv
-            ]
-        }
     }),
     resetChatSidebar: () => set((state) => ({ ...state, chatSidebar: undefined }))
 })

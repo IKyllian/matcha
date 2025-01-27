@@ -70,7 +70,6 @@ export const formStyle = sva({
             fontWeight: '500',
             fontSize: '20px',
             marginTop: '12px',
-            fontFamily: 'body',
             _active: {
                 boxShadow: 'none',
             },
@@ -101,7 +100,9 @@ export const formStyle = sva({
         },
         inputError: {
             color: 'red',
-            fontSize: '12px'
+            fontSize: '12px',
+            maxWidth: '300px',
+            whiteSpace: 'wrap',
         },
         forgotPassword: {
             textAlign: 'right',

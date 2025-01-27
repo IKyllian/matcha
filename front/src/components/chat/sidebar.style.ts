@@ -24,6 +24,9 @@ export const sidebarStyle = sva({
                     position: 'absolute',
                     top: 0,
                 }
+            },
+            '&::-webkit-scrollbar': {
+                display: 'none'
             }
         },
         sidebarItemContainer: {

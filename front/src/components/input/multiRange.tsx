@@ -42,7 +42,7 @@ const MultiRangeInput = ({ min, max, defaultMin, defaultMax, setValue }: MultiRa
         className={css(slotsStyles.input)}
         style={{
           '--input-z-index': minVal > (max - 100) ? '5' : '3'
-        }}
+        } as React.CSSProperties}
       />
       <input
         type="range"
@@ -59,7 +59,7 @@ const MultiRangeInput = ({ min, max, defaultMin, defaultMax, setValue }: MultiRa
         className={css(slotsStyles.input)}
         style={{
           '--input-z-index': '4'
-        }}
+        } as React.CSSProperties}
       />
 
       <div className={css(slotsStyles.slider)}>

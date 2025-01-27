@@ -11,7 +11,7 @@ import { ImageSettingsType, Tags, User } from "front/typing/user"
 import { useApi } from "front/hook/useApi"
 import { AlertTypeEnum } from "front/typing/alert"
 import { makeIpAddressRequest } from "front/api/auth"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 type InputRadioProps = {
   value: string
@@ -100,19 +100,23 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   } = useForm<Partial<User>>({
     defaultValues: profileSettings.user
   })
-
+  const location = useLocation()
+  const navigate = useNavigate()
   useEffect(() => {
     const getPos = async () => {
       const lat = profileSettings.user.latitude
       const lon = profileSettings.user.longitude
       if (lat && lon) {
-        const { display_name } = await makeReversePositionRequest({ lat, lon })
-        setPositionSelected({
-          displayName: display_name,
-          latitude: lat,
-          longitude: lon
-        })
-        setInputPosition(display_name)
+        const ret = await makeReversePositionRequest({ lat, lon })
+        if (ret) {
+          const { display_name } = ret
+          setPositionSelected({
+            displayName: display_name,
+            latitude: lat,
+            longitude: lon
+          })
+          setInputPosition(display_name)
+        }
       }
     }
     getPos()
@@ -165,26 +169,26 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     });
 
     if (positionSelected) {
-      console.info('set new position = ', positionSelected)
       formData.append('longitude', positionSelected.longitude.toString())
       formData.append('latitude', positionSelected.latitude.toString())
     }
 
-    console.info('formData = ', formData)
-
-    const { ip } = await makeIpAddressRequest()
-    const { user } = await makeSettingsRequest(
+    const resIp = await makeIpAddressRequest()
+    const retUser = await makeSettingsRequest(
       {
         data: formData,
         token,
         addAlert,
-        ip
+        ip: resIp.ip
       }
     )
 
-    if (user) {
+    if (retUser) {
       addAlert({ message: 'Votre profile a ete update', type: AlertTypeEnum.SUCCESS })
-      setUser(user)
+      setUser(retUser.user)
+      if (location.state?.prevPath === '/login') {
+        navigate('/')
+      }
     }
   }
 
@@ -200,17 +204,14 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
 
   const onSingleUpload = (event: any) => {
     const [file] = event.target.files
-    // const filesize: string = ((file.size/1024)/1024).toFixed(4);
     if (file) {
       if (checkFileNameExist(file)) return
       setProfilPicturePreview(URL.createObjectURL(file))
       setProfilesImages(prev => [...prev, { file, is_profile_picture: true, file_name: file.name }])
     }
-    console.info("upload", file)
   }
 
   const onMultipleUpload = (event: any) => {
-    console.info("data - ", event)
     const imagesLength = profilesImages.length
     if (imagesLength === 4) {
       console.error('Max images Uploaded: ', imagesLength)
@@ -268,6 +269,10 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     return () => clearTimeout(timeoutId)
   }, [inputPosition])
 
+  const onClearPosition = () => {
+    setPositionSelected(undefined)
+    setInputPosition('')
+  }
   return (
     <div className={css(slotsStyles.settingsContainer)}>
       <h2 className={css(slotsStyles.title)}> Completez votre profil </h2>
@@ -330,6 +335,12 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
                 }
               </div>
             )
+          }
+          {
+            positionSelected &&
+            <div className={css(slotsStyles.uploadButton, slotsStyles.imageResetButton)} onClick={onClearPosition}>
+              <IoClose />
+            </div>
           }
         </label>
         <label>
@@ -394,7 +405,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
             <span> Upload </span>
           </div>
         </label>
-        <span className={css(slotsStyles.textInfo)}>* Champs requis pour interagir avec les autres utilisateurs</span>
+        <span className={css(slotsStyles.textInfo)}>* Champs requis pour que votre compte soit valide</span>
         <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
       </form>
     </div>

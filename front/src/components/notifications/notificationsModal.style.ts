@@ -14,6 +14,9 @@ export const notificationsModalStyle = sva({
       flexDirection: 'column',
       gap: '10px',
       overflowY: 'scroll',
+      '&::-webkit-scrollbar': {
+        display: 'none'
+      },
       border: '2px solid black',
       boxShadow: '2.5px 2.5px 0 black',
       width: '370px',

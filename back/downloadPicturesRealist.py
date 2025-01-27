@@ -1,16 +1,12 @@
 import os
 import requests
 
-# Directory where images will be stored
 IMAGES_FOLDER = 'pictures'
 
-# Ensure the images folder exists
 if not os.path.exists(IMAGES_FOLDER):
     os.makedirs(IMAGES_FOLDER)
 
-# Function to download the image
 def download_image(image_url, save_path):
-    # Send a GET request to download the image
     response = requests.get(image_url, stream=True)
     if response.status_code == 200:
         with open(save_path, 'wb') as img_file:
@@ -37,25 +33,20 @@ def main(gender, age):
         ageUrl = "51-70"
 
 
-    # URL of the API endpoint
     url = 'https://this-person-does-not-exist.com/new?time=" + "1733836074302" + "&gender=' + genderUrl + "&age=" + ageUrl + "&etnic=all"
     
-    # Make the GET request to the API
     response = requests.get(url)
     if response.status_code != 200:
         print("Failed to fetch data from the API.")
         return
 
-    # Parse the JSON response
     data = response.json()
 
-    # Check if the response contains the 'src' field
     if 'src' in data:
         image_url = f"https://this-person-does-not-exist.com{data['src']}"
         image_name = data['name']
         save_path = os.path.join(IMAGES_FOLDER + "/" + genderUrl + "/" + ageUrl, image_name)
 
-        # Download and save the image
         download_image(image_url, save_path)
     else:
         print("Image source not found in response.")
