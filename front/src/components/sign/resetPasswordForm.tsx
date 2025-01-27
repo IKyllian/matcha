@@ -60,7 +60,7 @@ const ResetPasswordForm = () => {
     ]
 
     const onSubmit = async (data: FormValues) => {
-        const { ok } = await makeResetPasswordRequest({
+        const ret = await makeResetPasswordRequest({
             data: {
                 pass: data.password,
                 url_identifier
@@ -68,7 +68,7 @@ const ResetPasswordForm = () => {
             addAlert
         })
 
-        if (ok) {
+        if (ret?.ok) {
             addAlert({ message: "Mot de passe mis a jour", type: AlertTypeEnum.SUCCESS })
             setStatus('success')
             navigate('/login')

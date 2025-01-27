@@ -26,10 +26,6 @@ export const socketSlice = (set: StoreSetType): SocketStoreType => ({
             state.initializeSocket()
         })
 
-        socket.on('disconnect', () => {
-            console.info("socket disconected")
-        })
-
         socket.on('error', (error: { message: string }) => {
             state.addAlert({ type: AlertTypeEnum.ERROR, message: error.message })
         })

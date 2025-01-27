@@ -204,7 +204,6 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
 
   const onSingleUpload = (event: any) => {
     const [file] = event.target.files
-    // const filesize: string = ((file.size/1024)/1024).toFixed(4);
     if (file) {
       if (checkFileNameExist(file)) return
       setProfilPicturePreview(URL.createObjectURL(file))
@@ -270,6 +269,10 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     return () => clearTimeout(timeoutId)
   }, [inputPosition])
 
+  const onClearPosition = () => {
+    setPositionSelected(undefined)
+    setInputPosition('')
+  }
   return (
     <div className={css(slotsStyles.settingsContainer)}>
       <h2 className={css(slotsStyles.title)}> Completez votre profil </h2>
@@ -332,6 +335,12 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
                 }
               </div>
             )
+          }
+          {
+            positionSelected &&
+            <div className={css(slotsStyles.uploadButton, slotsStyles.imageResetButton)} onClick={onClearPosition}>
+              <IoClose />
+            </div>
           }
         </label>
         <label>

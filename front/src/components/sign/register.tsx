@@ -127,9 +127,9 @@ const Register = () => {
     const addAlert = useStore((state) => state.addAlert)
     const slotsStyles = formStyle.raw()
     const onSubmit = async (data: FormValues) => {
-        const { ip } = await makeIpAddressRequest()
-        const { ok } = await makeSignUpRequest({ data, addAlert, ip })
-        if (ok) {
+        const retIp = await makeIpAddressRequest()
+        const ret = await makeSignUpRequest({ data, addAlert, ip: retIp?.ip || undefined })
+        if (ret?.ok) {
             addAlert({ message: "Un mail a ete envoyer", type: AlertTypeEnum.SUCCESS })
             setStatus('registered')
         }

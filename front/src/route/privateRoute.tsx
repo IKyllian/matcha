@@ -34,7 +34,8 @@ const PrivateRoute = ({ children }) => {
                     marginTop: showBanner ? '130px' : '70px',
                     width: '100%',
                     mdDown: {
-                        marginTop: showBanner ? '50px' : '0'
+                        marginTop: showBanner ? '50px' : '0',
+                        marginBottom: '60px'
                     },
                     smDown: {
                         marginTop: showBanner ? '80px' : '0'
