@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { useParams, useNavigate } from 'react-router-dom';
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
-import { FieldsInputType } from "front/typing/input"
+import { FieldsInputType, PASSWORD_REGEX } from "front/typing/input"
 import { useApi } from "front/hook/useApi"
 import Screen404 from "front/components/utils/404"
 
@@ -45,7 +45,11 @@ const ResetPasswordForm = () => {
             type: 'password',
             options: {
                 required: true,
-                validate: value => value === getValues('confirmPasword')
+                validate: value => value === getValues('confirmPasword'),
+                pattern: {
+                    value: PASSWORD_REGEX,
+                    message: "Doit contenir au moins 8 characteres et majuscule, minuscule, nombre, charactere special"
+                }
             }
         },
         {
@@ -55,6 +59,10 @@ const ResetPasswordForm = () => {
             options: {
                 required: true,
                 validate: value => value === getValues('password') || "Les deux mots de passe doivent etre identique",
+                pattern: {
+                    value: PASSWORD_REGEX,
+                    message: "Doit contenir au moins 8 characteres et majuscule, minuscule, nombre, charactere special"
+                }
             }
         }
     ]
