@@ -1,16 +1,12 @@
 import os
 import requests
 
-# Directory where images will be stored
 IMAGES_FOLDER = 'pictures/generatedMicah'
 
-# Ensure the images folder exists
 if not os.path.exists(IMAGES_FOLDER):
     os.makedirs(IMAGES_FOLDER)
 
-# Function to download the image
 def download_image(image_url, save_path):
-    # Send a GET request to download the image
     response = requests.get(image_url, stream=True)
     if response.status_code == 200:
         with open(save_path, 'wb') as img_file:
@@ -23,20 +19,17 @@ def download_image(image_url, save_path):
 def main(seed):
     print("Started")
 
-    # URL of the API endpoint
     url = f'https://api.dicebear.com/9.x/micah/png?seed={seed}&size=600'
 
-    # Make the GET request to the API
     response = requests.get(url)
     if response.status_code != 200:
         print("Failed to fetch data from the API.")
         return
 
-    image_name = f"{seed}.png"  # You can customize this pattern for the filename
+    image_name = f"{seed}.png"
     save_path = os.path.join(IMAGES_FOLDER, image_name)
 
     
-    # Download and save the image
     download_image(url, save_path)
 
 

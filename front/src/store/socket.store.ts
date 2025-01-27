@@ -20,7 +20,7 @@ export const socketSlice = (set: StoreSetType): SocketStoreType => ({
         return { ...state }
     }),
     initSocket: ({ token }: { token: string }) => set(state => {
-        const socket = io(import.meta.env.VITE_API_URL)
+        const socket = io(import.meta.env.VITE_SOCKET_URL)
         socket.on('connect', () => {
             socket.emit("identify", { token })
             state.initializeSocket()

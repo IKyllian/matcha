@@ -3,7 +3,7 @@ import { useStore } from "front/store/store"
 import { AlertTypeEnum } from "front/typing/alert"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from 'react-router-dom';
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
 import { FieldsInputType } from "front/typing/input"
@@ -36,6 +36,7 @@ const ResetPasswordForm = () => {
         key: 'ok',
         useToken: false
     })
+    const navigate = useNavigate()
 
     const FIELDS: FieldsInputType<FormValues>[] = [
         {
@@ -70,6 +71,7 @@ const ResetPasswordForm = () => {
         if (ok) {
             addAlert({ message: "Mot de passe mis a jour", type: AlertTypeEnum.SUCCESS })
             setStatus('success')
+            navigate('/login')
         }
     }
 

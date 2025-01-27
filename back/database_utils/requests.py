@@ -76,7 +76,7 @@ def send_email_auth(user_email, url_identifier):
     recipient_email = user_email
     subject = "Email d'Authentification"
     message_body = '''Bienvenue sur Matcha!
-    Pour vous identifier, veuiller suivre le lien a cette adresse:
+    Pour vous identifier, veuillez suivre le lien a cette adresse:
     ''' + os.getenv("FRONT_HOST") + "/activateAccount/" + url_identifier
     
     # Create email message
@@ -115,7 +115,7 @@ def send_email_auth(user_email, url_identifier):
 def send_email_password(user_email, url_identifier):
     recipient_email = user_email
     subject = "Email de Reinitialisation de mot de passe"
-    message_body = '''Pour reinitialiser votre mot de passe, veuiller suivre le lien a cette adresse:
+    message_body = '''Pour reinitialiser votre mot de passe, veuillez suivre le lien a cette adresse:
     ''' + os.getenv("FRONT_HOST") + "/resetPassword/" + url_identifier
     
     # Create email message
