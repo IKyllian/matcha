@@ -30,8 +30,8 @@ for tag in tags:
                 (tag,))
 
 
-# Password is passpass but encrypted with bcrypt
-password = "$2b$12$HPt/IW3vCw1C6F.i/18PFOo87v.gW3oWKFyoZlX/EL2NHkHu5Zz1i"
+# Password is Passpass1! but encrypted with bcrypt
+password = "$2b$12$NjBwjOIzB35JdbRgrg1ZUuJPHQgE8CI0rEJg74787.BGAlwMZ/vfe"
 
 users = [
     {
