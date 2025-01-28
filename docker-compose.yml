@@ -13,7 +13,6 @@ services:
       VITE_API_URL: ${VITE_API_URL}
       VITE_FRONT_URL: ${VITE_FRONT_URL}
       VITE_SOCKET_URL: ${VITE_SOCKET_URL}
-      HOST: ${HOST}
     ports:
       - "5173:5173"
   back:
