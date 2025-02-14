@@ -29,7 +29,7 @@ CREATE TABLE user (
     email               NVARCHAR(320)                   NOT NULL,
     first_name          NVARCHAR(20)                    NOT NULL,
     last_name           NVARCHAR(20)                    NOT NULL,
-    birth_date          TEXT                       NULL,
+    birth_date          TEXT                            NULL,
     gender              NCHAR(1)                        NULL,
     sexual_preference   NCHAR(1)                        NULL,
     bio                 TEXT                            NULL,
@@ -40,7 +40,8 @@ CREATE TABLE user (
     url_identifier      TEXT                            NULL,
     is_connected        BOOLEAN                         NOT NULL DEFAULT 0,
     last_connection     TEXT                            NULL,
-    is_valid            BOOLEAN                         NOT NULL
+    is_valid            BOOLEAN                         NOT NULL,
+    position_name       TEXT                            NOT NULL
 );
 
 CREATE TABLE image (

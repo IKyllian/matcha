@@ -2,7 +2,7 @@ import { AlertStoreType } from "front/store/alert.store";
 import { AlertTypeEnum } from "front/typing/alert";
 import ky, { HTTPError } from "ky";
 
-export const makeApi = ({ token, ip }: { token?: string, ip?: string }) => {
+export const makeApi = ({ token }: { token?: string }) => {
     return ky.extend({
         credentials: 'include',
         hooks: {
@@ -10,7 +10,6 @@ export const makeApi = ({ token, ip }: { token?: string, ip?: string }) => {
                 (request) => {
                     request.headers.set('Access-Control-Allow-Origin', 'true')
                     if (token) request.headers.set('Authorization', `Bearer ${token}`)
-                    if (ip) request.headers.set('X-Forwarded-For', `${ip}`)
                 }
             ]
         }
@@ -20,13 +19,12 @@ export const makeApi = ({ token, ip }: { token?: string, ip?: string }) => {
 type ApiRequestProps = {
     url: string
     options: Record<string, any>
-    ip?: string
     token?: string
     addAlert?: AlertStoreType['addAlert']
 }
-export const apiRequest = async <T>({ token, url, options, addAlert, ip }: ApiRequestProps): Promise<T | null> => {
+export const apiRequest = async <T>({ token, url, options, addAlert }: ApiRequestProps): Promise<T | null> => {
     try {
-        const kyInstance = makeApi({ token, ip })
+        const kyInstance = makeApi({ token })
         const response = await kyInstance(url, options).json<T>();
         return response;
     } catch (error) {

@@ -321,9 +321,10 @@ MAX_IMAGE_SIZE = 15 * 1024 * 1024  # 15 MB in bytes
     "bio": {"type": str, "min": 1, "max": 1000},
     "latitude": {"type": float},
     "longitude": {"type": float},
+    "position_name": {"type": str}
 })
 def setSettings(user_id, validated_data):
-    fields = ["first_name", "last_name", "gender", "sexual_preference", "bio", "latitude", "longitude"]
+    fields = ["first_name", "last_name", "gender", "sexual_preference", "bio", "latitude", "longitude", "position_name"]
     latitude = validated_data['latitude']
     longitude = validated_data['longitude']
     tags = request.form.getlist("tag_ids", None)
@@ -337,7 +338,9 @@ def setSettings(user_id, validated_data):
             ipAddress = get_client_ip()
             if ('10.11.' in ipAddress or '127.0.'in ipAddress):
                 ipAddress = os.getenv("PUBLIC_IP")
-            data = ipdata.lookup(ipAddress)
+            data = ipdata.lookup(ipAddress, fields=['latitude','longitude','country_name', 'city'])
+            locationName = f"{data.get('city')}-{data.get('country_name')}"
+            fields.append({"position_name": locationName})
             if (not data['latitude'] or not data['longitude']):
                 print("Probleme avec la recuperation de la localisation -> Garde l'ancienne position")
             latitude = data['latitude'] if data['latitude'] else userPos['latitude']

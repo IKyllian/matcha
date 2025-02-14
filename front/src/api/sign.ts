@@ -6,7 +6,6 @@ import { NotificationType } from "front/typing/notification";
 type SignProps = {
     data: Pick<User, 'username' | 'password'>
     addAlert: AlertStoreType['addAlert']
-    ip?: string
 }
 
 type SignInResponseType = {
@@ -26,14 +25,13 @@ export const makeSignInRequest = async ({ data, addAlert }: SignProps): Promise<
     });
 };
 
-export const makeSignUpRequest = async ({ data, addAlert, ip }: SignProps): Promise<{ ok: boolean } | null> => {
+export const makeSignUpRequest = async ({ data, addAlert }: SignProps): Promise<{ ok: boolean } | null> => {
     return apiRequest<{ ok: boolean }>({
         url: `${import.meta.env.VITE_API_URL}/signup`,
         options: {
             method: 'POST',
             json: data
         },
-        addAlert,
-        ip
+        addAlert
     });
 };

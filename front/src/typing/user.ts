@@ -24,6 +24,7 @@ export type User = {
     last_connection?: string
     is_connected: boolean
     is_valid: boolean
+    position_name: string
 }
 
 export type Tags = {

@@ -10,7 +10,6 @@ import { useStore } from "front/store/store"
 import { ImageSettingsType, Tags, User } from "front/typing/user"
 import { useApi } from "front/hook/useApi"
 import { AlertTypeEnum } from "front/typing/alert"
-import { makeIpAddressRequest } from "front/api/auth"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { isUserProfileComplete } from "front/utils/user.utils"
 
@@ -174,15 +173,14 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     if (positionSelected) {
       formData.append('longitude', positionSelected.longitude.toString())
       formData.append('latitude', positionSelected.latitude.toString())
+      formData.append('position_name', positionSelected.displayName)
     }
 
-    const { ip = undefined } = await makeIpAddressRequest()
     const { user = undefined } = await makeSettingsRequest(
       {
         data: formData,
         token,
         addAlert,
-        ip
       }
     )
 
@@ -268,7 +266,11 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       }
       const ret: any = await makePositionRequest({ city: inputPosition })
       if (ret && Array.isArray(ret)) {
-        setInputPositionsList(ret.map(p => ({ displayName: p.display_name, latitude: p.lat, longitude: p.lon })))
+        setInputPositionsList(ret.map(p => {
+          const splitName: string[] = p.display_name.split(',')
+          const name = splitName.length > 1 ? `${splitName[0]}-${splitName[splitName.length - 1]}` : splitName.length === 1 ? splitName[0] : ""
+          return ({ displayName: name, latitude: p.lat, longitude: p.lon })
+        } ))
       }
     }, 500)
 

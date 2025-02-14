@@ -56,7 +56,8 @@ def signup(validated_data):
         ipAddress = get_client_ip()
         if ('10.11.' in ipAddress or '127.0.'in ipAddress):
             ipAddress = os.getenv("PUBLIC_IP")
-        data = ipdata.lookup(ipAddress)
+        data = ipdata.lookup(ipAddress, fields=['latitude','longitude','country_name', 'city'])
+        locationName = f"{data.get('city')}-{data.get('country_name')}"
         encryptedPass = encrypt_pass(password)
         userData = {
             'username': username,
@@ -70,7 +71,8 @@ def signup(validated_data):
             'longitude': data['longitude'],
             'is_activated': 0,
             'sexual_preference': 'B',
-            'is_valid': 0
+            'is_valid': 0,
+            'position_name': locationName
             
         }
         user_id = makeInsertRequest("""
