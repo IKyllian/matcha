@@ -406,3 +406,14 @@ def setSettings(user_id, validated_data):
 def getViewHistory(user_id):
     response = makeRequest("SELECT user_id FROM view WHERE viewed_user_id = ?", (str(user_id),))
     return jsonify(history=response)
+
+@auth()
+@validate_request({
+    "user_id_to_delete": {"required": True, "type": int, "min": 0},
+})
+def deleteUser(user_id, validated_data):
+    user_id_to_delete = validated_data['validated_data']
+    if (validated_data != user_id):
+        raise ForbiddenError('Not authorized')
+    makeRequest("DELETE FROM user WHERE id = :user_id", {"user_id": user_id_to_delete})
+    return jsonify(ok=True)

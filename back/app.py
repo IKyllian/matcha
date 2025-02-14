@@ -1,4 +1,4 @@
-from . import createApp, socketio
+from app import createApp, socketio
 from controller.socketController import *
 import os
 

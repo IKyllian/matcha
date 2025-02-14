@@ -2,6 +2,7 @@ import Alert from "front/components/alert/alert"
 import Banner from "front/components/banner/banner"
 import Header from "front/components/header/header"
 import NavBar from "front/components/header/navbar"
+import DeleteAccountModal from "front/components/modals/deleteAccountModal"
 import ReportModal from "front/components/modals/reportModal"
 import { useStore } from "front/store/store"
 import { isUserProfileComplete } from "front/utils/user.utils"
@@ -44,6 +45,7 @@ const PrivateRoute = ({ children }) => {
             }>
                 {showBanner && <Banner />}
                 {modals.report && <ReportModal />}
+                {modals.deleteAccount && <DeleteAccountModal /> }
                 <Alert />
                 {children}
                 <NavBar />

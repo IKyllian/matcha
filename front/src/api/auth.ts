@@ -15,8 +15,12 @@ export const makeAuthRequest = async (token: string, addAlert: AlertStoreType['a
 }
 
 export const makeIpAddressRequest = async () => {
-    const response = await ky.get<{ ip?: string }>('https://api.ipify.org?format=json').json()
-    return response
+    try {
+        const response = await ky.get<{ ip?: string }>('https://api.ipify.org?format=json').json()
+        return response
+    } catch (e) {
+        console.error('Error = ', e)
+    }
 }
 
 export const makeActivateAccountRequest = async ({ url_identifier, addAlert }: { url_identifier: string, addAlert: AlertStoreType['addAlert'] }) => {

@@ -18,7 +18,7 @@ CREATE TABLE user_tag (
     user_id INTEGER NOT NULL,
     tag_id  INTEGER NOT NULL,
     PRIMARY KEY (user_id, tag_id),
-    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     FOREIGN KEY (tag_id) REFERENCES tag(id)
 );
 
@@ -50,39 +50,39 @@ CREATE TABLE image (
     file_name           TEXT        NOT NULL,
     is_profile_picture  BOOLEAN     NOT NULL,
     user_id             INTEGER     NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id)
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE view (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id         INTEGER NOT NULL,
     viewed_user_id  INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (viewed_user_id) REFERENCES user(id)
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (viewed_user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE like (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id         INTEGER NOT NULL,
     liked_user_id   INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (liked_user_id) REFERENCES user(id)
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (liked_user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE block (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id         INTEGER NOT NULL,
     blocked_user_id INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (blocked_user_id) REFERENCES user(id)
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (blocked_user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE report (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id         INTEGER NOT NULL,
     reported_user_id INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (reported_user_id) REFERENCES user(id)
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (reported_user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE message (
@@ -90,9 +90,10 @@ CREATE TABLE message (
     message     TEXT        NOT NULL,
     sender_id   INTEGER     NOT NULL,
     receiver_id INTEGER     NOT NULL,
+    is_like     BOOLEAN     NOT NULL DEFAULT 0,
     created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (sender_id) REFERENCES user(id),
-    FOREIGN KEY (receiver_id) REFERENCES user(id)
+    FOREIGN KEY (sender_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 CREATE TABLE notification (
@@ -103,6 +104,6 @@ CREATE TABLE notification (
     created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     was_seen    BOOLEAN     NOT NULL,
     notif_type  INTEGER     NOT NULL,
-    FOREIGN KEY (sender_id) REFERENCES user(id),
-    FOREIGN KEY (receiver_id) REFERENCES user(id)
+    FOREIGN KEY (sender_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES user(id) ON DELETE CASCADE
 );

@@ -1,13 +1,14 @@
 import { StoreSetType } from "front/typing/store"
 
-export type ModalType = 'report'
+export type ModalType = 'report' | 'deleteAccount'
 
 const defaultModals: {
   modals: Record<ModalType, boolean>,
   userToReportId?: number
 } = {
   modals: {
-    report: false
+    report: false,
+    deleteAccount: false
   }
 }
 
@@ -16,7 +17,7 @@ export type ModalStoreType = {
     modals: Record<ModalType, boolean>,
     userToReportId?: number
   }
-  openModal: ({ modalKey, userToReportId }: { modalKey: ModalType, userToReportId: number }) => void,
+  openModal: ({ modalKey, userToReportId }: { modalKey: ModalType, userToReportId?: number }) => void,
   closeModal: (modalKey: ModalType) => void
 }
 

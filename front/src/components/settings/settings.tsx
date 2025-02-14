@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import ChipSelect from "front/components/chips/chipSelect"
 import { settingsStyle } from "./settings.style"
-import { css } from "styled-system/css"
+import { css, cx } from "styled-system/css"
 import { useForm } from "react-hook-form"
 import { FaUpload } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
@@ -11,7 +11,8 @@ import { ImageSettingsType, Tags, User } from "front/typing/user"
 import { useApi } from "front/hook/useApi"
 import { AlertTypeEnum } from "front/typing/alert"
 import { makeIpAddressRequest } from "front/api/auth"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
+import { isUserProfileComplete } from "front/utils/user.utils"
 
 type InputRadioProps = {
   value: string
@@ -82,6 +83,8 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const { token } = useStore((state) => state.authStore)
   const addAlert = useStore((state) => state.addAlert)
   const setUser = useStore((state) => state.setUser)
+  const openModal = useStore((state) => state.openModal)
+  const [searchParams] = useSearchParams();
   const [selectedChips, setSelectedChips] = useState<Tags[]>(profileSettings.user.tags)
   const [profilePicturePreview, setProfilPicturePreview] = useState<string | undefined>(profileImageFromUser ? profileImageFromUser : undefined)
   const [profilesImages, setProfilesImages] = useState<ImageSettingsType[]>(profileSettings.user.images.map(i => ({
@@ -173,22 +176,25 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       formData.append('latitude', positionSelected.latitude.toString())
     }
 
-    const resIp = await makeIpAddressRequest()
-    const retUser = await makeSettingsRequest(
+    const { ip = undefined } = await makeIpAddressRequest()
+    const { user = undefined } = await makeSettingsRequest(
       {
         data: formData,
         token,
         addAlert,
-        ip: resIp.ip
+        ip
       }
     )
 
-    if (retUser) {
+    if (user) {
       addAlert({ message: 'Votre profile a ete update', type: AlertTypeEnum.SUCCESS })
-      setUser(retUser.user)
-      if (location.state?.prevPath === '/login') {
-        navigate('/')
-      }
+      setUser(user)
+      // if (searchParams.get("completingAccount") && isUserProfileComplete(user)) {
+      //   navigate('/')
+      // }
+      // if (location.state?.from === '/login') {
+      //   navigate('/')
+      // }
     }
   }
 
@@ -213,14 +219,14 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
 
   const onMultipleUpload = (event: any) => {
     const imagesLength = profilesImages.length
-    if (imagesLength === 4) {
+    if (imagesLength === 5) {
       console.error('Max images Uploaded: ', imagesLength)
       return
     }
     const files = event.target.files
     for (let i = 0; i < files.length; i++) {
       if (checkFileNameExist(files[i])) return
-      if (i + imagesLength === 4) {
+      if (i + imagesLength === 5) {
         break
       }
       setProfilesImages(prev => [...prev, { file: files[i], file_name: files[i].name, preview: URL.createObjectURL(files[i]), is_profile_picture: false }])
@@ -272,6 +278,10 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const onClearPosition = () => {
     setPositionSelected(undefined)
     setInputPosition('')
+  }
+
+  const onDeleteAccount = () => {
+    openModal({ modalKey: 'deleteAccount' })
   }
   return (
     <div className={css(slotsStyles.settingsContainer)}>
@@ -406,6 +416,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
           </div>
         </label>
         <span className={css(slotsStyles.textInfo)}>* Champs requis pour que votre compte soit valide</span>
+        <button className={cx(css(slotsStyles.button, slotsStyles.deleteButton))}>Supprimer compte</button>
         <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
       </form>
     </div>

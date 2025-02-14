@@ -1,5 +1,5 @@
 import { chatStyle } from "./chat.style";
-import { css } from "styled-system/css";
+import { css, cx } from "styled-system/css";
 import { AiOutlineSend } from "react-icons/ai";
 import { useApi } from "front/hook/useApi";
 import { ChatType } from "front/typing/chat";
@@ -10,6 +10,9 @@ import { getMessageDateString } from "front/utils/chat";
 import { Link } from "react-router-dom";
 import { useEffect, useRef } from 'react';
 import Loader from "../utils/loader";
+import { FaHeart } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa"
+import { FaTrash } from "react-icons/fa";
 
 type ChatProps = {
     chatId: number;
@@ -39,6 +42,8 @@ const Chat = ({ chatId }: ChatProps) => {
     const chat = useStore(state => state.chat)
     const { user } = useStore(state => state.authStore)
     const setChat = useStore(state => state.setChat)
+    const changeLikeStatus = useStore(state => state.changeLikeStatus)
+    const deleteMessageEvent = useStore(state => state.deleteMessageEvent)
     const sendMessage = useStore(state => state.sendMessage)
     const {
         register,
@@ -69,6 +74,13 @@ const Chat = ({ chatId }: ChatProps) => {
         }
     }
 
+    const onLikeClick = (message_id: number) => {
+        changeLikeStatus({message_id})
+    }
+
+    const onDeleteClick = (message_id: number) => {
+        deleteMessageEvent({message_id})
+    }
     return (
         <Loader isLoading={isLoading} data={chat} shouldDisplay404>
             <div className={css(slotsStyles.chatContainer)}>
@@ -88,6 +100,9 @@ const Chat = ({ chatId }: ChatProps) => {
                                             message.sender_id === recipient?.id ? slotsStyles.recipient : slotsStyles.sender
                                         )}
                                     >
+                                        {message.sender_id === recipient?.id && message.is_like ? <FaHeart onClick={() => onLikeClick(message.id)} className={css(slotsStyles.likedIcon)} /> : null}
+                                        {message.sender_id === recipient?.id && !message.is_like ? <FaRegHeart onClick={() => onLikeClick(message.id)} className={cx(css(slotsStyles.likeIcon), 'likeIcon')} /> : null}
+                                        {message.sender_id !== recipient?.id ? <FaTrash onClick={() => onDeleteClick(message.id)} className={cx(css(slotsStyles.trashIcon), 'trashIcon')} /> : null}
                                         <p>{message.message}</p>
                                         <span className={css(slotsStyles.dateMessage)}>{getMessageDateString(message.created_at)}</span>
                                     </div>

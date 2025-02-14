@@ -24,7 +24,8 @@ export const settingsStyle = sva({
         'positionListContainer',
         'positionItem',
         'positionContainer',
-        'inputError'
+        'inputError',
+        'deleteButton'
     ],
     base: {
         settingsContainer: {
@@ -236,6 +237,9 @@ export const settingsStyle = sva({
         'inputError': {
             color: 'red',
             fontSize: '12px'
+        },
+        deleteButton: {
+            backgroundColor: 'red',
         }
     }
 })
