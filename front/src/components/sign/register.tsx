@@ -8,6 +8,7 @@ import { makeSignUpRequest } from "front/api/sign"
 import { EMAIL_REGEX, FieldsInputType, PASSWORD_REGEX } from "front/typing/input"
 import { AlertTypeEnum } from "front/typing/alert"
 import { useState } from "react"
+import { makeIpAddressRequest } from "front/api/auth"
 
 type FormValues = Pick<User, 'first_name' | 'last_name' | 'username' | 'email' | 'password' | 'birth_date'>
 type FormStatusType = 'registered' | 'onProgress'
@@ -130,7 +131,8 @@ const Register = () => {
     const addAlert = useStore((state) => state.addAlert)
     const slotsStyles = formStyle.raw()
     const onSubmit = async (data: FormValues) => {
-        const ret = await makeSignUpRequest({ data, addAlert })
+        const retIp = await makeIpAddressRequest()
+        const ret = await makeSignUpRequest({ data, addAlert, ip: retIp?.ip || undefined })
         if (ret?.ok) {
             addAlert({ message: "Un mail a ete envoyer", type: AlertTypeEnum.SUCCESS })
             setStatus('registered')

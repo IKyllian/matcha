@@ -52,7 +52,7 @@ export const makeViewRequest = async ({ token, id, addAlert }: RequestProps) => 
     });
 }
 
-export const makeSettingsRequest = async ({ data, token, addAlert }: { data: any, token: string, addAlert: AlertStoreType['addAlert'] }) => {
+export const makeSettingsRequest = async ({ data, token, addAlert, ip }: { data: any, token: string, addAlert: AlertStoreType['addAlert'], ip?: string }) => {
     return apiRequest<{ user: User }>({
         url: `${import.meta.env.VITE_API_URL}/profile/setSettings`,
         options: {
@@ -60,7 +60,8 @@ export const makeSettingsRequest = async ({ data, token, addAlert }: { data: any
             body: data
         },
         token,
-        addAlert
+        addAlert,
+        ip
     });
 }
 

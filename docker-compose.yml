@@ -22,7 +22,6 @@ services:
     networks:
       - matcha_network
     environment:
-      PUBLIC_IP: ${PUBLIC_IP}
       IP_DATA_API_KEY: ${IP_DATA_API_KEY}
       HOST: ${HOST}
       FRONT_HOST: ${FRONT_HOST}

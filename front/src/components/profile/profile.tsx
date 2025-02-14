@@ -144,7 +144,7 @@ const Profile = ({ profile, isLoggedUser }: ProfileProps) => {
                                 </div>
                                 {displayProfileIcons(slotsStyles.iconsWrapperDesktop)}
                             </div>
-                            <p> {profile.user.location} </p>
+                            <p>{profile.user.position_name}</p>
                             <p> {profile.user.bio} </p>
                             {
                                 profile.user.tags &&

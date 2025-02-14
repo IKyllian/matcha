@@ -54,8 +54,6 @@ def signup(validated_data):
     ipdata.api_key = os.getenv("IP_DATA_API_KEY")
     try :
         ipAddress = get_client_ip()
-        if ('10.11.' in ipAddress or '127.0.'in ipAddress):
-            ipAddress = os.getenv("PUBLIC_IP")
         data = ipdata.lookup(ipAddress, fields=['latitude','longitude','country_name', 'city'])
         locationName = f"{data.get('city')}-{data.get('country_name')}"
         encryptedPass = encrypt_pass(password)

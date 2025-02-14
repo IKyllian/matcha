@@ -12,6 +12,8 @@ import { useApi } from "front/hook/useApi"
 import { AlertTypeEnum } from "front/typing/alert"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { isUserProfileComplete } from "front/utils/user.utils"
+import { makeIpAddressRequest } from "front/api/auth"
+import useCloseRef from "front/hook/useCloseRef"
 
 type InputRadioProps = {
   value: string
@@ -95,6 +97,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const [inputPositionsList, setInputPositionsList] = useState<PositionType[]>([])
   const [positionSelected, setPositionSelected] = useState<PositionType>()
   const [inputPosition, setInputPosition] = useState<string>('')
+  const [inputSelected, setInputSelected] = useState<boolean>(false)
   const {
     register,
     handleSubmit,
@@ -104,22 +107,24 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   })
   const location = useLocation()
   const navigate = useNavigate()
+  const onClose = () => {
+    setInputSelected(false)
+    setInputPositionsList([])
+  }
+  const ref = useCloseRef({useEscape: false, onClose})
+
+
   useEffect(() => {
     const getPos = async () => {
       const lat = profileSettings.user.latitude
       const lon = profileSettings.user.longitude
-      if (lat && lon) {
-        const ret = await makeReversePositionRequest({ lat, lon })
-        if (ret) {
-          const { display_name } = ret
-          setPositionSelected({
-            displayName: display_name,
-            latitude: lat,
-            longitude: lon
-          })
-          setInputPosition(display_name)
-        }
-      }
+      const displayName = profileSettings.user.position_name
+      setPositionSelected({
+        displayName,
+        latitude: lat,
+        longitude: lon
+      })
+      setInputPosition(displayName)
     }
     getPos()
   }, [])
@@ -136,7 +141,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     const formData = new FormData()
 
     for (const [key, value] of Object.entries(values)) {
-      if (value && key !== 'tags' && key !== 'images' && key !== 'fame_rating' && key !== 'latitude' && key !== 'longitude') {
+      if (value && key !== 'tags' && key !== 'images' && key !== 'fame_rating' && key !== 'latitude' && key !== 'longitude' && key !== 'position_name') {
         formData.append(key, value)
       }
     }
@@ -176,15 +181,18 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       formData.append('position_name', positionSelected.displayName)
     }
 
-    const { user = undefined } = await makeSettingsRequest(
+    const resIp = await makeIpAddressRequest()
+    const retUser = await makeSettingsRequest(
       {
         data: formData,
         token,
         addAlert,
+        ip: resIp?.ip
       }
     )
 
-    if (user) {
+    if (retUser?.user) {
+      const { user } = retUser
       addAlert({ message: 'Votre profile a ete update', type: AlertTypeEnum.SUCCESS })
       setUser(user)
       // if (searchParams.get("completingAccount") && isUserProfileComplete(user)) {
@@ -259,6 +267,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   }
 
   useEffect(() => {
+    if (!inputSelected) return
     const timeoutId = setTimeout(async () => {
       if (inputPosition.trim() === "" || inputPosition.trim().length < 2) {
         setInputPositionsList([])
@@ -266,11 +275,15 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       }
       const ret: any = await makePositionRequest({ city: inputPosition })
       if (ret && Array.isArray(ret)) {
-        setInputPositionsList(ret.map(p => {
-          const splitName: string[] = p.display_name.split(',')
+        const positionParsed = ret.map(p => {
+          const splitName: string[] = p.display_name?.split(',')
           const name = splitName.length > 1 ? `${splitName[0]}-${splitName[splitName.length - 1]}` : splitName.length === 1 ? splitName[0] : ""
-          return ({ displayName: name, latitude: p.lat, longitude: p.lon })
-        } ))
+          return {...p, display_name: name}
+        })
+        const uniquePosition = Array.from(
+          new Map(positionParsed.map(item => [item.display_name, item])).values()
+        )
+        setInputPositionsList(uniquePosition.map(p => ({ displayName: p.display_name, latitude: p.lat, longitude: p.lon }) ))
       }
     }, 500)
 
@@ -328,7 +341,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
           Desription:
           <textarea className={css(slotsStyles.textAreaInput)} {...register('bio', INPUT_OPTIONS.bio)} name="bio" ></textarea>{errors?.bio?.message && <span className={css(slotsStyles.inputError)}>{errors?.bio?.message.toString()}</span>}
         </label>
-        <label className={css(slotsStyles.positionContainer)}>
+        <label className={css(slotsStyles.positionContainer)} ref={ref as any} onClick={() => setInputSelected(true)}>
           Position:
           <input type='text' onChange={handleChange} value={inputPosition} />
           {
@@ -418,8 +431,8 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
           </div>
         </label>
         <span className={css(slotsStyles.textInfo)}>* Champs requis pour que votre compte soit valide</span>
-        <button className={cx(css(slotsStyles.button, slotsStyles.deleteButton))}>Supprimer compte</button>
         <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
+        <button onClick={onDeleteAccount} className={cx(css(slotsStyles.button, slotsStyles.deleteButton))}>Supprimer compte</button>
       </form>
     </div>
   )

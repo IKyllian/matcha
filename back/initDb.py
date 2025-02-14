@@ -48,7 +48,8 @@ users = [
         'fame_rating' : '2.5',
         'image_name' : 'blank.png',
         'last_connection' : '1950-04-10 14:05:31',
-        'tag_ids' : [1, 6, 10]
+        'tag_ids' : [1, 6, 10],
+        'position_name': 'Lyon, France'
     },
     {
         'name': 'adam',
@@ -64,7 +65,8 @@ users = [
         'fame_rating' : '2.5',
         'image_name' : 'google.png',
         'last_connection' : '2024-12-03 14:05:31',
-        'tag_ids' : [5, 8, 9]
+        'tag_ids' : [5, 8, 9],
+        'position_name': 'Lyon, France'
     },
     {
         'name': 'kyllian',
@@ -80,7 +82,8 @@ users = [
         'fame_rating' : '2.5',
         'image_name' : 'google.png',
         'last_connection' : '2024-05-10 14:05:31',
-        'tag_ids' : [4, 8, 6, 10, 3]
+        'tag_ids' : [4, 8, 6, 10, 3],
+        'position_name': 'Lyon, France'
     },
     {
         'name': 'chafik',
@@ -96,7 +99,8 @@ users = [
         'fame_rating' : '2.5',
         'image_name' : 'pizza.png',
         'last_connection' : '2024-11-18 14:05:31',
-        'tag_ids' : [4, 8]
+        'tag_ids' : [4, 8],
+        'position_name': 'Lyon, France'
     },
     {
         'name': 'naruto',
@@ -112,7 +116,8 @@ users = [
         'fame_rating' : '2.5',
         'image_name' : 'naruto.png',
         'last_connection' : '2024-04-10 14:05:31',
-        'tag_ids' : [2, 6, 7, 9, 3]
+        'tag_ids' : [2, 6, 7, 9, 3],
+        'position_name': 'Lyon, France'
     },
     {
         'name': 'rozhou',
@@ -128,7 +133,8 @@ users = [
         'fame_rating' : '2.5',
         'image_name' : 'panda.jpeg',
         'last_connection' : '2024-04-10 14:05:31',
-        'tag_ids' : [1, 6, 2, 10]
+        'tag_ids' : [1, 6, 2, 10],
+        'position_name': 'Lyon, France'
     },
     {
         'name': 'jinx',
@@ -144,7 +150,8 @@ users = [
         'fame_rating' : '2.5',
         'image_name' : 'jynx.jpeg',
         'last_connection' : '2024-04-10 14:05:31',
-        'tag_ids' : [1, 5, 3, 4, 8]
+        'tag_ids' : [1, 5, 3, 4, 8],
+        'position_name': 'Lyon, France'
     },
     {
         'name': 'vi',
@@ -160,7 +167,8 @@ users = [
         'fame_rating' : '2.5',
         'image_name' : 'vi.png',
         'last_connection' : '1950-04-10 14:05:31',
-        'tag_ids' : [1, 5, 6]
+        'tag_ids' : [1, 5, 6],
+        'position_name': 'Lyon, France'
     }
 ]
 
@@ -183,50 +191,50 @@ image_names = [f for f in os.listdir(IMAGES_FOLDER) if os.path.isfile(os.path.jo
 sexualPreferences = ["F", "M", "B"]
 
 position = [
-        (48.86009267645108, 2.2982732755944135),    # Paris, tour eiffel
-        (48.79073039617435, 2.0506073585994566),    # Paris, versailles
-        (45.771723748567894, 4.891168382771459),    # Lyon, villeurbane
-        (45.69830709023305, 4.881899830200284),     # Lyon, Venissieux
-        (45.76191904856293, 4.777184036634483),     # Tassin-la-demi-lune
-        (44.84178316779002, -0.5781182978287304),   # Bordeaux
-        (45.199894610230004, 5.724611680709684),    # Grenoble, Bastille
-        (45.16535804630061, 5.765707984419116),     # Genoble, st martin d'heres
-        (43.237114748539085, 5.766501880534904),    # Marseille
-        (45.77609586590469, 3.0151253373951157),    # Clermont-Ferrant
-        (45.84305549077159, 1.1792718051136648),    # Limoges
-        (47.25376020121843, -1.1544131409468266),   # Nantes
-        (43.58341779848921, 1.644559577423305),     # Toulouse
-        (43.65699859055131, 4.242555741751027),     # Montpellier
-        (46.56936941697937, 0.3469385201065583),    # Poitiers
-        (45.433818078814156, 4.382963444569971),    # St-Etienne
-        (45.35838677143102, 5.596770957999823),     # Voiron
-        (45.56595696267661, 5.912848023347748),     # Chambery
-        (44.9275439181462, 4.890331872350312),      # Valence
-        (45.9020247991445, 6.126839659230195),      # Annecy
-        (42.67997799982199, 2.902007658297015),     # Perpignan
-        (47.23816509428725, 6.025924900819127),     # Besancon
-        (47.332167719409384, 5.03741987331862),     # Dijon
-        (49.24963450564252, 4.021199703767359),     # Reims
-        (43.708164934280376, 7.273685446060883),    # Nice
-        (43.54973951516737, 7.032170133737733),     # Cannes
-        (47.46956448283731, -0.5439765503204779),   # Angers
-        (49.43935590736683, 1.1107645394940173),    # Rouen
-        (50.62679583040629, 3.0685860085357692),    # Lille
-        (44.93383133645593, 4.897343910616063),     # Valence
-        (48.5743839961333, 7.761209550241155),      # Strasbourg
-        (46.1949446157051, 6.0409683904286355),     # Geneve
-        (50.84405701385618, 4.347265906862287),     # Bruxelles
-        (51.46939707859999, -0.1469683017249634),   # Londres
-        (52.511484952333596, 13.418969970370558),   # Berlin
-        (41.38616382211025, 2.11039219099627),      # Barcelone
-        (40.426875223087556, -3.7284268953173108),  # Madrid
-        (45.4801472041688, 9.202859573449752),      # Milan
-        (41.8747499068259, 12.502703761975058),     # Rome
-        (40.83871296014318, 14.269685834328847),    # Naples
-        (40.712032396948395, -74.00305098090818),   # New York
-        (42.365498245677564, -71.06101253827207),   # Boston
-        (37.779699145155575, -122.42858724092507),  # San Francisco
-        (34.076665109121635, -118.20972165275657),  # Los Angeles
+        (48.86009267645108, 2.2982732755944135, "Paris, France"),    # Paris, tour eiffel
+        (48.79073039617435, 2.0506073585994566, "Paris, France"),    # Paris, versailles
+        (45.771723748567894, 4.891168382771459, "Lyon, France"),    # Lyon, villeurbane
+        (45.69830709023305, 4.881899830200284, "Lyon, France"),     # Lyon, Venissieux
+        (45.76191904856293, 4.777184036634483, "Lyon, France"),     # Tassin-la-demi-lune
+        (44.84178316779002, -0.5781182978287304, "Bordeaux, France"),   # Bordeaux
+        (45.199894610230004, 5.724611680709684, "Grenoble, France"),    # Grenoble, Bastille
+        (45.16535804630061, 5.765707984419116, "Grenoble, France"),     # Genoble, st martin d'heres
+        (43.237114748539085, 5.766501880534904, "Marseille, France"),    # Marseille
+        (45.77609586590469, 3.0151253373951157, "Clermont-Ferrant, France"),    # Clermont-Ferrant
+        (45.84305549077159, 1.1792718051136648, "Limoges, France"),    # Limoges
+        (47.25376020121843, -1.1544131409468266, "Nantes, France"),   # Nantes
+        (43.58341779848921, 1.644559577423305, "Toulouse, France"),     # Toulouse
+        (43.65699859055131, 4.242555741751027, "Montpelier, France"),     # Montpellier
+        (46.56936941697937, 0.3469385201065583, "Poitiers, France"),    # Poitiers
+        (45.433818078814156, 4.382963444569971, "St-Etienne, France"),    # St-Etienne
+        (45.35838677143102, 5.596770957999823, "Voiron, France"),     # Voiron
+        (45.56595696267661, 5.912848023347748, "Chambery, France"),     # Chambery
+        (44.9275439181462, 4.890331872350312, "Valence, France"),      # Valence
+        (45.9020247991445, 6.126839659230195, "Annecy, France"),      # Annecy
+        (42.67997799982199, 2.902007658297015, "Perpignan, France"),     # Perpignan
+        (47.23816509428725, 6.025924900819127, "Besancon, France"),     # Besancon
+        (47.332167719409384, 5.03741987331862, "Dijon, France"),     # Dijon
+        (49.24963450564252, 4.021199703767359, "Reims, France"),     # Reims
+        (43.708164934280376, 7.273685446060883, "Nice, France"),    # Nice
+        (43.54973951516737, 7.032170133737733, "Cannes, France"),     # Cannes
+        (47.46956448283731, -0.5439765503204779, "Angers, France"),   # Angers
+        (49.43935590736683, 1.1107645394940173, "Rouen, France"),    # Rouen
+        (50.62679583040629, 3.0685860085357692, "Lille, France"),    # Lille
+        (44.93383133645593, 4.897343910616063, "Valence, France"),     # Valence
+        (48.5743839961333, 7.761209550241155, "Strasbourg, France"),      # Strasbourg
+        (46.1949446157051, 6.0409683904286355, "Geneve, Suisse"),     # Geneve
+        (50.84405701385618, 4.347265906862287, "Bruxelles, Belgique"),     # Bruxelles
+        (51.46939707859999, -0.1469683017249634, "Londres, Angleterre"),   # Londres
+        (52.511484952333596, 13.418969970370558, "Berlin, Allemagne"),   # Berlin
+        (41.38616382211025, 2.11039219099627, "Barcelone, Espagne"),      # Barcelone
+        (40.426875223087556, -3.7284268953173108, "Madrid, Espagne"),  # Madrid
+        (45.4801472041688, 9.202859573449752, "Milan, Italie"),      # Milan
+        (41.8747499068259, 12.502703761975058, "Rome, Italie"),     # Rome
+        (40.83871296014318, 14.269685834328847, "Naples, Italie"),    # Naples
+        (40.712032396948395, -74.00305098090818, "New-York, États-Unis"),   # New York
+        (42.365498245677564, -71.06101253827207, "Boston, États-Unis"),   # Boston
+        (37.779699145155575, -122.42858724092507, "San Francisco, États-Unis"),  # San Francisco
+        (34.076665109121635, -118.20972165275657, "Los Angeles, États-Unis"),  # Los Angeles
     ]
 
 user_id = 1
@@ -256,9 +264,9 @@ while (user_id < 5000):
     city = position[user_id % len(position)]
 
     cur.execute('''
-                INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude, is_activated, fame_rating, is_connected, is_valid)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-            (name, password, email, first_name, last_name, gender, sexual_preference, birth_date, city[0], city[1], "1", fame_rating, "0", "1"))
+                INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude, position_name, is_activated, fame_rating, is_connected, is_valid)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            (name, password, email, first_name, last_name, gender, sexual_preference, birth_date, city[0], city[1], city[2] ,"1", fame_rating, "0", "1"))
     
     generated_image_name = image_names[user_id % len(image_names)]
     image_name = './pictures/generated/' + generated_image_name
@@ -290,8 +298,8 @@ while (user_id < 5000):
 
 
 for user in users:
-    cur.execute("INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude, is_activated, fame_rating, is_connected, is_valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (user['name'], user['pass'],user['email'], user['first_name'], user['last_name'], user['gender'], user['sexual_preference'], user['birth_date'], user['latitude'], user['longitude'], "1", user['fame_rating'], "0", "1"))
+    cur.execute("INSERT INTO user (username, pass, email, first_name, last_name,gender, sexual_preference, birth_date, latitude, longitude, position_name, is_activated, fame_rating, is_connected, is_valid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (user['name'], user['pass'],user['email'], user['first_name'], user['last_name'], user['gender'], user['sexual_preference'], user['birth_date'], user['latitude'], user['longitude'], user['position_name'] ,"1", user['fame_rating'], "0", "1"))
     image_name = './pictures/' + user['image_name']
     with open(image_name, "rb") as file:
         file_content = file.read()
