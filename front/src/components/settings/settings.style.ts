@@ -251,6 +251,9 @@ export const settingsStyle = sva({
         },
         deleteButton: {
             backgroundColor: 'lightRed',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
         }
     }
 })

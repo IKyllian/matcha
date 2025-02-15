@@ -31,29 +31,38 @@ def decodeImages(images):
 
 def makeRequest(query, params = ()):
     connection = sqlite3.connect('database.db')
+    connection.execute("PRAGMA foreign_keys = ON")
     connection.row_factory = sqlite3.Row
-
     cur = connection.cursor()
-    response = cur.execute(query, params)
-    rows = response.fetchall()
-    unpacked = [{k: item[k] for k in item.keys()} for item in rows]
-
-    connection.commit()
-    connection.close()
-    return unpacked
+    
+    try:
+        response = cur.execute(query, params)
+        connection.commit()
+        rows = response.fetchall()
+        unpacked = [{k: item[k] for k in item.keys()} for item in rows]
+        return unpacked
+    except sqlite3.Error as e:
+        print("SQLite error:", e)
+    finally:
+        cur.close()
+        connection.close()
 
 def makeInsertRequest(query, params = ()):
     connection = sqlite3.connect('database.db')
+    connection.execute("PRAGMA foreign_keys = ON")
     connection.row_factory = sqlite3.Row
-
     cur = connection.cursor()
-    response = cur.execute(query, params)
-    lastRowId = response.lastrowid
-
-    connection.commit()
-    connection.close()
-    return lastRowId
-
+    
+    try:
+        response = cur.execute(query, params)
+        lastRowId = response.lastrowid
+        connection.commit()
+        return lastRowId
+    except sqlite3.Error as e:
+        print("SQLite error:", e)
+    finally:
+        cur.close()
+        connection.close()
 
 def get_client_ip():
     headers_to_check = [

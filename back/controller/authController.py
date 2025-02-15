@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from controller.notifController import getAllNotifs
-from services.user import getUserWithProfilePictureById, getUserWithProfilePictureByUsername
+from services.user import getUserWithProfilePictureById
 from decorators.dataDecorator import validate_request
 from database_utils.requests import *
 from flask_jwt_extended import create_access_token, decode_token
@@ -19,10 +19,11 @@ def signin(validated_data):
     username, password = (validated_data[key] for key in fields)
     username = str(username).lower()
     
-    response = makeRequest("SELECT pass FROM user WHERE username = ?", (username,))
+    response = makeRequest("SELECT id, pass FROM user WHERE username = ?", (username,))
     if len(response) < 1 or not bcrypt.check_password_hash(response[0]["pass"], password):
         raise APIAuthError("Mauvais nom d'utilisateur ou mot de passe")
-    user = getUserWithProfilePictureByUsername(username)
+    user_id = response[0]["id"]
+    user = getUserWithProfilePictureById(user_id)
     user["is_connected"] = '1'
     if (user["is_activated"] == '0'):
         raise APIAuthError('Compte invalide')

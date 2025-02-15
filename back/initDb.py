@@ -6,6 +6,7 @@ import random
 from controller.userController import calculate_date_from_age
 
 connection = sqlite3.connect('database.db')
+connection.execute("PRAGMA foreign_keys = ON")
 
 with open('schema.sql') as f:
     connection.executescript(f.read())

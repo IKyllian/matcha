@@ -298,6 +298,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   }
 
   const onDeleteAccount = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
     openModal({ modalKey: 'deleteAccount' })
   }
   return (
@@ -434,8 +435,8 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         </label>
         <span className={css(slotsStyles.textInfo)}>* Champs requis pour que votre compte soit valide</span>
         <button type="submit" className={css(slotsStyles.button)} disabled={disableInput}> Sauvegarder </button>
-        <button onClick={onDeleteAccount} className={cx(css(slotsStyles.button, slotsStyles.deleteButton))}>Supprimer compte</button>
       </form>
+      <button onClick={onDeleteAccount} className={cx(css(slotsStyles.button, slotsStyles.deleteButton))}>Supprimer compte</button>
     </div>
   )
 }

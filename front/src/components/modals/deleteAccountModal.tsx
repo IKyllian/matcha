@@ -13,8 +13,8 @@ const DeleteAccountModal = () => {
   const addAlert = useStore((state) => state.addAlert)
   const { onLogout } = useLogout()
   const onDelete = async () => {
-    const { ok = false } = await deleteAccountRequest({user_id_to_delete: loggedUser.id, token, addAlert})
-    if (ok) {
+    const ret = await deleteAccountRequest({user_id_to_delete: loggedUser.id, token, addAlert})
+    if (ret?.ok) {
       addAlert({type: AlertTypeEnum.SUCCESS, message: 'Votre compte a été supprimer'})
       onLogout()
     }
