@@ -102,7 +102,8 @@ const Chat = ({ chatId }: ChatProps) => {
                                     >
                                         {message.sender_id === recipient?.id && message.is_like ? <FaHeart onClick={() => onLikeClick(message.id)} className={css(slotsStyles.likedIcon)} /> : null}
                                         {message.sender_id === recipient?.id && !message.is_like ? <FaRegHeart onClick={() => onLikeClick(message.id)} className={cx(css(slotsStyles.likeIcon), 'likeIcon')} /> : null}
-                                        {message.sender_id !== recipient?.id ? <FaTrash onClick={() => onDeleteClick(message.id)} className={cx(css(slotsStyles.trashIcon), 'trashIcon')} /> : null}
+                                        {message.sender_id == user.id && message.is_like ? <FaHeart className={cx(css(slotsStyles.likedIconLeft), 'likeIcon')} /> : null}
+                                        {message.sender_id === user.id ? <FaTrash onClick={() => onDeleteClick(message.id)} className={cx(css(slotsStyles.trashIcon), 'trashIcon')} /> : null}
                                         <p>{message.message}</p>
                                         <span className={css(slotsStyles.dateMessage)}>{getMessageDateString(message.created_at)}</span>
                                     </div>

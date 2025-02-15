@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css";
 
 export const chatStyle = sva({
-    slots: ['chatContainer', 'chatWrapper', 'chatHeader', 'img', 'messagesContainer', 'messageItem', 'recipient', 'sender', 'chatFormContainer', 'sendButtonContainer', 'dateMessage', 'likeIcon', 'likedIcon', 'trashIcon'],
+    slots: ['chatContainer', 'chatWrapper', 'chatHeader', 'img', 'messagesContainer', 'messageItem', 'recipient', 'sender', 'chatFormContainer', 'sendButtonContainer', 'dateMessage', 'likeIcon', 'likedIconLeft', 'likedIcon', 'trashIcon'],
     base: {
         chatContainer: {
             borderLeft: 'none',
@@ -108,6 +108,15 @@ export const chatStyle = sva({
             width: '15px',
             height: '15px',
             display: 'none',
+            color: '#ed05ab',
+            cursor: 'pointer',
+        },
+        likedIconLeft: {
+            position: 'absolute',
+            bottom: '-5px',
+            left: '-7px',
+            width: '15px',
+            height: '15px',
             color: '#ed05ab',
             cursor: 'pointer',
         },
