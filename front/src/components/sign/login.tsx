@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { css } from "styled-system/css"
 import { formStyle } from "./sign.style"
 import { useStore } from "front/store/store"
@@ -41,11 +41,11 @@ const Login = () => {
     const authStore = useStore((state) => state.authStore)
     const addAlert = useStore((state) => state.addAlert)
     const logUser = useStore((state) => state.logUser)
+    const changeIsCompletingAccount = useStore((state) => state.changeIsCompletingAccount)
     const setNotifications = useStore((state) => state.setNotifications)
     const navigate = useNavigate()
     const slotsStyles = formStyle.raw()
     const initSocket = useStore((state) => state.initSocket)
-    const location = useLocation()
 
     const onSubmit = async (data: FormValues) => {
         const ret = await makeSignInRequest({ data, addAlert })
@@ -61,9 +61,8 @@ const Login = () => {
     useEffect(() => {
         if (authStore.isLogged) {
             if (!authStore.user.is_valid) {
-                navigate('/settings', {
-                    state: { from: location.pathname }
-                })
+                changeIsCompletingAccount(true)
+                navigate('/settings')
             } else {
                 navigate('/')
             }

@@ -337,7 +337,7 @@ def setSettings(user_id, validated_data):
         try :
             ipAddress = get_client_ip()
             data = ipdata.lookup(ipAddress, fields=['latitude','longitude','country_name', 'city'])
-            locationName = f"{data.get('city')}-{data.get('country_name')}"
+            locationName = f"{data.get('city')}, {data.get('country_name')}"
             validated_data["position_name"] = locationName
             if (not data['latitude'] or not data['longitude']):
                 print("Probleme avec la recuperation de la localisation -> Garde l'ancienne position")

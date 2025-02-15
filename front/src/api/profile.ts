@@ -97,12 +97,3 @@ export const makePositionRequest = async ({ city }) => {
        console.error('Error = ', e)
     }
 }
-
-export const makeReversePositionRequest = async ({ lat, lon }: { lat: number, lon: number }) => {
-    try {
-        const response = await ky.get<any>(`https://nominatim.openstreetmap.org/reverse.php?lat=${lat}&lon=${lon}&zoom=10&format=jsonv2`).json()
-        return response
-    } catch (e) {
-        console.error('Error = ', e)
-    }
-}

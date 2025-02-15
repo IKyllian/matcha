@@ -55,7 +55,7 @@ def signup(validated_data):
     try :
         ipAddress = get_client_ip()
         data = ipdata.lookup(ipAddress, fields=['latitude','longitude','country_name', 'city'])
-        locationName = f"{data.get('city')}-{data.get('country_name')}"
+        locationName = f"{data.get('city')}, {data.get('country_name')}"
         encryptedPass = encrypt_pass(password)
         userData = {
             'username': username,
@@ -74,8 +74,8 @@ def signup(validated_data):
             
         }
         user_id = makeInsertRequest("""
-            INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, is_activated, sexual_preference, is_valid)
-            VALUES (:username, :pass, :email, :first_name, :last_name, :birth_date, :fame_rating, :latitude, :longitude, :is_activated, :sexual_preference, :is_valid)
+            INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, position_name, is_activated, sexual_preference, is_valid)
+            VALUES (:username, :pass, :email, :first_name, :last_name, :birth_date, :fame_rating, :latitude, :longitude, :position_name, :is_activated, :sexual_preference, :is_valid)
             """
             , userData)
     except :

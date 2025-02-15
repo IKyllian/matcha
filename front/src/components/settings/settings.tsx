@@ -5,12 +5,12 @@ import { css, cx } from "styled-system/css"
 import { useForm } from "react-hook-form"
 import { FaUpload } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
-import { makePositionRequest, makeReversePositionRequest, makeSettingsRequest } from "front/api/profile"
+import { makePositionRequest, makeSettingsRequest } from "front/api/profile"
 import { useStore } from "front/store/store"
 import { ImageSettingsType, Tags, User } from "front/typing/user"
 import { useApi } from "front/hook/useApi"
 import { AlertTypeEnum } from "front/typing/alert"
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { isUserProfileComplete } from "front/utils/user.utils"
 import { makeIpAddressRequest } from "front/api/auth"
 import useCloseRef from "front/hook/useCloseRef"
@@ -81,11 +81,11 @@ const InputRadio = ({ value, label, register }: InputRadioProps) => {
 const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType }) => {
   const profileImageFromUser = profileSettings?.user?.images?.find(i => i.is_profile_picture)?.image_file
   const slotsStyles = settingsStyle.raw()
-  const { token } = useStore((state) => state.authStore)
+  const { token, isCompletingAccount } = useStore((state) => state.authStore)
+  const changeIsCompletingAccount = useStore((state) => state.changeIsCompletingAccount)
   const addAlert = useStore((state) => state.addAlert)
   const setUser = useStore((state) => state.setUser)
   const openModal = useStore((state) => state.openModal)
-  const [searchParams] = useSearchParams();
   const [selectedChips, setSelectedChips] = useState<Tags[]>(profileSettings.user.tags)
   const [profilePicturePreview, setProfilPicturePreview] = useState<string | undefined>(profileImageFromUser ? profileImageFromUser : undefined)
   const [profilesImages, setProfilesImages] = useState<ImageSettingsType[]>(profileSettings.user.images.map(i => ({
@@ -105,14 +105,12 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   } = useForm<Partial<User>>({
     defaultValues: profileSettings.user
   })
-  const location = useLocation()
   const navigate = useNavigate()
   const onClose = () => {
     setInputSelected(false)
     setInputPositionsList([])
   }
   const ref = useCloseRef({useEscape: false, onClose})
-
 
   useEffect(() => {
     const getPos = async () => {
@@ -195,12 +193,10 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       const { user } = retUser
       addAlert({ message: 'Votre profile a ete update', type: AlertTypeEnum.SUCCESS })
       setUser(user)
-      // if (searchParams.get("completingAccount") && isUserProfileComplete(user)) {
-      //   navigate('/')
-      // }
-      // if (location.state?.from === '/login') {
-      //   navigate('/')
-      // }
+      if (isCompletingAccount && isUserProfileComplete(user)) {
+        changeIsCompletingAccount(false)
+        navigate("/")
+      }
     }
   }
 
@@ -224,15 +220,16 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   }
 
   const onMultipleUpload = (event: any) => {
-    const imagesLength = profilesImages.length
-    if (imagesLength === 5) {
+    const imagesWithoutProfilePic = profilesImages.filter(i => !i.is_profile_picture)
+    const imagesLength = imagesWithoutProfilePic.length
+    if (imagesLength === 4) {
       console.error('Max images Uploaded: ', imagesLength)
       return
     }
     const files = event.target.files
     for (let i = 0; i < files.length; i++) {
       if (checkFileNameExist(files[i])) return
-      if (i + imagesLength === 5) {
+      if (i + imagesLength >= 4) {
         break
       }
       setProfilesImages(prev => [...prev, { file: files[i], file_name: files[i].name, preview: URL.createObjectURL(files[i]), is_profile_picture: false }])
