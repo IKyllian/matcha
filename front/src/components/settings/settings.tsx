@@ -225,8 +225,8 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   }
 
   const onMultipleUpload = (event: any) => {
-    const imagesWithoutProfilePic = profilesImages.filter(i => !i.is_profile_picture)
-    const imagesLength = imagesWithoutProfilePic.length
+    const imagesWithoutProfilePic = profilesImages?.filter(i => !i.is_profile_picture)
+    const imagesLength = imagesWithoutProfilePic?.length
     if (imagesLength === 4) {
       console.error('Max images Uploaded: ', imagesLength)
       return

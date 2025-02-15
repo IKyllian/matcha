@@ -5,7 +5,7 @@ type useCloseRefProps = {
   useEscape?: boolean
 }
 const useCloseRef = ({ onClose, useEscape = true }: useCloseRefProps) => {
-  const closeRef = useRef<HTMLDivElement | HTMLLabelElement | null>(null)
+  const closeRef = useRef<HTMLDivElement | null>(null)
 
   const handleClickOutside = useCallback((event: Event) => {
     if (closeRef?.current && !closeRef?.current.contains(event.target as Node)) {

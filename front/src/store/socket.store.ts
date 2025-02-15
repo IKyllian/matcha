@@ -58,7 +58,6 @@ export const socketSlice = (set: StoreSetType): SocketStoreType => ({
         })
 
         socket.on('updateMessage', (data: {message: MessageType}) => {
-            console.info('data = ', data)
             state.updateMessage(data.message)
         })
 
