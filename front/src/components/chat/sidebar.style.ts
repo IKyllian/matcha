@@ -15,7 +15,13 @@ export const sidebarStyle = sva({
             backgroundColor: 'primaryBackground',
             zIndex: '2',
             '&[data-isopen="0"]': {
-                width: '70px'
+                width: '70px',
+                minWidth: '70px',
+            },
+            smDown: {
+                '&[data-isopen="0"]': {
+                    display: 'none'
+                },
             },
             mdDown: {
                 height: '100vh',

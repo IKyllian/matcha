@@ -45,7 +45,7 @@ const Card = ({ user, cardType, className, isLike, onLikeClick, showLike = false
                         <div className={css(slotsStyles.textWrapper)}>
                             <div className={css(slotsStyles.nameWrapper)}>
                                 {diplayGender()}
-                                <Link to={`/profile/${id}`} className={css(slotsStyles.cardPrimaryText)}> {first_name} {last_name} <span className={css(slotsStyles.ageText)}>{age}ans</span> </Link>
+                                <Link to={`/profile/${id}`} className={css(slotsStyles.cardPrimaryText)}> {first_name} {last_name} { age && <span className={css(slotsStyles.ageText)}>{age}ans</span>} </Link>
                             </div>
                             <div className={css({
                                 display: 'flex',

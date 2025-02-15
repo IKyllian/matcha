@@ -9,7 +9,10 @@ export const chatStyle = sva({
             padding: '24px',
             height: 'calc(100vh - 70px)',
             display: 'flex',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            smDown: {
+                padding: '8px',
+            }
         },
         chatWrapper: {
             display: 'flex',

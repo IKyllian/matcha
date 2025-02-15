@@ -98,6 +98,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const [positionSelected, setPositionSelected] = useState<PositionType>()
   const [inputPosition, setInputPosition] = useState<string>('')
   const [inputSelected, setInputSelected] = useState<boolean>(false)
+  const [disableInput, setDisableInput] = useState<boolean>(false)
   const {
     register,
     handleSubmit,
@@ -136,6 +137,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   }
 
   const onSubmit = async (values: Partial<User>) => {
+    setDisableInput(true)
     const formData = new FormData()
 
     for (const [key, value] of Object.entries(values)) {
@@ -193,10 +195,13 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       const { user } = retUser
       addAlert({ message: 'Votre profile a ete update', type: AlertTypeEnum.SUCCESS })
       setUser(user)
+      setDisableInput(false)
       if (isCompletingAccount && isUserProfileComplete(user)) {
         changeIsCompletingAccount(false)
         navigate("/")
       }
+    } else {
+      setDisableInput(false)
     }
   }
 
@@ -428,7 +433,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
           </div>
         </label>
         <span className={css(slotsStyles.textInfo)}>* Champs requis pour que votre compte soit valide</span>
-        <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
+        <button type="submit" className={css(slotsStyles.button)} disabled={disableInput}> Sauvegarder </button>
         <button onClick={onDeleteAccount} className={cx(css(slotsStyles.button, slotsStyles.deleteButton))}>Supprimer compte</button>
       </form>
     </div>

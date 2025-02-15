@@ -15,7 +15,7 @@ const defaultAuthStore: AuthType = {
     authStatus: 'CHECKING',
     isLogged: false,
     socketInitialized: false,
-    isCompletingAccount: true
+    isCompletingAccount: false
 }
 export type AuthStoreType = {
     authStore: AuthType,
