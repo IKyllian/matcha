@@ -331,6 +331,7 @@ def setSettings(user_id, validated_data):
     images = []
     index = 0
     userPos = getUserPos(user_id)
+    has_profile_picture = False
 
     if (not latitude or not longitude):
         ipdata.api_key = os.getenv("IP_DATA_API_KEY")
@@ -367,6 +368,9 @@ def setSettings(user_id, validated_data):
         file_name = image_file.filename if image_file.filename else ""
         is_profile_picture = request.form.get(f"images[{index}][is_profile_picture]") == 'true'
         
+        if is_profile_picture:
+            has_profile_picture = True
+        
         if not isImageFile(image_file):
             raise ForbiddenError(f"Le fichier '{file_name}' n'est pas une image valide.")
         
@@ -377,6 +381,9 @@ def setSettings(user_id, validated_data):
         'file_name': file_name
         })
         index += 1
+    
+    if not has_profile_picture:
+        raise ForbiddenError("Une image de profil est requise.")
     
     if (not checkImages(images)):
         raise ForbiddenError("Images invalides envoyees")
