@@ -14,7 +14,7 @@ type AlertItemProps = {
 const AlertItem = ({ alert }: AlertItemProps) => {
     const removeAlert = useStore(store => store.removeAlert)
     const [isExiting, setIsExiting] = useState(false);
-    const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | undefined>(undefined)
+    const [timeoutId, setTimeoutId] = useState<number | undefined>(undefined)
     const slotsStyles = alertStyle.raw()
 
     const closeSuccess = (id: number) => {
