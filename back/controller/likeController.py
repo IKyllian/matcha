@@ -71,7 +71,7 @@ def getUserLikes(user_id):
     matches = getMatchesOfUserIds(user_id)
     matchIds = [match["matched_user"] for match in matches]
     likes = makeRequest("""
-        SELECT user.id, user.first_name, user.last_name, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name
+        SELECT user.id, user.first_name, user.last_name, user.gender, user.fame_rating, image.id AS image_id, image.image_file, image.is_profile_picture, image.mime_type, image.file_name
         FROM like
         JOIN user ON like.user_id = user.id
         LEFT JOIN image ON user.id = image.user_id AND image.is_profile_picture = 1
@@ -80,6 +80,8 @@ def getUserLikes(user_id):
         WHERE like.liked_user_id = :target_user_id AND block.user_id IS NULL;                    
     """, {'target_user_id': user_id})
     filteredLikes = [like for like in likes if like['id'] not in matchIds]
+    for user in filteredLikes:
+        user["distance"] = getDistanceOfUser(user_id, user["id"])
     likes = decodeImagesFromArray(filteredLikes)
     return jsonify(likes=likes)
 
