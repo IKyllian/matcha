@@ -111,7 +111,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     setInputSelected(false)
     setInputPositionsList([])
   }
-  const ref = useCloseRef({useEscape: false, onClose})
+  const ref = useCloseRef({ useEscape: false, onClose })
 
   useEffect(() => {
     const getPos = async () => {
@@ -279,13 +279,13 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       if (ret && Array.isArray(ret)) {
         const positionParsed = ret.map(p => {
           const splitName: string[] = p.display_name?.split(',')
-          const name = splitName.length > 1 ? `${splitName[0]}-${splitName[splitName.length - 1]}` : splitName.length === 1 ? splitName[0] : ""
-          return {...p, display_name: name}
+          const name = splitName.length > 1 ? `${splitName[0]}, ${splitName[splitName.length - 1]}` : splitName.length === 1 ? splitName[0] : ""
+          return { ...p, display_name: name }
         })
         const uniquePosition = Array.from(
           new Map(positionParsed.map(item => [item.display_name, item])).values()
         )
-        setInputPositionsList(uniquePosition.map(p => ({ displayName: p.display_name, latitude: p.lat, longitude: p.lon }) ))
+        setInputPositionsList(uniquePosition.map(p => ({ displayName: p.display_name, latitude: p.lat, longitude: p.lon })))
       }
     }, 500)
 
