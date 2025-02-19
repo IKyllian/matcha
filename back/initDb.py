@@ -36,23 +36,6 @@ password = "$2b$12$NjBwjOIzB35JdbRgrg1ZUuJPHQgE8CI0rEJg74787.BGAlwMZ/vfe"
 
 users = [
     {
-        'name': 'blank',
-        'pass' : password,
-        'email' : 'blank@gmail.com',
-        'first_name' : 'Blank',
-        'last_name' : 'Blank',
-        'gender' : 'F',
-        'sexual_preference' : 'M',
-        'birth_date' : '1950-04-10',
-        'latitude' : '42.74800109863281',
-        'longitude' : '6.849999904632568',
-        'fame_rating' : '2.5',
-        'image_name' : 'blank.png',
-        'last_connection' : '1950-04-10 14:05:31',
-        'tag_ids' : [1, 6, 10],
-        'position_name': 'Lyon, France'
-    },
-    {
         'name': 'adam',
         'pass' : password,
         'email' : 'adam@gmail.com',
@@ -103,74 +86,6 @@ users = [
         'tag_ids' : [4, 8],
         'position_name': 'Lyon, France'
     },
-    {
-        'name': 'naruto',
-        'pass' : password,
-        'email' : 'naruto@gmail.com',
-        'first_name' : 'Naruto',
-        'last_name' : 'Uzumaki',
-        'gender' : 'M',
-        'sexual_preference' : 'F',
-        'birth_date' : '1988-05-11',
-        'latitude' : '45.74800109863281',
-        'longitude' : '4.849999904632568',
-        'fame_rating' : '2.5',
-        'image_name' : 'naruto.png',
-        'last_connection' : '2024-04-10 14:05:31',
-        'tag_ids' : [2, 6, 7, 9, 3],
-        'position_name': 'Lyon, France'
-    },
-    {
-        'name': 'rozhou',
-        'pass' : password,
-        'email' : 'rozhou@gmail.com',
-        'first_name' : 'Romain',
-        'last_name' : 'Zhou',
-        'gender' : 'M',
-        'sexual_preference' : 'F',
-        'birth_date' : '2002-08-01',
-        'latitude' : '45.74800109863281',
-        'longitude' : '4.849999904632568',
-        'fame_rating' : '2.5',
-        'image_name' : 'panda.jpeg',
-        'last_connection' : '2024-04-10 14:05:31',
-        'tag_ids' : [1, 6, 2, 10],
-        'position_name': 'Lyon, France'
-    },
-    {
-        'name': 'jinx',
-        'pass' : password,
-        'email' : 'jinx@gmail.com',
-        'first_name' : 'Jinx',
-        'last_name' : 'Arcane',
-        'gender' : 'F',
-        'sexual_preference' : 'M',
-        'birth_date' : '1999-04-10',
-        'latitude' : '45.74800109863281',
-        'longitude' : '4.849999904632568',
-        'fame_rating' : '2.5',
-        'image_name' : 'jynx.jpeg',
-        'last_connection' : '2024-04-10 14:05:31',
-        'tag_ids' : [1, 5, 3, 4, 8],
-        'position_name': 'Lyon, France'
-    },
-    {
-        'name': 'vi',
-        'pass' : password,
-        'email' : 'vi@gmail.com',
-        'first_name' : 'Vi',
-        'last_name' : 'Arcane',
-        'gender' : 'F',
-        'sexual_preference' : 'F',
-        'birth_date' : '1996-04-10',
-        'latitude' : '45.74800109863281',
-        'longitude' : '4.849999904632568',
-        'fame_rating' : '2.5',
-        'image_name' : 'vi.png',
-        'last_connection' : '1950-04-10 14:05:31',
-        'tag_ids' : [1, 5, 6],
-        'position_name': 'Lyon, France'
-    }
 ]
 
 femaleNames = [
