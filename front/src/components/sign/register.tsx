@@ -129,13 +129,18 @@ const Register = () => {
         formState: { errors }
     } = useForm<FormValues>()
     const addAlert = useStore((state) => state.addAlert)
+    const [isPending, setIsPending] = useState(false)
     const slotsStyles = formStyle.raw()
     const onSubmit = async (data: FormValues) => {
+        setIsPending(true)
         const retIp = await makeIpAddressRequest()
         const ret = await makeSignUpRequest({ data, addAlert, ip: retIp?.ip || undefined })
         if (ret?.ok) {
             addAlert({ message: "Un mail a ete envoyer", type: AlertTypeEnum.SUCCESS })
             setStatus('registered')
+            setIsPending(false)
+        } else {
+            setIsPending(false)
         }
     }
     const [status, setStatus] = useState<FormStatusType>('onProgress')
@@ -164,7 +169,7 @@ const Register = () => {
                             </label>
                         ))
                     }
-                    <button className={css(slotsStyles.button)} type="submit">Valider</button>
+                    <button className={css(slotsStyles.button)} type="submit" disabled={isPending}>{isPending ? "Pending" : "Valider"}</button>
                 </form>
                 <span className={css(slotsStyles.textInfo)}>Deja un compte ? <Link to="/login">Connectez-vous</Link></span>
             </div>
