@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from controller.notifController import getAllNotifs
-from services.user import getUserWithProfilePictureById, getUserWithProfilePictureByUsername
+from services.user import getUserWithProfilePictureById
 from decorators.dataDecorator import validate_request
 from database_utils.requests import *
 from flask_jwt_extended import create_access_token, decode_token
@@ -19,10 +19,11 @@ def signin(validated_data):
     username, password = (validated_data[key] for key in fields)
     username = str(username).lower()
     
-    response = makeRequest("SELECT pass FROM user WHERE username = ?", (username,))
+    response = makeRequest("SELECT id, pass FROM user WHERE username = ?", (username,))
     if len(response) < 1 or not bcrypt.check_password_hash(response[0]["pass"], password):
         raise APIAuthError("Mauvais nom d'utilisateur ou mot de passe")
-    user = getUserWithProfilePictureByUsername(username)
+    user_id = response[0]["id"]
+    user = getUserWithProfilePictureById(user_id)
     user["is_connected"] = '1'
     if (user["is_activated"] == '0'):
         raise APIAuthError('Compte invalide')
@@ -54,9 +55,8 @@ def signup(validated_data):
     ipdata.api_key = os.getenv("IP_DATA_API_KEY")
     try :
         ipAddress = get_client_ip()
-        if ('10.11.' in ipAddress or '127.0.'in ipAddress):
-            ipAddress = os.getenv("PUBLIC_IP")
-        data = ipdata.lookup(ipAddress)
+        data = ipdata.lookup(ipAddress, fields=['latitude','longitude','country_name', 'city'])
+        locationName = f"{data.get('city')}, {data.get('country_name')}"
         encryptedPass = encrypt_pass(password)
         userData = {
             'username': username,
@@ -70,12 +70,13 @@ def signup(validated_data):
             'longitude': data['longitude'],
             'is_activated': 0,
             'sexual_preference': 'B',
-            'is_valid': 0
+            'is_valid': 0,
+            'position_name': locationName
             
         }
         user_id = makeInsertRequest("""
-            INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, is_activated, sexual_preference, is_valid)
-            VALUES (:username, :pass, :email, :first_name, :last_name, :birth_date, :fame_rating, :latitude, :longitude, :is_activated, :sexual_preference, :is_valid)
+            INSERT INTO user (username, pass, email, first_name, last_name, birth_date, fame_rating, latitude, longitude, position_name, is_activated, sexual_preference, is_valid)
+            VALUES (:username, :pass, :email, :first_name, :last_name, :birth_date, :fame_rating, :latitude, :longitude, :position_name, :is_activated, :sexual_preference, :is_valid)
             """
             , userData)
     except :

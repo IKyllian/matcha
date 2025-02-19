@@ -2,8 +2,9 @@ import { useCallback, useEffect, useRef } from "react"
 
 type useCloseRefProps = {
   onClose: () => void
+  useEscape?: boolean
 }
-const useCloseRef = ({ onClose }: useCloseRefProps) => {
+const useCloseRef = ({ onClose, useEscape = true }: useCloseRefProps) => {
   const closeRef = useRef<HTMLDivElement | null>(null)
 
   const handleClickOutside = useCallback((event: Event) => {
@@ -20,6 +21,7 @@ const useCloseRef = ({ onClose }: useCloseRefProps) => {
   }, [handleClickOutside])
 
   useEffect(() => {
+    if (!useEscape) return
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();

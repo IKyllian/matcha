@@ -23,7 +23,6 @@ const ReportModal = () => {
       addAlert({message: 'Votre report à été envoyer', type: AlertTypeEnum.SUCCESS})
       onClose()
     }
-
   }
 
   const onClose = () => {

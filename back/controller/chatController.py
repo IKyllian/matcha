@@ -79,7 +79,7 @@ def getChatById(user_id, validated_data, chatter_id):
     if chatter_id not in matchIds:
         raise ForbiddenError("Vous ne pouver pas chatter avec cet utilisateur car il n'as pas match avec vous")
     chatter = getUserWithProfilePictureById(chatter_id)
-    messages = makeRequest("SELECT id, sender_id, receiver_id, created_at, message FROM message WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) ORDER BY created_at ASC",
+    messages = makeRequest("SELECT id, sender_id, receiver_id, created_at, is_like, message FROM message WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) ORDER BY created_at ASC",
                            ((str(user_id)), (str(chatter_id)), (str(chatter_id)), (str(user_id))))
     return jsonify(chatter=chatter,messages=messages)
 
@@ -89,3 +89,27 @@ def createMessage(user_id, chatter_id, message):
                 ((user_id), (chatter_id), (created_at), (message)))
     messageSent = makeRequest("SELECT * FROM message WHERE id = :id", (str(response),))
     return messageSent
+
+def updateLikeStatus(message_id, user_id):
+    message = makeRequest("SELECT * FROM message WHERE id = :message_id", {"message_id": message_id})
+    if (not message) or (message and not len(message) > 0):
+        return {'error': True, 'message': 'Message not found'}
+    message = message[0]
+    if (message['receiver_id'] != user_id):
+        return {'error': True, 'message': 'Not authorized'}
+    newStatus = not bool(message["is_like"])
+    makeRequest("UPDATE message SET is_like = :is_like WHERE id = :message_id", {"message_id": message_id, "is_like": newStatus})
+    message['is_like'] = newStatus
+    return message
+
+def deleteMessage(message_id, user_id):
+    message = makeRequest("SELECT id, is_like, sender_id, receiver_id FROM message WHERE id = :message_id", {"message_id": message_id})
+    if (not message) or (message and not len(message) > 0):
+        return {'error': True, 'message': 'Message not found'}
+    message = message[0]
+    if message['sender_id'] != user_id:
+        return {'error': True, 'message': 'Not authorized'}
+    chatters = {'sender_id': message['sender_id'], 'receiver_id': message['receiver_id'], 'id': message['id']}
+    makeRequest("DELETE FROM message WHERE id = :message_id", {"message_id": message_id})
+    return chatters
+    

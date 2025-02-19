@@ -37,9 +37,7 @@ const Card = ({ user, cardType, className, isLike, onLikeClick, showLike = false
         }
     }
     return (
-        <div className={css(slotsStyles.cardWrapper, className, {
-            // height: cardType === 'image-content' ? '370px' : 'auto'
-        })}>
+        <div className={css(slotsStyles.cardWrapper, className)}>
             <ProfilePicture className={slotsStyles.cardImg} userImages={images} width='280px' height='280px' />
             {
                 cardType === 'image-content' && (
@@ -47,7 +45,7 @@ const Card = ({ user, cardType, className, isLike, onLikeClick, showLike = false
                         <div className={css(slotsStyles.textWrapper)}>
                             <div className={css(slotsStyles.nameWrapper)}>
                                 {diplayGender()}
-                                <Link to={`/profile/${id}`} className={css(slotsStyles.cardPrimaryText)}> {first_name} {last_name} <span className={css(slotsStyles.ageText)}>{age}ans</span> </Link>
+                                <Link to={`/profile/${id}`} className={css(slotsStyles.cardPrimaryText)}> {first_name} {last_name} { age && <span className={css(slotsStyles.ageText)}>{age}ans</span>} </Link>
                             </div>
                             <div className={css({
                                 display: 'flex',
@@ -57,8 +55,6 @@ const Card = ({ user, cardType, className, isLike, onLikeClick, showLike = false
                                 {distance >= 0 && <p className={css(slotsStyles.cardSecondaryText)}> <FaLocationDot /> {Math.round(distance)}km </p>}
                                 {fame_rating && <StarRating isReadOnly initialRating={fame_rating} unit="float" size={15} />}
                             </div>
-                            {/* {fame_rating && <StarRating isReadOnly initialRating={fame_rating} unit="float" size={15} />}
-                            {distance && <p className={css(slotsStyles.cardSecondaryText)}> <FaLocationDot /> {Math.round(distance)}km </p>} */}
                         </div>
                         {
                             showLike &&

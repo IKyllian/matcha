@@ -5,10 +5,10 @@ import { formStyle } from "./sign.style"
 import { useStore } from "front/store/store"
 import { User } from "front/typing/user"
 import { makeSignUpRequest } from "front/api/sign"
-import { makeIpAddressRequest } from "front/api/auth"
 import { EMAIL_REGEX, FieldsInputType, PASSWORD_REGEX } from "front/typing/input"
 import { AlertTypeEnum } from "front/typing/alert"
 import { useState } from "react"
+import { makeIpAddressRequest } from "front/api/auth"
 
 type FormValues = Pick<User, 'first_name' | 'last_name' | 'username' | 'email' | 'password' | 'birth_date'>
 type FormStatusType = 'registered' | 'onProgress'

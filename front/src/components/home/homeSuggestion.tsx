@@ -58,10 +58,10 @@ const HomeSuggestion = () => {
       <div className={css(slotsStyles.suggestionWrapper)}>
         <MdOutlineKeyboardArrowLeft className={css(slotsStyles.arrowIcon, slotsStyles.leftArrow)} onClick={onSuggestionPrev} />
         <Card user={suggestionList[suggestionIndex].user} cardType='image-content' isLike={suggestionList[suggestionIndex].like} className={slotsStyles.cardSuggestion} onLikeClick={onLikeClick} showLike />
-        {!reachedEnd && <MdOutlineKeyboardArrowRight className={css(slotsStyles.arrowIcon, slotsStyles.rightArrow)} onClick={onNext} />}
+        <MdOutlineKeyboardArrowRight className={css(slotsStyles.arrowIcon, slotsStyles.rightArrow)} onClick={onNext} />
         <div className={css(slotsStyles.iconContainer)}>
           <MdOutlineKeyboardArrowLeft onClick={onSuggestionPrev} />
-          {!reachedEnd && <MdOutlineKeyboardArrowRight onClick={onNext} />}
+          <MdOutlineKeyboardArrowRight onClick={onNext} />
         </div>
       </div>
     </div>

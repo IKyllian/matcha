@@ -31,40 +31,51 @@ def decodeImages(images):
 
 def makeRequest(query, params = ()):
     connection = sqlite3.connect('database.db')
+    connection.execute("PRAGMA foreign_keys = ON")
     connection.row_factory = sqlite3.Row
-
     cur = connection.cursor()
-    response = cur.execute(query, params)
-    rows = response.fetchall()
-    unpacked = [{k: item[k] for k in item.keys()} for item in rows]
-
-    connection.commit()
-    connection.close()
-    return unpacked
+    
+    try:
+        response = cur.execute(query, params)
+        connection.commit()
+        rows = response.fetchall()
+        unpacked = [{k: item[k] for k in item.keys()} for item in rows]
+        return unpacked
+    except sqlite3.Error as e:
+        print("SQLite error:", e)
+    finally:
+        cur.close()
+        connection.close()
 
 def makeInsertRequest(query, params = ()):
     connection = sqlite3.connect('database.db')
+    connection.execute("PRAGMA foreign_keys = ON")
     connection.row_factory = sqlite3.Row
-
     cur = connection.cursor()
-    response = cur.execute(query, params)
-    lastRowId = response.lastrowid
-
-    connection.commit()
-    connection.close()
-    return lastRowId
-
+    
+    try:
+        response = cur.execute(query, params)
+        lastRowId = response.lastrowid
+        connection.commit()
+        return lastRowId
+    except sqlite3.Error as e:
+        print("SQLite error:", e)
+    finally:
+        cur.close()
+        connection.close()
 
 def get_client_ip():
     headers_to_check = [
-        'HTTP_X_FORWARDED_FOR', 'X_FORWARDED_FOR',
-        'HTTP_CLIENT_IP', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED',
-        'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR',
-        'HTTP_FORWARDED', 'HTTP_VIA', 'REMOTE_ADDR'
+        # 'HTTP_X_FORWARDED_FOR', 'X_FORWARDED_FOR',
+        # 'HTTP_CLIENT_IP', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED',
+        # 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR',
+        # 'HTTP_FORWARDED', 'HTTP_VIA', 'REMOTE_ADDR'
+        'X-Forwarded-For', 'X-Real-IP', 'REMOTE_ADDR'
     ]
     for header in headers_to_check:
-        if header in request.environ:
-            return request.environ[header].split(',')[0].strip()
+        ip = request.headers.get(header)
+        if ip:
+            return ip.split(",")[0].strip()
     return request.remote_addr
 
 SMTP_SERVER = 'smtp.gmail.com'

@@ -3,7 +3,7 @@ from enum import Enum
 from flask import request
 from app import socketio
 from errors.httpErrors import ForbiddenError
-from controller.chatController import createMessage
+from controller.chatController import createMessage, updateLikeStatus, deleteMessage
 from database_utils.requests import makeRequest, makeInsertRequest
 from flask_socketio import emit
 from decorators.authDecorator import socket_auth
@@ -72,13 +72,13 @@ def handle_send_message(data, user_id):
     
     message = data.get('message')
 
-    if (len(message) > 500 or len(message) < 1):
-        emit('error', "Votre message doit contenir entre 1 et 500 characteres", room=request.sid)
+    if (not message or (message and (len(message) > 500 or len(message) < 1))):
+        emit('error', {"message": "Votre message doit contenir entre 1 et 500 characteres"}, room=request.sid)
         return
     
     messageCreated = createMessage(sender_id, receiver_id, message)
     if not messageCreated:
-        emit('error', {message: "Erreur lors de la creation du message"}, room=request.sid)
+        emit('error', {"message": "Erreur lors de la creation du message"}, room=request.sid)
         return
     
     sender = getUserWithProfilePictureById(user_id)
@@ -121,6 +121,36 @@ def handle_send_message(data, user_id):
         emit('receiveMessage', {'sender_id': sender_id, 'receiver_id': int(receiver_id),'created_at': messageCreated[0]["created_at"], 'id': messageCreated[0]["id"], 'message': message}, room=receiver_socket_id)
     else:
         print(f"User {receiver_id} not connected, so not notified of message sent")
+        
+@socketio.on('updateLikeMessageStatus')
+@socket_auth()
+def updateLikeMessageStatus(data, user_id):
+    messageId = data.get('message_id')
+    if (not messageId):
+        emit('error', {"message": "Message id manquant"}, room=request.sid)
+        return
+    message = updateLikeStatus(messageId, user_id)
+    if (message.get('error')):
+        emit('error', {"message": message['message']}, room=request.sid)
+        return
+    senderSid = user_socket_map[message["sender_id"]]
+    emit('updateMessage', {"message": message}, room=request.sid)
+    emit('updateMessage', {"message": message}, room=senderSid)
+
+@socketio.on('deleteMessage')
+@socket_auth()
+def deleteMessageEvent(data, user_id):
+    messageId = data.get('message_id')
+    if (not messageId):
+        emit('error', {"message": "Message id manquant"}, room=request.sid)
+        return
+    message = deleteMessage(messageId, user_id)
+    if (message.get('error')):
+        emit('error', {"message": message['message']}, room=request.sid)
+        return
+    receiverId = user_socket_map[message["receiver_id"]]
+    emit('deleteMessage', {'messageId': message['id']}, room=request.sid)
+    emit('deleteMessage', {'messageId': message['id']}, room=receiverId)
 
 def sendNotificationEvent(message, sender, receiver_id, type: NotifType):
     sender_id = sender["id"]

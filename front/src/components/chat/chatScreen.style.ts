@@ -31,6 +31,11 @@ export const chatScreenStyle = sva({
                 '&[data-issidebaropen="1"]': {
                     left: '235px',
                 },
+            },
+            smDown: {
+                '&[data-issidebaropen="0"]': {
+                    left: '-10px'
+                },
             }
         },
     }

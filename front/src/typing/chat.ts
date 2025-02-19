@@ -14,6 +14,7 @@ export type MessageType = {
     sender_id: number;
     receiver_id: number;
     message: string;
+    is_like: boolean;
     created_at: string;
 }
 

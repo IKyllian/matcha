@@ -1,7 +1,7 @@
 import { sva } from "styled-system/css";
 
 export const chatStyle = sva({
-    slots: ['chatContainer', 'chatWrapper', 'chatHeader', 'img', 'messagesContainer', 'messageItem', 'recipient', 'sender', 'chatFormContainer', 'sendButtonContainer', 'dateMessage'],
+    slots: ['chatContainer', 'chatWrapper', 'chatHeader', 'img', 'messagesContainer', 'messageItem', 'recipient', 'sender', 'chatFormContainer', 'sendButtonContainer', 'dateMessage', 'likeIcon', 'likedIconLeft', 'likedIcon', 'trashIcon'],
     base: {
         chatContainer: {
             borderLeft: 'none',
@@ -9,7 +9,10 @@ export const chatStyle = sva({
             padding: '24px',
             height: 'calc(100vh - 70px)',
             display: 'flex',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            smDown: {
+                padding: '8px',
+            }
         },
         chatWrapper: {
             display: 'flex',
@@ -52,7 +55,10 @@ export const chatStyle = sva({
             wordWrap: 'break-word',
             position: 'relative',
             border: '2px solid black',
-            fontSize: '16px'
+            fontSize: '16px',
+            '&:hover .trashIcon, &:hover .likeIcon': {
+                display: 'block'
+            }
         },
         recipient: {
             alignSelf: 'flex-start',
@@ -94,6 +100,44 @@ export const chatStyle = sva({
         },
         dateMessage: {
             fontSize: '12px'
+        },
+        likeIcon: {
+            position: 'absolute',
+            bottom: '-5px',
+            right: '-5px',
+            width: '15px',
+            height: '15px',
+            display: 'none',
+            color: '#ed05ab',
+            cursor: 'pointer',
+        },
+        likedIconLeft: {
+            position: 'absolute',
+            bottom: '-5px',
+            left: '-7px',
+            width: '15px',
+            height: '15px',
+            color: '#ed05ab',
+            cursor: 'pointer',
+        },
+        likedIcon: {
+            position: 'absolute',
+            bottom: '-5px',
+            right: '-5px',
+            width: '15px',
+            height: '15px',
+            color: '#ed05ab',
+            cursor: 'pointer',
+        },
+        trashIcon: {
+            position: 'absolute',
+            bottom: '-5px',
+            right: '-5px',
+            width: '13px',
+            height: '13px',
+            color: 'red',
+            cursor: 'pointer',
+            display: 'none'
         }
     }
 })

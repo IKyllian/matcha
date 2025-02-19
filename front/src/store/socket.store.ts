@@ -8,6 +8,8 @@ export type SocketStoreType = {
     socket: Socket | undefined,
     initSocket: ({ token }: { token: string }) => void,
     sendMessage: (params: { receiver_id: number, sender_id: number, message: string }) => void;
+    changeLikeStatus: (params: { message_id: number}) => void;
+    deleteMessageEvent: (params: { message_id: number}) => void;
     socketDisconnect: () => void
 }
 
@@ -16,6 +18,18 @@ export const socketSlice = (set: StoreSetType): SocketStoreType => ({
     sendMessage: (params: { receiver_id: number, sender_id: number, message: string }) => set(state => {
         if (state.socket && state.authStore.token) {
             state.socket.emit('sendMessage', { ...params, token: state.authStore.token })
+        }
+        return { ...state }
+    }),
+    changeLikeStatus: (params: { message_id: number}) => set(state => {
+        if (state.socket && state.authStore.token) {
+            state.socket.emit('updateLikeMessageStatus', { ...params, token: state.authStore.token })
+        }
+        return { ...state }
+    }),
+    deleteMessageEvent: (params: { message_id: number}) => set(state => {
+        if (state.socket && state.authStore.token) {
+            state.socket.emit('deleteMessage', { ...params, token: state.authStore.token })
         }
         return { ...state }
     }),
@@ -41,6 +55,14 @@ export const socketSlice = (set: StoreSetType): SocketStoreType => ({
 
         socket.on('updateNotification', (notification: NotificationType) => {
             state.updateNotification(notification)
+        })
+
+        socket.on('updateMessage', (data: {message: MessageType}) => {
+            state.updateMessage(data.message)
+        })
+
+        socket.on('deleteMessage', (data: {messageId: MessageType['id']}) => {
+            state.deleteMessage(data.messageId)
         })
 
         return {

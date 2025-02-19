@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react"
 import ChipSelect from "front/components/chips/chipSelect"
 import { settingsStyle } from "./settings.style"
-import { css } from "styled-system/css"
+import { css, cx } from "styled-system/css"
 import { useForm } from "react-hook-form"
 import { FaUpload } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
-import { makePositionRequest, makeReversePositionRequest, makeSettingsRequest } from "front/api/profile"
+import { makePositionRequest, makeSettingsRequest } from "front/api/profile"
 import { useStore } from "front/store/store"
 import { ImageSettingsType, Tags, User } from "front/typing/user"
 import { useApi } from "front/hook/useApi"
 import { AlertTypeEnum } from "front/typing/alert"
+import { useNavigate } from "react-router-dom"
+import { isUserProfileComplete } from "front/utils/user.utils"
 import { makeIpAddressRequest } from "front/api/auth"
-import { useLocation, useNavigate } from "react-router-dom"
+import useCloseRef from "front/hook/useCloseRef"
 
 type InputRadioProps = {
   value: string
@@ -79,9 +81,11 @@ const InputRadio = ({ value, label, register }: InputRadioProps) => {
 const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType }) => {
   const profileImageFromUser = profileSettings?.user?.images?.find(i => i.is_profile_picture)?.image_file
   const slotsStyles = settingsStyle.raw()
-  const { token } = useStore((state) => state.authStore)
+  const { token, isCompletingAccount } = useStore((state) => state.authStore)
+  const changeIsCompletingAccount = useStore((state) => state.changeIsCompletingAccount)
   const addAlert = useStore((state) => state.addAlert)
   const setUser = useStore((state) => state.setUser)
+  const openModal = useStore((state) => state.openModal)
   const [selectedChips, setSelectedChips] = useState<Tags[]>(profileSettings.user.tags)
   const [profilePicturePreview, setProfilPicturePreview] = useState<string | undefined>(profileImageFromUser ? profileImageFromUser : undefined)
   const [profilesImages, setProfilesImages] = useState<ImageSettingsType[]>(profileSettings.user.images.map(i => ({
@@ -93,6 +97,8 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const [inputPositionsList, setInputPositionsList] = useState<PositionType[]>([])
   const [positionSelected, setPositionSelected] = useState<PositionType>()
   const [inputPosition, setInputPosition] = useState<string>('')
+  const [inputSelected, setInputSelected] = useState<boolean>(false)
+  const [disableInput, setDisableInput] = useState<boolean>(false)
   const {
     register,
     handleSubmit,
@@ -100,24 +106,24 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   } = useForm<Partial<User>>({
     defaultValues: profileSettings.user
   })
-  const location = useLocation()
   const navigate = useNavigate()
+  const onClose = () => {
+    setInputSelected(false)
+    setInputPositionsList([])
+  }
+  const ref = useCloseRef({useEscape: false, onClose})
+
   useEffect(() => {
     const getPos = async () => {
       const lat = profileSettings.user.latitude
       const lon = profileSettings.user.longitude
-      if (lat && lon) {
-        const ret = await makeReversePositionRequest({ lat, lon })
-        if (ret) {
-          const { display_name } = ret
-          setPositionSelected({
-            displayName: display_name,
-            latitude: lat,
-            longitude: lon
-          })
-          setInputPosition(display_name)
-        }
-      }
+      const displayName = profileSettings.user.position_name
+      setPositionSelected({
+        displayName,
+        latitude: lat,
+        longitude: lon
+      })
+      setInputPosition(displayName)
     }
     getPos()
   }, [])
@@ -131,10 +137,11 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   }
 
   const onSubmit = async (values: Partial<User>) => {
+    setDisableInput(true)
     const formData = new FormData()
 
     for (const [key, value] of Object.entries(values)) {
-      if (value && key !== 'tags' && key !== 'images' && key !== 'fame_rating' && key !== 'latitude' && key !== 'longitude') {
+      if (value && key !== 'tags' && key !== 'images' && key !== 'fame_rating' && key !== 'latitude' && key !== 'longitude' && key !== 'position_name') {
         formData.append(key, value)
       }
     }
@@ -171,6 +178,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     if (positionSelected) {
       formData.append('longitude', positionSelected.longitude.toString())
       formData.append('latitude', positionSelected.latitude.toString())
+      formData.append('position_name', positionSelected.displayName)
     }
 
     const resIp = await makeIpAddressRequest()
@@ -179,16 +187,21 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
         data: formData,
         token,
         addAlert,
-        ip: resIp.ip
+        ip: resIp?.ip
       }
     )
 
-    if (retUser) {
+    if (retUser?.user) {
+      const { user } = retUser
       addAlert({ message: 'Votre profile a ete update', type: AlertTypeEnum.SUCCESS })
-      setUser(retUser.user)
-      if (location.state?.prevPath === '/login') {
-        navigate('/')
+      setUser(user)
+      setDisableInput(false)
+      if (isCompletingAccount && isUserProfileComplete(user)) {
+        changeIsCompletingAccount(false)
+        navigate("/")
       }
+    } else {
+      setDisableInput(false)
     }
   }
 
@@ -212,7 +225,8 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   }
 
   const onMultipleUpload = (event: any) => {
-    const imagesLength = profilesImages.length
+    const imagesWithoutProfilePic = profilesImages?.filter(i => !i.is_profile_picture)
+    const imagesLength = imagesWithoutProfilePic?.length
     if (imagesLength === 4) {
       console.error('Max images Uploaded: ', imagesLength)
       return
@@ -220,7 +234,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
     const files = event.target.files
     for (let i = 0; i < files.length; i++) {
       if (checkFileNameExist(files[i])) return
-      if (i + imagesLength === 4) {
+      if (i + imagesLength >= 4) {
         break
       }
       setProfilesImages(prev => [...prev, { file: files[i], file_name: files[i].name, preview: URL.createObjectURL(files[i]), is_profile_picture: false }])
@@ -255,6 +269,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   }
 
   useEffect(() => {
+    if (!inputSelected) return
     const timeoutId = setTimeout(async () => {
       if (inputPosition.trim() === "" || inputPosition.trim().length < 2) {
         setInputPositionsList([])
@@ -262,7 +277,15 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
       }
       const ret: any = await makePositionRequest({ city: inputPosition })
       if (ret && Array.isArray(ret)) {
-        setInputPositionsList(ret.map(p => ({ displayName: p.display_name, latitude: p.lat, longitude: p.lon })))
+        const positionParsed = ret.map(p => {
+          const splitName: string[] = p.display_name?.split(',')
+          const name = splitName.length > 1 ? `${splitName[0]}-${splitName[splitName.length - 1]}` : splitName.length === 1 ? splitName[0] : ""
+          return {...p, display_name: name}
+        })
+        const uniquePosition = Array.from(
+          new Map(positionParsed.map(item => [item.display_name, item])).values()
+        )
+        setInputPositionsList(uniquePosition.map(p => ({ displayName: p.display_name, latitude: p.lat, longitude: p.lon }) ))
       }
     }, 500)
 
@@ -272,6 +295,11 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
   const onClearPosition = () => {
     setPositionSelected(undefined)
     setInputPosition('')
+  }
+
+  const onDeleteAccount = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+    openModal({ modalKey: 'deleteAccount' })
   }
   return (
     <div className={css(slotsStyles.settingsContainer)}>
@@ -316,7 +344,7 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
           Desription:
           <textarea className={css(slotsStyles.textAreaInput)} {...register('bio', INPUT_OPTIONS.bio)} name="bio" ></textarea>{errors?.bio?.message && <span className={css(slotsStyles.inputError)}>{errors?.bio?.message.toString()}</span>}
         </label>
-        <label className={css(slotsStyles.positionContainer)}>
+        <label className={css(slotsStyles.positionContainer)} ref={ref as any} onClick={() => setInputSelected(true)}>
           Position:
           <input type='text' onChange={handleChange} value={inputPosition} />
           {
@@ -406,8 +434,9 @@ const Settings = ({ profileSettings }: { profileSettings: ProfileSettingsType })
           </div>
         </label>
         <span className={css(slotsStyles.textInfo)}>* Champs requis pour que votre compte soit valide</span>
-        <button type="submit" className={css(slotsStyles.button)}> Sauvegarder </button>
+        <button type="submit" className={css(slotsStyles.button)} disabled={disableInput}> Sauvegarder </button>
       </form>
+      <button onClick={onDeleteAccount} className={cx(css(slotsStyles.button, slotsStyles.deleteButton))}>Supprimer compte</button>
     </div>
   )
 }

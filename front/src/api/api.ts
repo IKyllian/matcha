@@ -20,8 +20,8 @@ export const makeApi = ({ token, ip }: { token?: string, ip?: string }) => {
 type ApiRequestProps = {
     url: string
     options: Record<string, any>
-    ip?: string
     token?: string
+    ip?: string
     addAlert?: AlertStoreType['addAlert']
 }
 export const apiRequest = async <T>({ token, url, options, addAlert, ip }: ApiRequestProps): Promise<T | null> => {

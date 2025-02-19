@@ -8,12 +8,14 @@ type AuthType = {
     authStatus: AuthStatusType
     isLogged: boolean,
     socketInitialized: boolean
+    isCompletingAccount: boolean
 }
 
 const defaultAuthStore: AuthType = {
     authStatus: 'CHECKING',
     isLogged: false,
     socketInitialized: false,
+    isCompletingAccount: false
 }
 export type AuthStoreType = {
     authStore: AuthType,
@@ -21,6 +23,7 @@ export type AuthStoreType = {
     setUser: (user: Partial<User>) => void,
     setAuthStatus: (status: AuthStatusType) => void,
     initializeSocket: () => void,
+    changeIsCompletingAccount: (value: boolean) => void
     logoutUser: () => void,
 }
 
@@ -31,4 +34,5 @@ export const authSlice = (set: StoreSetType): AuthStoreType => ({
     setAuthStatus: (status: AuthStatusType) => set((state) => ({ ...state, authStore: { ...state.authStore, authStatus: status } })),
     initializeSocket: () => set((state) => ({ ...state, authStore: { ...state.authStore, socketInitialized: true } })),
     logoutUser: () => set((state) => ({ ...state, authStore: { ...state.authStore, user: undefined, authStatus: 'CHECKED', isLogged: false, token: undefined, socketInitialized: false } })),
+    changeIsCompletingAccount: (value: boolean) => set((state) => ({...state, authStore: {...state.authStore, isCompletingAccount: value}}))
 })

@@ -24,7 +24,8 @@ export const settingsStyle = sva({
         'positionListContainer',
         'positionItem',
         'positionContainer',
-        'inputError'
+        'inputError',
+        'deleteButton'
     ],
     base: {
         settingsContainer: {
@@ -64,7 +65,6 @@ export const settingsStyle = sva({
         },
         rowInputs: {
             display: 'flex',
-            flexWrap: 'wrap',
             gap: '8px',
             '& > label': {
                 display: 'flex',
@@ -81,7 +81,10 @@ export const settingsStyle = sva({
                     padding: '8px',
                     borderRadius: '7px'
                 }
-            }
+            },
+            mdDown: {
+                flexDir: 'column'
+            },
         },
         radioWrapper: {
             display: 'flex',
@@ -119,6 +122,12 @@ export const settingsStyle = sva({
             margin: '12px auto 0 auto',
             _active: {
                 boxShadow: 'none',
+            },
+            mdDown: {
+                width: '80%'
+            },
+            smDown: {
+                fontSize: '15px',
             }
         },
         uploadButton: {
@@ -181,6 +190,9 @@ export const settingsStyle = sva({
             },
             '& > svg': {
                 margin: '0 auto'
+            },
+            smDown: {
+                width: '90%',
             }
         },
         picturesContainer: {
@@ -236,6 +248,12 @@ export const settingsStyle = sva({
         'inputError': {
             color: 'red',
             fontSize: '12px'
+        },
+        deleteButton: {
+            backgroundColor: 'lightRed',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
         }
     }
 })

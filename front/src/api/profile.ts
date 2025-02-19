@@ -53,7 +53,7 @@ export const makeViewRequest = async ({ token, id, addAlert }: RequestProps) => 
 }
 
 export const makeSettingsRequest = async ({ data, token, addAlert, ip }: { data: any, token: string, addAlert: AlertStoreType['addAlert'], ip?: string }) => {
-    return apiRequest<{ user: Partial<User> }>({
+    return apiRequest<{ user: User }>({
         url: `${import.meta.env.VITE_API_URL}/profile/setSettings`,
         options: {
             method: 'POST',
@@ -77,12 +77,23 @@ export const makeTagsCreateRequest = async ({ tag_name, token, addAlert }: { tag
     })
 }
 
-export const makePositionRequest = async ({ city }) => {
-    const response = await ky.get<any>(`https://nominatim.openstreetmap.org/search?city=${city}&format=json`).json()
-    return response
+export const deleteAccountRequest = async ({ user_id_to_delete, token, addAlert }: {user_id_to_delete: number, token: string, addAlert: AlertStoreType['addAlert']}) => {
+    return apiRequest<{ok: boolean}>({
+        url: `${import.meta.env.VITE_API_URL}/profile/delete`,
+        options: {
+            method: 'DELETE',
+            json: { user_id_to_delete }
+        },
+        token,
+        addAlert
+    })
 }
 
-export const makeReversePositionRequest = async ({ lat, lon }: { lat: number, lon: number }) => {
-    const response = await ky.get<any>(`https://nominatim.openstreetmap.org/reverse.php?lat=${lat}&lon=${lon}&zoom=10&format=jsonv2`).json()
-    return response
+export const makePositionRequest = async ({ city }) => {
+    try {
+        const response = await ky.get<any>(`https://nominatim.openstreetmap.org/search?city=${city}&format=json`).json()
+        return response
+    } catch (e) {
+       console.error('Error = ', e)
+    }
 }

@@ -321,23 +321,25 @@ MAX_IMAGE_SIZE = 15 * 1024 * 1024  # 15 MB in bytes
     "bio": {"type": str, "min": 1, "max": 1000},
     "latitude": {"type": float},
     "longitude": {"type": float},
+    "position_name": {"type": str}
 })
 def setSettings(user_id, validated_data):
-    fields = ["first_name", "last_name", "gender", "sexual_preference", "bio", "latitude", "longitude"]
+    fields = ["first_name", "last_name", "gender", "sexual_preference", "bio", "latitude", "longitude", "position_name"]
     latitude = validated_data['latitude']
     longitude = validated_data['longitude']
     tags = request.form.getlist("tag_ids", None)
     images = []
     index = 0
     userPos = getUserPos(user_id)
+    has_profile_picture = False
 
     if (not latitude or not longitude):
         ipdata.api_key = os.getenv("IP_DATA_API_KEY")
         try :
             ipAddress = get_client_ip()
-            if ('10.11.' in ipAddress or '127.0.'in ipAddress):
-                ipAddress = os.getenv("PUBLIC_IP")
-            data = ipdata.lookup(ipAddress)
+            data = ipdata.lookup(ipAddress, fields=['latitude','longitude','country_name', 'city'])
+            locationName = f"{data.get('city')}, {data.get('country_name')}"
+            validated_data["position_name"] = locationName
             if (not data['latitude'] or not data['longitude']):
                 print("Probleme avec la recuperation de la localisation -> Garde l'ancienne position")
             latitude = data['latitude'] if data['latitude'] else userPos['latitude']
@@ -366,6 +368,9 @@ def setSettings(user_id, validated_data):
         file_name = image_file.filename if image_file.filename else ""
         is_profile_picture = request.form.get(f"images[{index}][is_profile_picture]") == 'true'
         
+        if is_profile_picture:
+            has_profile_picture = True
+        
         if not isImageFile(image_file):
             raise ForbiddenError(f"Le fichier '{file_name}' n'est pas une image valide.")
         
@@ -376,6 +381,9 @@ def setSettings(user_id, validated_data):
         'file_name': file_name
         })
         index += 1
+    
+    if not has_profile_picture:
+        raise ForbiddenError("Une image de profil est requise.")
     
     if (not checkImages(images)):
         raise ForbiddenError("Images invalides envoyees")
@@ -406,3 +414,15 @@ def setSettings(user_id, validated_data):
 def getViewHistory(user_id):
     response = makeRequest("SELECT user_id FROM view WHERE viewed_user_id = ?", (str(user_id),))
     return jsonify(history=response)
+
+@auth()
+@validate_request({
+    "user_id_to_delete": {"required": True, "type": int, "min": 0},
+})
+def deleteUser(user_id, validated_data):
+    user_id_to_delete = validated_data['user_id_to_delete']
+    user_id = int(user_id)
+    if (user_id_to_delete != user_id):
+        raise ForbiddenError('Not authorized')
+    makeRequest("DELETE FROM user WHERE id = :user_id", {"user_id": user_id_to_delete})
+    return jsonify(ok=True)

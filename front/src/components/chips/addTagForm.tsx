@@ -7,6 +7,9 @@ import { Tags } from "front/typing/user"
 import { AlertTypeEnum } from 'front/typing/alert';
 import { IoMdClose } from "react-icons/io";
 import { FaCheck } from "react-icons/fa6";
+import { useCallback } from "react"
+import _ from 'lodash'
+
 type FormValues = {
     tag_name: string
 }
@@ -25,7 +28,7 @@ const AddTagForm = ({ onSubmit, onCancel }: AddTagFormProps) => {
     const { token } = useStore((state) => state.authStore)
     const addAlert = useStore((state) => state.addAlert)
 
-    const onTagSubmit = async (data: FormValues) => {
+    const onTagSubmit = useCallback(_.debounce(async (data: FormValues) => {
         const { tag_name } = data
         const ret = await makeTagsCreateRequest({ token, addAlert, tag_name })
         if (ret) {
@@ -34,7 +37,7 @@ const AddTagForm = ({ onSubmit, onCancel }: AddTagFormProps) => {
             addAlert({ message: `Tag "${tag.tag_name}" cree`, type: AlertTypeEnum.SUCCESS })
             setValue('tag_name', "")
         }
-    }
+    }, 500, { leading: true }), [token, addAlert, onSubmit, setValue, makeTagsCreateRequest])
 
     return (
         <div className={css(slotsStyles.tagFormContainer)}>
